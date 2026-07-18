@@ -1,0 +1,99 @@
+<div class="team-detail">
+  @if (member()) {
+    <app-page-header
+      [title]="member()!.first_name + ' ' + member()!.last_name"
+      [subtitle]="member()!.position || 'Sin cargo asignado'"
+      icon="bi-person-badge"
+      actionLabel="Editar"
+      (actionClick)="onEdit()"
+    />
+
+    <app-info-tip message="Desde aquí podrás asignar responsabilidades, gestionar documentos y revisar la actividad del colaborador." />
+
+    <section class="team-detail__section">
+      <h3 class="team-detail__section-title">Información general</h3>
+      <dl class="team-detail__list">
+        <div class="team-detail__item">
+          <dt>Correo</dt>
+          <dd>{{ member()!.email }}</dd>
+        </div>
+        <div class="team-detail__item">
+          <dt>Teléfono</dt>
+          <dd>{{ member()!.phone || '-' }}</dd>
+        </div>
+        <div class="team-detail__item">
+          <dt>Documento</dt>
+          <dd>{{ member()!.document_type }} {{ member()!.document_number }}</dd>
+        </div>
+        <div class="team-detail__item">
+          <dt>Estado</dt>
+          <dd>{{ member()!.status }}</dd>
+        </div>
+        <div class="team-detail__item">
+          <dt>Cuenta de usuario</dt>
+          <dd>{{ member()!.has_account ? 'Sí' : 'No' }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="team-detail__section">
+      <h3 class="team-detail__section-title">
+        <i class="bi bi-briefcase team-detail__section-icon"></i>
+        Responsabilidades
+      </h3>
+      <p class="team-detail__section-description">
+        Asigna a este colaborador como responsable de una gerencia y/o área. Puedes seleccionar solo una de las opciones o ambas.
+      </p>
+
+      <div class="team-detail__assign-fields">
+        <div class="form-field">
+          <label>Gerencia</label>
+          <app-fluent-dropdown [formField]="assignForm.managementId" placeholder="Selecciona gerencia">
+            <fluent-option value="">Sin gerencia</fluent-option>
+            @for (mgmt of managements(); track mgmt.id) {
+              <fluent-option [value]="mgmt.id">{{ mgmt.name }}</fluent-option>
+            }
+          </app-fluent-dropdown>
+        </div>
+
+        <div class="form-field">
+          <label>Área</label>
+          <app-fluent-dropdown [formField]="assignForm.areaId" placeholder="Selecciona área">
+            <fluent-option value="">Sin área</fluent-option>
+            @for (area of areas(); track area.id) {
+              <fluent-option [value]="area.id">{{ area.name }}</fluent-option>
+            }
+          </app-fluent-dropdown>
+        </div>
+
+        <fluent-button
+          appearance="accent"
+          [disabled]="assigning()"
+          (click)="onAssignResponsible()"
+        >
+          {{ assigning() ? 'Asignando...' : 'Asignar responsable' }}
+        </fluent-button>
+      </div>
+    </section>
+
+    <section class="team-detail__section">
+      <h3 class="team-detail__section-title">Documentos</h3>
+      <app-empty-state
+        icon="bi-folder"
+        title="Sin documentos"
+        message="Próximamente podrás subir contratos, certificados y otros archivos del colaborador."
+      />
+    </section>
+
+    <div class="team-detail__actions">
+      <fluent-button appearance="accent" (click)="onEdit()">Editar</fluent-button>
+      <fluent-button appearance="neutral" (click)="onDeactivate()">Desactivar</fluent-button>
+    </div>
+  } @else {
+    <app-empty-state
+      icon="bi-person-x"
+      title="Miembro no encontrado"
+      message="El colaborador solicitado no existe o no tienes permisos para verlo."
+    />
+  }
+</div>

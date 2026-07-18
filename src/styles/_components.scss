@@ -1,0 +1,89 @@
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  transition: var(--transition-base);
+
+  label {
+    font-size: var(--type-ramp-minus-1-font-size);
+    font-weight: 600;
+    color: var(--neutral-color-700);
+    transition: var(--transition-base);
+  }
+
+  &__error {
+    font-size: var(--type-ramp-minus-1-font-size);
+    font-weight: 500;
+    color: var(--error-color);
+  }
+
+  app-fluent-text-input,
+  app-fluent-dropdown,
+  fluent-text-input,
+  fluent-select,
+  fluent-dropdown {
+    width: 100%;
+  }
+}
+
+// -----------------------------------------------------------
+// Fluent Button overrides — flat corporate accent
+// -----------------------------------------------------------
+fluent-button {
+  --accent-fill-rest: var(--primary-color-500);
+  --accent-fill-hover: var(--primary-color-400);
+  --accent-fill-active: var(--primary-color-600);
+  --accent-foreground-rest: var(--neutral-color-0);
+  --neutral-fill-rest: var(--neutral-color-100);
+  --neutral-fill-hover: var(--neutral-color-150);
+  --neutral-fill-active: var(--neutral-color-200);
+  --control-corner-radius: 6px;
+
+  font-weight: 600;
+  transition: var(--transition-base);
+}
+
+// Force the accent appearance to the corporate blue fill.
+fluent-button[appearance='accent'] {
+  background-color: var(--primary-color-500);
+  color: var(--neutral-color-0);
+  border-color: var(--primary-color-500);
+}
+
+fluent-button[appearance='accent']:hover {
+  background-color: var(--primary-color-400);
+  border-color: var(--primary-color-400);
+}
+
+fluent-button[appearance='accent']:active {
+  background-color: var(--primary-color-600);
+  border-color: var(--primary-color-600);
+}
+
+// -----------------------------------------------------------
+// Tabs, checkbox and radio accent
+// -----------------------------------------------------------
+fluent-tab-list,
+fluent-tabs {
+  --accent-fill-rest: var(--primary-color-500);
+  --accent-fill-hover: var(--primary-color-400);
+  --accent-fill-active: var(--primary-color-600);
+}
+
+fluent-checkbox,
+fluent-radio {
+  --accent-fill-rest: var(--primary-color-500);
+  --accent-fill-hover: var(--primary-color-400);
+  --accent-fill-active: var(--primary-color-600);
+}
+
+// -----------------------------------------------------------
+// Card surface helper — white cards with subtle shadows
+// -----------------------------------------------------------
+.surface-card {
+  background-color: var(--neutral-color-0);
+  border: 1px solid var(--neutral-color-200);
+  border-radius: var(--layer-corner-radius);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-base);
+}

@@ -1,0 +1,56 @@
+$sides: (
+  'l': 'left',
+  't': 'top',
+  'r': 'right',
+  'b': 'bottom',
+);
+
+$sizes: (
+  'xxs': var(--space-xxs),
+  'xs': var(--space-xs),
+  'sm': var(--space-sm),
+  'md': var(--space-md),
+  'lg': var(--space-lg),
+  'xl': var(--space-xl),
+  'xxl': var(--space-xxl),
+);
+
+// Margin utilities: ml-xxs, mt-md, mr-lg, mb-xl...
+@each $side-key, $side-name in $sides {
+  @each $size-key, $size-value in $sizes {
+    .m#{$side-key}-#{$size-key} {
+      margin-#{$side-name}: #{$size-value};
+    }
+  }
+}
+
+// Padding utilities: pl-xxs, pt-md, pr-lg, pb-xl...
+@each $side-key, $side-name in $sides {
+  @each $size-key, $size-value in $sizes {
+    .p#{$side-key}-#{$size-key} {
+      padding-#{$side-name}: #{$size-value};
+    }
+  }
+}
+
+// Shorthand axis utilities
+@each $size-key, $size-value in $sizes {
+  .m-#{$size-key} {
+    margin: #{$size-value};
+  }
+  .p-#{$size-key} {
+    padding: #{$size-value};
+  }
+  .mx-#{$size-key} {
+    margin-inline: #{$size-value};
+  }
+  .my-#{$size-key} {
+    margin-block: #{$size-value};
+  }
+  .px-#{$size-key} {
+    padding-inline: #{$size-value};
+  }
+  .py-#{$size-key} {
+    padding-block: #{$size-value};
+  }
+}

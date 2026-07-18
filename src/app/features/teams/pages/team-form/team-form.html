@@ -1,0 +1,124 @@
+<div class="team-form">
+  <app-page-header
+    [title]="memberId() && memberId() !== 'new' ? 'Editar miembro' : 'Nuevo miembro'"
+    subtitle="Completa la información del colaborador"
+    icon="bi-person"
+  />
+
+  <form class="team-form__form" (ngSubmit)="onSubmit()">
+    <section class="team-form__section">
+      <h2 class="team-form__section-title">
+        <i class="bi bi-person-vcard team-form__section-icon"></i>
+        Información personal
+      </h2>
+      <p class="team-form__section-description">
+        Datos básicos de contacto del colaborador. Los campos nombre, apellido y correo son obligatorios.
+      </p>
+
+      <div class="team-form__fields">
+        <div class="form-field">
+          <label>Nombre</label>
+          <app-fluent-text-input [formField]="memberForm.first_name" />
+          @if (memberForm.first_name().invalid() && memberForm.first_name().touched()) {
+            <span class="form-field__error">{{ memberForm.first_name().getError('required')?.message }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Apellido</label>
+          <app-fluent-text-input [formField]="memberForm.last_name" />
+          @if (memberForm.last_name().invalid() && memberForm.last_name().touched()) {
+            <span class="form-field__error">{{ memberForm.last_name().getError('required')?.message }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Correo</label>
+          <app-fluent-text-input type="email" [formField]="memberForm.email" />
+          @if (memberForm.email().invalid() && memberForm.email().touched()) {
+            <span class="form-field__error">{{ memberForm.email().getError('required')?.message }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Teléfono</label>
+          <app-fluent-text-input [formField]="memberForm.phone" />
+        </div>
+      </div>
+    </section>
+
+    <section class="team-form__section">
+      <h2 class="team-form__section-title">
+        <i class="bi bi-card-text team-form__section-icon"></i>
+        Documento de identidad
+      </h2>
+      <p class="team-form__section-description">
+        Selecciona el tipo de documento e ingresa el número correspondiente.
+      </p>
+
+      <div class="team-form__fields team-form__fields--narrow">
+        <div class="form-field">
+          <label>Tipo de documento</label>
+          <app-fluent-dropdown [formField]="memberForm.document_type">
+            <fluent-option value="DNI">DNI</fluent-option>
+            <fluent-option value="CE">Carné de extranjería</fluent-option>
+            <fluent-option value="PASSPORT">Pasaporte</fluent-option>
+            <fluent-option value="OTHER">Otro</fluent-option>
+          </app-fluent-dropdown>
+        </div>
+
+        <div class="form-field">
+          <label>Número de documento</label>
+          <app-fluent-text-input [formField]="memberForm.document_number" />
+        </div>
+      </div>
+    </section>
+
+    <section class="team-form__section">
+      <h2 class="team-form__section-title">
+        <i class="bi bi-briefcase team-form__section-icon"></i>
+        Información laboral
+      </h2>
+      <p class="team-form__section-description">
+        Datos relacionados con el puesto y la fecha de ingreso a la organización.
+      </p>
+
+      <div class="team-form__fields team-form__fields--narrow">
+        <div class="form-field">
+          <label>Cargo</label>
+          <app-fluent-text-input [formField]="memberForm.position" />
+        </div>
+
+        <div class="form-field">
+          <label>Fecha de contratación</label>
+          <app-fluent-text-input type="date" [formField]="memberForm.hire_date" />
+        </div>
+      </div>
+    </section>
+
+    <section class="team-form__section">
+      <h2 class="team-form__section-title">
+        <i class="bi bi-shield-lock team-form__section-icon"></i>
+        Cuenta de usuario
+      </h2>
+      <app-info-tip message="Si activas 'Crear cuenta', el sistema generará un usuario EMPLOYEE con contraseña temporal ChangeMe123!." />
+
+      <div class="team-form__fields team-form__fields--narrow">
+        <div class="form-field form-field--checkbox">
+          <app-fluent-checkbox [formField]="memberForm.create_account">
+            Crear cuenta de usuario
+          </app-fluent-checkbox>
+        </div>
+      </div>
+    </section>
+
+    <div class="team-form__actions">
+      <fluent-button type="submit" appearance="accent" [disabled]="saving()">
+        {{ saving() ? 'Guardando...' : 'Guardar' }}
+      </fluent-button>
+      <fluent-button type="button" appearance="neutral" (click)="router.navigate(['/teams'])">
+        Cancelar
+      </fluent-button>
+    </div>
+  </form>
+</div>

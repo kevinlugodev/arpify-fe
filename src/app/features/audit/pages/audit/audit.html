@@ -1,0 +1,27 @@
+<div class="audit">
+  <app-page-header
+    title="Auditoría"
+    subtitle="Registro de acciones del tenant"
+    icon="bi-shield-check"
+  />
+
+  <app-info-tip message="Esta sección está disponible para roles OWNER y ADMIN. Permite rastrear cambios en entidades del sistema." />
+
+  <div class="audit__filters">
+    <app-search-field
+      placeholder="Filtrar por tipo de entidad"
+      [value]="entityType()"
+      (valueChange)="entityType.set($event)"
+    />
+  </div>
+
+  @if (logs().length === 0 && !loading()) {
+    <app-empty-state
+      icon="bi-shield-check"
+      title="Sin registros"
+      message="No hay eventos de auditoría que coincidan con los filtros."
+    />
+  } @else {
+    <app-data-table [columns]="columns" [rows]="logs()" [loading]="loading()" />
+  }
+</div>

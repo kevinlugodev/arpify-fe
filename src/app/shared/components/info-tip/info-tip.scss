@@ -1,0 +1,25 @@
+.info-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--primary-color-50);
+  color: var(--primary-color-800);
+  border: 1px solid var(--primary-color-200);
+  border-radius: var(--border-radius-md);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-base);
+
+  &__icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 14px;
+  }
+
+  &__message {
+    line-height: 1.5;
+  }
+}

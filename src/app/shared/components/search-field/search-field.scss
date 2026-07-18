@@ -1,0 +1,29 @@
+.search-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 24rem;
+
+  &__icon {
+    position: absolute;
+    left: var(--space-sm);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+    color: #94a3b8;
+    pointer-events: none;
+  }
+
+  &__input {
+    width: 100%;
+
+    &::part(root) {
+      padding-left: var(--space-xl);
+    }
+  }
+}

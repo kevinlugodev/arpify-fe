@@ -1,0 +1,95 @@
+<div class="mass-emails">
+  <app-page-header
+    title="Correos masivos"
+    subtitle="Plantillas, campañas y logs de envío"
+    icon="bi-envelope-paper"
+  />
+
+  <app-info-tip message="Usa variables como {nombre} en el asunto y cuerpo del correo. La campaña se ejecuta manualmente desde el botón de cada fila." />
+
+  <div class="mass-emails__tabs">
+    <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+      <fluent-tab id="templates">Plantillas</fluent-tab>
+      <fluent-tab id="campaigns">Campañas</fluent-tab>
+      <fluent-tab id="logs">Logs</fluent-tab>
+    </fluent-tablist>
+  </div>
+
+  @if (activeTab() === 'templates') {
+    <section class="mass-emails__panel">
+      <div class="mass-emails__create">
+        <app-fluent-text-input
+          placeholder="Nombre"
+          [formField]="templateForm.name"
+        />
+        <app-fluent-text-input
+          placeholder="Asunto"
+          [formField]="templateForm.subject_template"
+        />
+        <fluent-button appearance="accent" (click)="onCreateTemplate()">Crear plantilla</fluent-button>
+      </div>
+      @if (templateForm.name().invalid() && templateForm.name().touched()) {
+        <span class="form-field__error">{{ templateForm.name().getError('required')?.message }}</span>
+      }
+      @if (templateForm.subject_template().invalid() && templateForm.subject_template().touched()) {
+        <span class="form-field__error">{{ templateForm.subject_template().getError('required')?.message }}</span>
+      }
+
+      @if (templates().length === 0 && !loading()) {
+        <app-empty-state
+          icon="bi-envelope-paper"
+          title="Sin plantillas"
+          message="Crea tu primera plantilla de correo."
+        />
+      } @else {
+        <app-data-table [columns]="templateColumns" [rows]="templates()" [loading]="loading()" />
+      }
+    </section>
+  } @else if (activeTab() === 'campaigns') {
+    <section class="mass-emails__panel">
+      <div class="mass-emails__create">
+        <app-fluent-text-input
+          placeholder="Nombre de campaña"
+          [formField]="campaignForm.name"
+        />
+        <app-fluent-dropdown
+          placeholder="Plantilla"
+          [formField]="campaignForm.template_id"
+        >
+          @for (template of templates(); track template.id) {
+            <fluent-option [value]="template.id">{{ template.name }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+        <fluent-button appearance="accent" (click)="onCreateCampaign()">Crear campaña</fluent-button>
+      </div>
+      @if (campaignForm.name().invalid() && campaignForm.name().touched()) {
+        <span class="form-field__error">{{ campaignForm.name().getError('required')?.message }}</span>
+      }
+      @if (campaignForm.template_id().invalid() && campaignForm.template_id().touched()) {
+        <span class="form-field__error">{{ campaignForm.template_id().getError('required')?.message }}</span>
+      }
+
+      @if (campaigns().length === 0 && !loading()) {
+        <app-empty-state
+          icon="bi-send"
+          title="Sin campañas"
+          message="Crea una campaña vinculada a una plantilla."
+        />
+      } @else {
+        <app-data-table [columns]="campaignColumns" [rows]="campaigns()" [loading]="loading()" />
+      }
+    </section>
+  } @else {
+    <section class="mass-emails__panel">
+      @if (logs().length === 0 && !loading()) {
+        <app-empty-state
+          icon="bi-journal-text"
+          title="Sin envíos"
+          message="Aquí aparecerán los logs cuando ejecutes campañas."
+        />
+      } @else {
+        <app-data-table [columns]="logColumns" [rows]="logs()" [loading]="loading()" />
+      }
+    </section>
+  }
+</div>

@@ -1,0 +1,27 @@
+@use 'fonts';
+@use 'variables';
+@use 'fluent-theme';
+@use 'utilities';
+@use 'layout';
+@use 'components';
+
+// Bootstrap Icons font
+@use 'bootstrap-icons/font/bootstrap-icons' with (
+  $bootstrap-icons-font-dir: '/bootstrap-icons/fonts'
+);
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

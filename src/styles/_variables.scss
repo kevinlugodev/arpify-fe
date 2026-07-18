@@ -1,0 +1,133 @@
+// ===========================================================
+// Design Tokens — Humanized Light-Mode UI System
+// 8px spacing, 60-30-10 color rule, soft layered shadows
+// and fluid micro-states.
+// ===========================================================
+
+:root {
+  // -----------------------------------------------------------
+  // Typography
+  // -----------------------------------------------------------
+  --font-family-base:
+    'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  // -----------------------------------------------------------
+  // Primary palette — Microsoft Azure blue (10% accent rule)
+  // -----------------------------------------------------------
+  --primary-color-50: #e8f1fa;
+  --primary-color-100: #cfe4f5;
+  --primary-color-200: #9fc9eb;
+  --primary-color-300: #6fade0;
+  --primary-color-400: #3f92d6;
+  --primary-color-500: #0f6cbd;
+  --primary-color-600: #0b5a9e;
+  --primary-color-700: #08477e;
+  --primary-color-800: #06345f;
+  --primary-color-900: #04223f;
+
+  // -----------------------------------------------------------
+  // Secondary palette — tech violet/lavender (accent highlights)
+  // -----------------------------------------------------------
+  --accent-color-50: #f2edff;
+  --accent-color-100: #e0d4ff;
+  --accent-color-200: #c4b0ff;
+  --accent-color-300: #a386ff;
+  --accent-color-400: #b18aff;
+  --accent-color-500: #8c5cf7;
+  --accent-color-600: #6b43c8;
+
+  // -----------------------------------------------------------
+  // Neutral palette — cool gray (30% secondary rule)
+  // -----------------------------------------------------------
+  --neutral-color-0: #ffffff;
+  --neutral-color-50: #f8fafc;
+  --neutral-color-100: #f1f5f9;
+  --neutral-color-150: #e9edf5;
+  --neutral-color-200: #dce3f0;
+  --neutral-color-300: #b8c4db;
+  --neutral-color-400: #8e9aae;
+  --neutral-color-500: #6b778c;
+  --neutral-color-600: #4f5666;
+  --neutral-color-700: #373d4d;
+  --neutral-color-800: #222730;
+  --neutral-color-900: #141724;
+  --neutral-color-950: #0f111a;
+  --neutral-color-1000: #0b0f19;
+
+  // -----------------------------------------------------------
+  // Semantic colors
+  // -----------------------------------------------------------
+  --success-color: #107c10;
+  --warning-color: #ffc107;
+  --error-color: #d13438;
+  --info-color: #0078d4;
+
+  // -----------------------------------------------------------
+  // Spacing — strict 8px mathematical system
+  // -----------------------------------------------------------
+  --space-xs: 0.5rem; // 8px
+  --space-sm: 0.5rem; // 8px
+  --space-md: 1rem;   // 16px
+  --space-lg: 1.5rem; // 24px
+  --space-xl: 2rem;   // 32px
+  --space-xxl: 3rem;  // 48px
+
+  // -----------------------------------------------------------
+  // Layout
+  // -----------------------------------------------------------
+  --content-max-width: 1480px;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+
+  // -----------------------------------------------------------
+  // Transitions — fluid micro-states
+  // -----------------------------------------------------------
+  --transition-duration-fast: 0.2s;
+  --transition-duration-normal: 0.2s;
+  --transition-duration-slow: 0.2s;
+  --transition-timing-default: ease-in-out;
+  --transition-base: all var(--transition-duration-normal) var(--transition-timing-default);
+
+  // -----------------------------------------------------------
+  // Elevation — soft layered shadows using the accent tint
+  // Opacities kept ultra-low (0.04-0.08) for a clean lift
+  // -----------------------------------------------------------
+  --shadow-sm:
+    0 1px 2px 0 rgb(15 108 189 / 0.04),
+    0 1px 3px 0 rgb(15 108 189 / 0.04);
+  --shadow-md:
+    0 4px 8px 0 rgb(15 108 189 / 0.04),
+    0 2px 4px 0 rgb(15 108 189 / 0.04);
+  --shadow-lg:
+    0 8px 16px 0 rgb(15 108 189 / 0.05),
+    0 4px 8px 0 rgb(15 108 189 / 0.03);
+  --shadow-xl:
+    0 16px 32px 0 rgb(15 108 189 / 0.05),
+    0 8px 16px 0 rgb(15 108 189 / 0.04);
+
+  // Premium accent-tinted shadow for floating cards (login)
+  --shadow-accent-floating:
+    0 20px 40px -10px rgb(0 120 212 / 0.08),
+    0 8px 16px -4px rgb(0 120 212 / 0.04);
+
+  // -----------------------------------------------------------
+  // Shell layout colors
+  // Header is the ONLY dark element in the app.
+  // -----------------------------------------------------------
+  --shell-header-bg: var(--neutral-color-950);
+  --shell-sidebar-bg: var(--neutral-color-50);
+  --shell-sidebar-active-bg: var(--neutral-color-0);
+  --shell-content-bg: var(--neutral-color-100);
+  --shell-border: var(--neutral-color-200);
+
+  // -----------------------------------------------------------
+  // Auth light-mode glassmorphism tokens
+  // -----------------------------------------------------------
+  --auth-bg: var(--neutral-color-100);
+  --auth-card-bg: rgb(255 255 255 / 0.8);
+  --auth-card-border: rgb(255 255 255 / 0.9);
+  --auth-card-shadow: var(--shadow-accent-floating);
+}

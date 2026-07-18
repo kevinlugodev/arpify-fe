@@ -1,0 +1,26 @@
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+
+  &__section {
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__section-title {
+    margin: 0 0 var(--space-md);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--neutral-color-800);
+  }
+
+  &__form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+  }
+}

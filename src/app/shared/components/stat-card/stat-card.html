@@ -1,0 +1,12 @@
+<div class="stat-card">
+  <div class="stat-card__icon">
+    <i class="bi {{ icon() }}"></i>
+  </div>
+  <div class="stat-card__content">
+    <span class="stat-card__title">{{ title() }}</span>
+    <span class="stat-card__value">{{ value() }}</span>
+    @if (trend()) {
+      <span class="stat-card__trend">{{ trend() }}</span>
+    }
+  </div>
+</div>

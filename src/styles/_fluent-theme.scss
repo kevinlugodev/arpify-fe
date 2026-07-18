@@ -1,0 +1,98 @@
+// Fluent UI Web Components theme overrides.
+// The web components are registered in src/main.ts via the all-components bundle.
+// Tokens align Fluent defaults with the humanized light-mode corporate palette.
+
+:root {
+  // -----------------------------------------------------------
+  // Corner radius — subtle, contemporary controls
+  // -----------------------------------------------------------
+  --control-corner-radius: 6px;
+  --layer-corner-radius: 8px;
+  --border-radius: var(--control-corner-radius);
+
+  // -----------------------------------------------------------
+  // Fluent elevation shadows — layered, soft, realistic depth
+  // -----------------------------------------------------------
+  --elevation-shadow-card-rest: var(--shadow-md);
+  --elevation-shadow-card-hover: var(--shadow-lg);
+  --elevation-shadow-card-active: var(--shadow-sm);
+  --elevation-shadow-dialog: var(--shadow-xl);
+  --elevation-shadow-flyout: var(--shadow-lg);
+
+  // -----------------------------------------------------------
+  // Neutral fills — mapped to the corporate neutral scale
+  // -----------------------------------------------------------
+  --neutral-fill-rest: var(--neutral-color-100);
+  --neutral-fill-hover: var(--neutral-color-150);
+  --neutral-fill-active: var(--neutral-color-200);
+  --neutral-fill-stealth-rest: transparent;
+  --neutral-fill-stealth-hover: var(--neutral-color-100);
+  --neutral-fill-stealth-active: var(--neutral-color-150);
+
+  --neutral-foreground-rest: var(--neutral-color-900);
+  --neutral-foreground-hover: var(--neutral-color-950);
+  --neutral-foreground-active: var(--neutral-color-1000);
+
+  // -----------------------------------------------------------
+  // Accent fills — Microsoft Azure blue family
+  // -----------------------------------------------------------
+  --accent-fill-rest: var(--primary-color-500);
+  --accent-fill-hover: var(--primary-color-400);
+  --accent-fill-active: var(--primary-color-600);
+  --accent-fill-focus: var(--primary-color-500);
+  --accent-foreground-rest: var(--neutral-color-0);
+
+  // -----------------------------------------------------------
+  // Layers — surfaces for cards, dialogs and panels
+  // -----------------------------------------------------------
+  --neutral-layer-1: var(--neutral-color-0);
+  --neutral-layer-2: var(--neutral-color-50);
+  --neutral-layer-3: var(--neutral-color-100);
+  --neutral-layer-4: var(--neutral-color-150);
+
+  // -----------------------------------------------------------
+  // Strokes / borders — ultra thin and subtle
+  // -----------------------------------------------------------
+  --neutral-stroke-rest: var(--neutral-color-200);
+  --neutral-stroke-hover: var(--neutral-color-300);
+  --neutral-stroke-active: var(--primary-color-400);
+  --focus-stroke-outer: var(--primary-color-500);
+  --focus-stroke-inner: var(--neutral-color-0);
+
+  // -----------------------------------------------------------
+  // Typography scale
+  // -----------------------------------------------------------
+  --type-ramp-base-font-size: 1rem;
+  --type-ramp-base-line-height: 1.5;
+  --type-ramp-minus-1-font-size: 0.875rem;
+  --type-ramp-plus-1-font-size: 1.125rem;
+  --type-ramp-plus-2-font-size: 1.25rem;
+  --type-ramp-plus-3-font-size: 1.5rem;
+}
+
+// -----------------------------------------------------------
+// Base page surface — clean light grey
+// -----------------------------------------------------------
+body {
+  background-color: var(--neutral-color-100);
+  color: var(--neutral-color-900);
+}
+
+// Ensure Fluent controls inherit the corporate font stack.
+fluent-text-input,
+fluent-text-field,
+fluent-text-area,
+fluent-select,
+fluent-dropdown,
+fluent-button,
+fluent-checkbox,
+fluent-radio,
+fluent-tab-list,
+fluent-tabs,
+fluent-menu-item {
+  font-family: inherit;
+  transition: var(--transition-base);
+}
+
+// Note: input/control styles intentionally left to Fluent UI defaults
+// to keep the native design-system behaviour.

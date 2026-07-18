@@ -1,0 +1,96 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  &__section-title {
+    margin: 0 0 var(--space-md);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--neutral-color-800);
+    letter-spacing: -0.01em;
+  }
+
+  &__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  &__shortcut {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-lg);
+    color: var(--neutral-color-900);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-base);
+
+    &:hover {
+      border-color: var(--neutral-color-300);
+      box-shadow: var(--shadow-md);
+    }
+
+    &:active {
+      box-shadow: var(--shadow-sm);
+    }
+  }
+
+  &__shortcut-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 20px;
+    color: var(--primary-color-600);
+    background-color: var(--primary-color-50);
+    border-radius: var(--border-radius-md);
+    transition: var(--transition-base);
+  }
+
+  &__shortcut-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__shortcut-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--neutral-color-900);
+  }
+
+  &__shortcut-description {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--neutral-color-500);
+    line-height: 1.5;
+  }
+
+  &__shortcut-arrow {
+    position: absolute;
+    right: var(--space-md);
+    bottom: var(--space-md);
+    font-size: 14px;
+    color: var(--neutral-color-400);
+    transition: var(--transition-base);
+  }
+
+  &__shortcut:hover &__shortcut-arrow {
+    color: var(--primary-color-500);
+  }
+}

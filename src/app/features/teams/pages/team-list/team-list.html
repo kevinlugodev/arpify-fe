@@ -1,0 +1,29 @@
+<div class="team-list">
+  <app-page-header
+    title="Equipos"
+    subtitle="Gestiona los miembros de tu organización"
+    icon="bi-people-fill"
+    actionLabel="Nuevo miembro"
+    (actionClick)="onCreate()"
+  />
+
+  <div class="team-list__filters">
+    <app-search-field
+      placeholder="Buscar por nombre o correo..."
+      [value]="search()"
+      (valueChange)="search.set($event)"
+    />
+  </div>
+
+  @if (members().length === 0 && !loading()) {
+    <app-empty-state
+      icon="bi-people"
+      title="Aún no hay miembros"
+      message="Crea el primer miembro del equipo para comenzar."
+      actionLabel="Nuevo miembro"
+      (actionClick)="onCreate()"
+    />
+  } @else {
+    <app-data-table [columns]="columns" [rows]="members()" [loading]="loading()" (rowClick)="onRowClick($event)" />
+  }
+</div>

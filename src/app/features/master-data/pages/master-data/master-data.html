@@ -1,0 +1,122 @@
+<div class="master-data">
+  <app-page-header
+    title="Estructura organizacional"
+    subtitle="Administra gerencias y áreas de la organización"
+    icon="bi-diagram-3"
+  />
+
+  <app-info-tip message="Configura primero las gerencias y luego las áreas que dependen de ellas. Usa el botón 'Asignar responsable' en cada fila para designar un miembro del equipo como responsable." />
+
+  <div class="master-data__tabs">
+    <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+      <fluent-tab id="managements">Gerencias</fluent-tab>
+      <fluent-tab id="areas">Áreas</fluent-tab>
+    </fluent-tablist>
+  </div>
+
+  @if (activeTab() === 'managements') {
+    <section class="master-data__panel">
+      <div class="master-data__create">
+        <app-fluent-text-input
+          placeholder="Nueva gerencia"
+          [formField]="managementForm.name"
+        />
+        <fluent-button appearance="accent" (click)="onCreateManagement()">Crear</fluent-button>
+      </div>
+      @if (managementForm.name().invalid() && managementForm.name().touched()) {
+        <span class="form-field__error">{{ managementForm.name().getError('required')?.message }}</span>
+      }
+
+      @if (managements().length === 0 && !loading()) {
+        <app-empty-state
+          icon="bi-diagram-3"
+          title="Sin gerencias"
+          message="Crea la primera gerencia para organizar las áreas y equipos."
+        />
+      } @else {
+        <app-data-table
+          [columns]="managementColumns"
+          [rows]="managements()"
+          [loading]="loading()"
+          [rowActions]="managementActions"
+          (rowActionClick)="onRowAction($event)"
+        />
+      }
+    </section>
+  } @else {
+    <section class="master-data__panel">
+      <div class="master-data__create">
+        <app-fluent-dropdown
+          placeholder="Selecciona gerencia"
+          [formField]="areaForm.managementId"
+        >
+          @for (mgmt of managements(); track mgmt.id) {
+            <fluent-option [value]="mgmt.id">{{ mgmt.name }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+        <app-fluent-text-input
+          placeholder="Nueva área"
+          [formField]="areaForm.name"
+        />
+        <fluent-button appearance="accent" (click)="onCreateArea()">Crear</fluent-button>
+      </div>
+      @if (areaForm.managementId().invalid() && areaForm.managementId().touched()) {
+        <span class="form-field__error">{{ areaForm.managementId().getError('required')?.message }}</span>
+      }
+      @if (areaForm.name().invalid() && areaForm.name().touched()) {
+        <span class="form-field__error">{{ areaForm.name().getError('required')?.message }}</span>
+      }
+
+      @if (areas().length === 0 && !loading()) {
+        <app-empty-state
+          icon="bi-diagram-3"
+          title="Sin áreas"
+          message="Crea la primera área asignada a una gerencia."
+        />
+      } @else {
+        <app-data-table
+          [columns]="areaColumns"
+          [rows]="areas()"
+          [loading]="loading()"
+          [rowActions]="areaActions"
+          (rowActionClick)="onRowAction($event)"
+        />
+      }
+    </section>
+  }
+
+  <dialog #assignDialog class="assign-dialog">
+    <div class="assign-dialog__content">
+      <header class="assign-dialog__header">
+        <h3 class="assign-dialog__title">Asignar responsable</h3>
+        <p class="assign-dialog__subtitle">
+          Selecciona el miembro del equipo que será responsable de
+          <strong>{{ assignEntityName() }}</strong>.
+        </p>
+      </header>
+
+      <div class="form-field">
+        <label>Miembro del equipo</label>
+        <app-fluent-dropdown
+          placeholder="Selecciona un miembro"
+          [formField]="assignDialogForm.teamMemberId"
+        >
+          <fluent-option value="">Selecciona un miembro</fluent-option>
+          @for (member of teamMembers(); track member.id) {
+            <fluent-option [value]="member.id">{{ getTeamMemberName(member) }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+        @if (assignDialogForm.teamMemberId().invalid() && assignDialogForm.teamMemberId().touched()) {
+          <span class="form-field__error">{{ assignDialogForm.teamMemberId().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <footer class="assign-dialog__actions">
+        <fluent-button appearance="accent" [disabled]="assigning()" (click)="onAssignSubmit()">
+          {{ assigning() ? 'Asignando...' : 'Asignar' }}
+        </fluent-button>
+        <fluent-button appearance="neutral" (click)="closeAssignDialog()">Cancelar</fluent-button>
+      </footer>
+    </div>
+  </dialog>
+</div>

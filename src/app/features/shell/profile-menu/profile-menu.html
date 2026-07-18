@@ -1,0 +1,79 @@
+<div class="profile-menu">
+  <button
+    class="profile-menu__trigger"
+    type="button"
+    aria-haspopup="true"
+    [attr.aria-expanded]="isProfileMenuOpen()"
+    (click)="toggleMenu($event)"
+  >
+    <span class="profile-menu__info">
+      <span class="profile-menu__name">{{ profile().name }}</span>
+      <span class="profile-menu__email">{{ profile().email }}</span>
+    </span>
+    <fluent-avatar
+      class="profile-menu__avatar"
+      [attr.initials]="profile().initials"
+      shape="circle"
+      color="accent"
+    ></fluent-avatar>
+  </button>
+
+  @if (isProfileMenuOpen()) {
+    <div class="profile-menu__backdrop" (click)="onBackdropClick($event)"></div>
+
+    <div class="profile-menu__popover" role="menu" (click)="$event.stopPropagation()">
+      <div class="profile-menu__popover-header">
+        <i class="bi bi-briefcase-fill profile-menu__brand-icon"></i>
+        <span class="profile-menu__brand-name">Arpify</span>
+      </div>
+
+      <div class="profile-menu__profile-summary">
+        <fluent-avatar
+          class="profile-menu__summary-avatar"
+          [attr.initials]="profile().initials"
+          shape="circle"
+          color="accent"
+        ></fluent-avatar>
+        <div class="profile-menu__summary-info">
+          <span class="profile-menu__summary-name">{{ profile().name }}</span>
+          <span class="profile-menu__summary-email">{{ profile().email }}</span>
+        </div>
+      </div>
+
+      <div class="profile-menu__section">
+        <span class="profile-menu__section-label">Cuenta</span>
+        <ul class="profile-menu__options">
+          <li class="profile-menu__option" role="menuitem" (click)="onProfileClick()">
+            <i class="bi bi-person profile-menu__option-icon"></i>
+            <span class="profile-menu__option-label">Mi Perfil</span>
+          </li>
+          <li class="profile-menu__option" role="menuitem" (click)="onAccountSettingsClick()">
+            <i class="bi bi-gear profile-menu__option-icon"></i>
+            <span class="profile-menu__option-label">Configuración de Cuenta</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="profile-menu__divider"></div>
+
+      <div class="profile-menu__section">
+        <span class="profile-menu__section-label">Workspace</span>
+        <ul class="profile-menu__options">
+          <li class="profile-menu__option" role="menuitem" (click)="onSwitchWorkspaceClick()">
+            <i class="bi bi-arrow-left-right profile-menu__option-icon"></i>
+            <span class="profile-menu__option-label">Cambiar de Tenant/Workspace</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="profile-menu__divider"></div>
+
+      <div class="profile-menu__footer">
+        <button class="profile-menu__sign-out" type="button" (click)="onSignOutClick()">
+          <i class="bi bi-box-arrow-right profile-menu__sign-out-icon"></i>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
+    </div>
+  }
+</div>

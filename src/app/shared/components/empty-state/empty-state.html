@@ -1,0 +1,8 @@
+<div class="empty-state">
+  <i class="bi {{ icon() }} empty-state__icon"></i>
+  <h3 class="empty-state__title">{{ title() }}</h3>
+  <p class="empty-state__message">{{ message() }}</p>
+  @if (actionLabel()) {
+    <fluent-button appearance="accent" class="mt-md" (click)="onActionClick()">{{ actionLabel() }}</fluent-button>
+  }
+</div>

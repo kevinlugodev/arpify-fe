@@ -1,0 +1,51 @@
+@if (loading()) {
+  <div class="data-table__loading">
+    <span class="data-table__loading-text">Cargando datos...</span>
+  </div>
+} @else if (rows().length === 0) {
+  <app-empty-state
+    icon="bi-table"
+    title="Sin resultados"
+    message="No se encontraron registros para mostrar."
+  />
+} @else {
+  <table class="data-table">
+    <thead>
+      <tr>
+        @for (column of columns(); track column.key) {
+          <th [style.width]="column.width">{{ column.header }}</th>
+        }
+        @if (rowActions().length > 0) {
+          <th class="data-table__actions-header">Acciones</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track $index) {
+        <tr (click)="onRowClick(row)">
+          @for (column of columns(); track column.key) {
+            <td>
+              <ng-container>{{ getCellValue(row, column) }}</ng-container>
+            </td>
+          }
+          @if (rowActions().length > 0) {
+            <td class="data-table__actions-cell">
+              @for (action of rowActions(); track action.key) {
+                <fluent-button
+                  appearance="neutral"
+                  size="small"
+                  (click)="onActionClick($event, action.key, row)"
+                >
+                  @if (action.icon) {
+                    <i class="bi {{ action.icon }}"></i>
+                  }
+                  {{ action.label }}
+                </fluent-button>
+              }
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+}

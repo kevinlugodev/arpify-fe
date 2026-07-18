@@ -1,0 +1,67 @@
+<div class="dashboard">
+  <app-page-header
+    title="Inicio"
+    subtitle="Resumen de tu espacio de trabajo"
+    icon="bi-house"
+  />
+
+  <app-info-tip
+    message="Este dashboard se conectará en tiempo real con los endpoints de equipos, correos y auditoría. Por ahora muestra un resumen visual de ejemplo."
+  />
+
+  <section class="dashboard__stats">
+    <app-stat-card title="Miembros del equipo" value="0" icon="bi-people" trend="Conecta con /teams" />
+    <app-stat-card title="Gerencias" value="0" icon="bi-diagram-3" trend="Configura en /organizacion" />
+    <app-stat-card title="Campañas activas" value="0" icon="bi-envelope-paper" trend="Gestiona en /mass-emails" />
+    <app-stat-card title="Registros de auditoría" value="0" icon="bi-shield-check" trend="Revisa en /audit" />
+  </section>
+
+  <section class="dashboard__shortcuts">
+    <h3 class="dashboard__section-title">Accesos rápidos</h3>
+    <div class="dashboard__cards">
+      <a class="dashboard__shortcut" routerLink="/teams">
+        <div class="dashboard__shortcut-icon">
+          <i class="bi bi-people"></i>
+        </div>
+        <div class="dashboard__shortcut-content">
+          <span class="dashboard__shortcut-title">Gestionar equipos</span>
+          <span class="dashboard__shortcut-description">Administra miembros, roles y permisos.</span>
+        </div>
+        <i class="bi bi-box-arrow-up-right dashboard__shortcut-arrow"></i>
+      </a>
+
+      <a class="dashboard__shortcut" routerLink="/organizacion">
+        <div class="dashboard__shortcut-icon">
+          <i class="bi bi-diagram-3"></i>
+        </div>
+        <div class="dashboard__shortcut-content">
+          <span class="dashboard__shortcut-title">Estructura organizacional</span>
+          <span class="dashboard__shortcut-description">Configura gerencias y catálogos base.</span>
+        </div>
+        <i class="bi bi-box-arrow-up-right dashboard__shortcut-arrow"></i>
+      </a>
+
+      <a class="dashboard__shortcut" routerLink="/mass-emails">
+        <div class="dashboard__shortcut-icon">
+          <i class="bi bi-envelope-paper"></i>
+        </div>
+        <div class="dashboard__shortcut-content">
+          <span class="dashboard__shortcut-title">Correos masivos</span>
+          <span class="dashboard__shortcut-description">Crea y programa campañas de correo.</span>
+        </div>
+        <i class="bi bi-box-arrow-up-right dashboard__shortcut-arrow"></i>
+      </a>
+
+      <a class="dashboard__shortcut" routerLink="/me">
+        <div class="dashboard__shortcut-icon">
+          <i class="bi bi-person"></i>
+        </div>
+        <div class="dashboard__shortcut-content">
+          <span class="dashboard__shortcut-title">Mi perfil</span>
+          <span class="dashboard__shortcut-description">Revisa tu cuenta y registros de actividad.</span>
+        </div>
+        <i class="bi bi-box-arrow-up-right dashboard__shortcut-arrow"></i>
+      </a>
+    </div>
+  </section>
+</div>

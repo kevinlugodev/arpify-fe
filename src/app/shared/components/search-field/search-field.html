@@ -1,0 +1,9 @@
+<div class="search-field">
+  <i class="bi bi-search search-field__icon"></i>
+  <fluent-text-input
+    class="search-field__input"
+    [attr.placeholder]="placeholder()"
+    [value]="value()"
+    (input)="onInput($event)"
+  />
+</div>

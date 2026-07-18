@@ -1,0 +1,68 @@
+<div class="profile">
+  <app-page-header title="Mi cuenta" subtitle="Gestiona tu perfil y seguridad" icon="bi-person-circle" />
+
+  @if (profileForm().value(); as profile) {
+    <section class="profile__section">
+      <h3 class="profile__section-title">Información personal</h3>
+      <div class="profile__form">
+        <div class="form-field">
+          <label>Nombre</label>
+          <app-fluent-text-input [formField]="profileForm.first_name" />
+          @if (profileForm.first_name().invalid() && profileForm.first_name().touched()) {
+            <span class="form-field__error">{{ profileForm.first_name().getError('required')?.message }}</span>
+          }
+        </div>
+        <div class="form-field">
+          <label>Apellido</label>
+          <app-fluent-text-input [formField]="profileForm.last_name" />
+          @if (profileForm.last_name().invalid() && profileForm.last_name().touched()) {
+            <span class="form-field__error">{{ profileForm.last_name().getError('required')?.message }}</span>
+          }
+        </div>
+        <div class="form-field">
+          <label>Teléfono</label>
+          <app-fluent-text-input [formField]="profileForm.phone" />
+        </div>
+        <div class="form-field">
+          <label>Dirección</label>
+          <app-fluent-text-input [formField]="profileForm.address" />
+        </div>
+      </div>
+      <fluent-button appearance="accent" [disabled]="saving()" (click)="onSave()">
+        Guardar cambios
+      </fluent-button>
+    </section>
+
+    <section class="profile__section">
+      <h3 class="profile__section-title">Seguridad</h3>
+      <div class="profile__form">
+        <div class="form-field">
+          <label>Contraseña actual</label>
+          <app-fluent-text-input type="password" [formField]="passwordForm.currentPassword" />
+          @if (passwordForm.currentPassword().invalid() && passwordForm.currentPassword().touched()) {
+            <span class="form-field__error">{{ passwordForm.currentPassword().getError('required')?.message }}</span>
+          }
+        </div>
+        <div class="form-field">
+          <label>Nueva contraseña</label>
+          <app-fluent-text-input type="password" [formField]="passwordForm.newPassword" />
+          @if (passwordForm.newPassword().invalid() && passwordForm.newPassword().touched()) {
+            <span class="form-field__error">{{ passwordForm.newPassword().getError('required')?.message }}</span>
+          }
+        </div>
+        <div class="form-field">
+          <label>Confirmar contraseña</label>
+          <app-fluent-text-input type="password" [formField]="passwordForm.confirmPassword" />
+          @if (passwordForm.confirmPassword().invalid() && passwordForm.confirmPassword().touched()) {
+            <span class="form-field__error">{{ passwordForm.confirmPassword().getError('required')?.message }}</span>
+          }
+        </div>
+      </div>
+      <fluent-button appearance="accent" [disabled]="changingPassword()" (click)="onChangePassword()">
+        Cambiar contraseña
+      </fluent-button>
+    </section>
+  } @else {
+    <app-info-tip message="Cargando tu perfil... Si tarda, verifica que el endpoint /me esté disponible." />
+  }
+</div>

@@ -1,0 +1,61 @@
+<form class="sign-in">
+  <h2 class="sign-in__title">Iniciar sesión</h2>
+  <p class="sign-in__subtitle">Ingresa tus credenciales para continuar</p>
+
+  <div class="form-field">
+    <label for="email">Correo electrónico</label>
+    <app-fluent-text-input
+      id="email"
+      type="email"
+      placeholder="admin@acme.com"
+      [formField]="signInForm.email"
+    />
+    @if (signInForm.email().invalid() && signInForm.email().touched()) {
+      <span class="form-field__error">{{ signInForm.email().getError('required')?.message }}</span>
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="password">Contraseña</label>
+    <app-fluent-text-input
+      id="password"
+      type="password"
+      placeholder="••••••••"
+      [formField]="signInForm.password"
+    />
+    @if (signInForm.password().invalid() && signInForm.password().touched()) {
+      <span class="form-field__error">{{
+        signInForm.password().getError('required')?.message
+      }}</span>
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="tenant">Workspace (slug)</label>
+    <app-fluent-text-input
+      id="tenant"
+      type="text"
+      placeholder="acme"
+      [formField]="signInForm.tenantSlug"
+    />
+    <app-info-tip
+      message="En desarrollo local puedes usar el slug del tenant. En producción se resuelve automáticamente por dominio."
+    />
+  </div>
+
+  <fluent-button
+    class="sign-in__submit"
+    appearance="accent"
+    type="button"
+    [disabled]="loading()"
+    (click)="onSubmit()"
+  >
+    @if (loading()) {
+      <span>Ingresando...</span>
+    } @else {
+      <span>Ingresar</span>
+    }
+  </fluent-button>
+
+  <a class="sign-in__link" routerLink="/recover-password">¿Olvidaste tu contraseña?</a>
+</form>

@@ -1,0 +1,16 @@
+<header class="topbar">
+  <div class="topbar__brand">
+    <i class="bi bi-briefcase-fill topbar__logo"></i>
+    <span class="topbar__title">Arpify</span>
+  </div>
+
+  <div class="topbar__actions">
+    <app-profile-menu
+      [profile]="profile()"
+      (profileClick)="onProfile()"
+      (accountSettingsClick)="onAccountSettings()"
+      (switchWorkspaceClick)="onSwitchWorkspace()"
+      (signOutClick)="onSignOut()"
+    />
+  </div>
+</header>

@@ -1,0 +1,31 @@
+.mass-emails {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+
+  &__tabs {
+    margin-top: var(--space-sm);
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__create {
+    display: flex;
+    gap: var(--space-md);
+    align-items: flex-end;
+
+    fluent-text-field,
+    fluent-select {
+      flex: 1;
+      max-width: 20rem;
+    }
+  }
+}

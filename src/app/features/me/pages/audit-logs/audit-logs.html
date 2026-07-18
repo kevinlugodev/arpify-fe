@@ -1,0 +1,17 @@
+<div class="audit-logs">
+  <app-page-header
+    title="Mis logs de auditoría"
+    subtitle="Registro de acciones realizadas en tu cuenta"
+    icon="bi-journal-text"
+  />
+
+  @if (logs().length === 0 && !loading()) {
+    <app-empty-state
+      icon="bi-shield-check"
+      title="Sin actividad reciente"
+      message="Aún no hay registros de auditoría para mostrar."
+    />
+  } @else {
+    <app-data-table [columns]="columns" [rows]="logs()" [loading]="loading()" />
+  }
+</div>

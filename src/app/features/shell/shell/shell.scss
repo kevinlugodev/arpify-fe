@@ -1,0 +1,22 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--shell-content-bg);
+  transition: var(--transition-base);
+
+  &__body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  &__content {
+    flex: 1;
+    overflow: auto;
+    padding: var(--space-md);
+    background-color: var(--shell-content-bg);
+    transition: var(--transition-base);
+  }
+}
