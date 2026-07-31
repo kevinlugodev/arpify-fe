@@ -24,10 +24,11 @@ import type { FormCheckboxControl, FormValueControl } from '@angular/forms/signa
   template: `
     <fluent-text-input
       [value]="value()"
-      (input)="value.set($any($event.target).value)"
+      (input)="onInput($event)"
       (blur)="touch.emit()"
       [attr.id]="id()"
       [attr.type]="type()"
+      [attr.inputmode]="inputmode()"
       [attr.placeholder]="placeholder()"
     />
   `,
@@ -39,7 +40,41 @@ export class FluentTextInput implements FormValueControl<string> {
 
   readonly id = model<string | undefined>(undefined);
   readonly type = model<string>('text');
+  readonly inputmode = model<string | undefined>(undefined);
   readonly placeholder = model<string | undefined>(undefined);
+  readonly decimals = model<number | undefined>(undefined);
+
+  protected onInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const maxDecimals = this.decimals();
+    let next = input.value;
+
+    if (maxDecimals !== undefined && maxDecimals >= 0) {
+      next = this.sanitizeDecimal(next, maxDecimals);
+      if (input.value !== next) {
+        input.value = next;
+      }
+    }
+
+    this.value.set(next);
+  }
+
+  private sanitizeDecimal(value: string, maxDecimals: number): string {
+    let cleaned = value.replace(/[^0-9.]/g, '');
+    const parts = cleaned.split('.');
+
+    if (parts.length > 2) {
+      cleaned = `${parts[0]}.${parts.slice(1).join('')}`;
+    }
+
+    if (parts.length === 2) {
+      const integerPart = parts[0];
+      const decimalPart = parts[1].slice(0, maxDecimals);
+      cleaned = decimalPart.length > 0 ? `${integerPart}.${decimalPart}` : integerPart + '.';
+    }
+
+    return cleaned;
+  }
 }
 
 type DropdownElement = HTMLElement & {

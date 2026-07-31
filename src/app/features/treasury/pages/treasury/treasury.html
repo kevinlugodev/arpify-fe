@@ -1,0 +1,450 @@
+<div class="treasury">
+  <app-page-header
+    title="Tesorería"
+    subtitle="Gestión de cuentas, obligaciones por pagar y movimientos bancarios"
+    icon="bi-cash-stack"
+  />
+
+  <app-workflow-tip
+    title="Flujo recomendado"
+    subtitle="Sigue estos pasos para mantener la caja alineada con las obligaciones."
+    [steps]="[
+      'Registra las cuentas bancarias',
+      'Carga las obligaciones por pagar',
+      'Ejecuta ingresos, pagos y transferencias',
+      'Revierte movimientos erróneos si es necesario'
+    ]"
+  />
+
+  <div class="treasury__tabs">
+    <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+      <fluent-tab id="accounts">Cuentas bancarias</fluent-tab>
+      <fluent-tab id="payables">Obligaciones por pagar</fluent-tab>
+      <fluent-tab id="transactions">Movimientos bancarios</fluent-tab>
+    </fluent-tablist>
+  </div>
+
+  @if (activeTab() === 'accounts') {
+    <section class="treasury__panel">
+      <header class="treasury__panel-header">
+        <h2 class="treasury__panel-title">
+          <i class="bi bi-bank treasury__panel-icon"></i>
+          Cuentas bancarias
+        </h2>
+        <p class="treasury__panel-description">
+          Registra cada cuenta operativa o de caja. El saldo real es el dinero físico disponible; el saldo disponible se calcula restando las reservas.
+        </p>
+      </header>
+
+      <form class="treasury__form" (ngSubmit)="onAccountSubmit()">
+        <fieldset class="treasury__section">
+          <legend class="treasury__section-title">
+            {{ editingAccountId() ? 'Editar cuenta' : 'Nueva cuenta' }}
+          </legend>
+
+          <div class="treasury__fields">
+            <div class="form-field">
+              <label>Nombre <span class="treasury__required">*</span></label>
+              <app-fluent-text-input [formField]="accountForm.name" />
+              <span class="treasury__field-hint">Ej. Cuenta Operativa BCP USD.</span>
+              @if (accountForm.name().invalid() && accountForm.name().touched()) {
+                <span class="form-field__error">{{ accountForm.name().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Banco</label>
+              <app-fluent-text-input [formField]="accountForm.bank_name" />
+              <span class="treasury__field-hint">Nombre de la entidad financiera.</span>
+            </div>
+
+            <div class="form-field">
+              <label>Número de cuenta</label>
+              <app-fluent-text-input [formField]="accountForm.account_number" />
+            </div>
+
+            <div class="form-field">
+              <label>CCI</label>
+              <app-fluent-text-input [formField]="accountForm.cci" />
+              <span class="treasury__field-hint">Código de cuenta interbancaria.</span>
+            </div>
+
+            <div class="form-field">
+              <label>Moneda <span class="treasury__required">*</span></label>
+              <app-fluent-dropdown [formField]="accountForm.currency">
+                @for (option of currencyOptions; track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              @if (accountForm.currency().invalid() && accountForm.currency().touched()) {
+                <span class="form-field__error">{{ accountForm.currency().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Saldo real inicial</label>
+              <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="accountForm.real_balance" />
+              <span class="treasury__field-hint">Puede comenzar en 0.</span>
+            </div>
+
+            <div class="form-field treasury__field--checkbox">
+              <app-fluent-checkbox [formField]="accountForm.is_active">Activa</app-fluent-checkbox>
+              <span class="treasury__field-hint">Desmarca para dar de baja la cuenta.</span>
+            </div>
+          </div>
+
+          <div class="treasury__actions">
+            @if (editingAccountId()) {
+              <fluent-button type="button" appearance="neutral" (click)="resetAccountForm()">
+                Cancelar
+              </fluent-button>
+            }
+            <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onAccountSubmit()">
+              @if (saving()) {
+                <i class="bi bi-arrow-repeat treasury__spinner treasury__action-icon"></i>
+                Guardando...
+              } @else {
+                <i class="bi bi-check-lg treasury__action-icon"></i>
+                {{ editingAccountId() ? 'Actualizar cuenta' : 'Crear cuenta' }}
+              }
+            </fluent-button>
+          </div>
+        </fieldset>
+      </form>
+
+      @if (accountRows().length === 0 && !accountsLoading()) {
+        <app-empty-state
+          icon="bi-bank"
+          title="Sin cuentas bancarias"
+          message="Crea la primera cuenta para comenzar a registrar movimientos."
+        />
+      } @else {
+        <app-data-table
+          [columns]="accountColumns"
+          [rows]="accountRows()"
+          [loading]="accountsLoading()"
+          [rowActions]="accountActions"
+          [rowClass]="editingAccountRowClass"
+          (rowActionClick)="onAccountAction($event)"
+        />
+      }
+    </section>
+  }
+
+  @if (activeTab() === 'payables') {
+    <section class="treasury__panel">
+      <header class="treasury__panel-header">
+        <h2 class="treasury__panel-title">
+          <i class="bi bi-receipt treasury__panel-icon"></i>
+          Obligaciones por pagar
+        </h2>
+        <p class="treasury__panel-description">
+          Registra RHE, facturas de proveedores y liquidaciones tributarias pendientes. Crear un payable reserva capital pero no modifica el saldo real.
+        </p>
+      </header>
+
+      <form class="treasury__form" (ngSubmit)="onPayableSubmit()">
+        <fieldset class="treasury__section">
+          <legend class="treasury__section-title">
+            {{ editingPayableId() ? 'Editar obligación' : 'Nueva obligación' }}
+          </legend>
+
+          <div class="treasury__fields">
+            <div class="form-field">
+              <label>Cuenta asignada</label>
+              <app-fluent-dropdown [formField]="payableForm.bank_account_id">
+                @for (option of accountOptions(); track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              <span class="treasury__field-hint">Cuenta de la que se reservará el monto.</span>
+            </div>
+
+            <div class="form-field">
+              <label>Tipo de documento <span class="treasury__required">*</span></label>
+              <app-fluent-dropdown [formField]="payableForm.document_type">
+                @for (option of documentTypeOptions; track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              @if (payableForm.document_type().invalid() && payableForm.document_type().touched()) {
+                <span class="form-field__error">{{ payableForm.document_type().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Número de documento</label>
+              <app-fluent-text-input [formField]="payableForm.document_number" />
+            </div>
+
+            <div class="form-field">
+              <label>Entidad <span class="treasury__required">*</span></label>
+              <app-fluent-text-input [formField]="payableForm.entity_name" />
+              @if (payableForm.entity_name().invalid() && payableForm.entity_name().touched()) {
+                <span class="form-field__error">{{ payableForm.entity_name().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Monto bruto <span class="treasury__required">*</span></label>
+              <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="payableForm.gross_amount" />
+              @if (payableForm.gross_amount().invalid() && payableForm.gross_amount().touched()) {
+                <span class="form-field__error">{{ payableForm.gross_amount().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Retención</label>
+              <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="payableForm.retention_amount" />
+              <span class="treasury__field-hint">Monto retenido.</span>
+            </div>
+
+            <div class="form-field">
+              <label>Monto neto <span class="treasury__required">*</span></label>
+              <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="payableForm.net_amount" />
+              @if (payableForm.net_amount().invalid() && payableForm.net_amount().touched()) {
+                <span class="form-field__error">{{ payableForm.net_amount().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Fecha de vencimiento</label>
+              <app-fluent-text-input type="date" [formField]="payableForm.due_date" />
+            </div>
+
+            <div class="form-field treasury__field--wide">
+              <label>Notas</label>
+              <app-fluent-text-input [formField]="payableForm.notes" />
+            </div>
+          </div>
+
+          <div class="treasury__actions">
+            @if (editingPayableId()) {
+              <fluent-button type="button" appearance="neutral" (click)="resetPayableForm()">
+                Cancelar
+              </fluent-button>
+            }
+            <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onPayableSubmit()">
+              @if (saving()) {
+                <i class="bi bi-arrow-repeat treasury__spinner treasury__action-icon"></i>
+                Guardando...
+              } @else {
+                <i class="bi bi-check-lg treasury__action-icon"></i>
+                {{ editingPayableId() ? 'Actualizar obligación' : 'Crear obligación' }}
+              }
+            </fluent-button>
+          </div>
+        </fieldset>
+      </form>
+
+      @if (payables().length === 0 && !payablesLoading()) {
+        <app-empty-state
+          icon="bi-receipt"
+          title="Sin obligaciones"
+          message="Crea la primera obligación por pagar."
+        />
+      } @else {
+        <app-data-table
+          [columns]="payableColumns"
+          [rows]="payables()"
+          [loading]="payablesLoading()"
+          [rowActions]="payableActions"
+          [rowClass]="editingPayableRowClass"
+          (rowActionClick)="onPayableAction($event)"
+        />
+      }
+    </section>
+  }
+
+  @if (activeTab() === 'transactions') {
+    <section class="treasury__panel">
+      <header class="treasury__panel-header">
+        <h2 class="treasury__panel-title">
+          <i class="bi bi-arrow-left-right treasury__panel-icon"></i>
+          Movimientos bancarios
+        </h2>
+        <p class="treasury__panel-description">
+          Registra ingresos, pagos a obligaciones y transferencias entre cuentas. Los movimientos confirmados afectan el saldo real.
+        </p>
+      </header>
+
+      <form class="treasury__form" (ngSubmit)="onTransactionSubmit()">
+        <fieldset class="treasury__section">
+          <legend class="treasury__section-title">Nuevo movimiento</legend>
+
+          <div class="treasury__fields">
+            <div class="form-field">
+              <label>Cuenta origen <span class="treasury__required">*</span></label>
+              <app-fluent-dropdown [formField]="transactionForm.bank_account_id">
+                <fluent-option value="">Selecciona cuenta</fluent-option>
+                @for (option of activeAccountOptions(); track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              @if (transactionForm.bank_account_id().invalid() && transactionForm.bank_account_id().touched()) {
+                <span class="form-field__error">{{ transactionForm.bank_account_id().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Tipo <span class="treasury__required">*</span></label>
+              <app-fluent-dropdown [formField]="transactionForm.type" (change)="onTransactionTypeChange()">
+                <fluent-option value="">Selecciona tipo</fluent-option>
+                @for (option of transactionTypeOptions; track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              @if (transactionForm.type().invalid() && transactionForm.type().touched()) {
+                <span class="form-field__error">{{ transactionForm.type().getError('required')?.message }}</span>
+              }
+            </div>
+
+            @if (isTransfer()) {
+              <div class="form-field">
+                <label>Cuenta destino <span class="treasury__required">*</span></label>
+                <app-fluent-dropdown [formField]="transactionForm.destination_bank_account_id">
+                  <fluent-option value="">Selecciona cuenta destino</fluent-option>
+                  @for (option of destinationAccountOptions(); track option.value) {
+                    <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                  }
+                </app-fluent-dropdown>
+              </div>
+            }
+
+            @if (isOutflow()) {
+              <div class="form-field">
+                <label>Obligación a pagar</label>
+                <app-fluent-dropdown [formField]="transactionForm.payable_id">
+                  <fluent-option value="">Sin vincular</fluent-option>
+                  @for (option of payableOptions(); track option.value) {
+                    <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                  }
+                </app-fluent-dropdown>
+                <span class="treasury__field-hint">Opcional. Vincula el pago a una obligación pendiente.</span>
+              </div>
+            }
+
+            <div class="form-field">
+              <label>Categoría <span class="treasury__required">*</span></label>
+              <app-fluent-dropdown [formField]="transactionForm.category">
+                <fluent-option value="">Selecciona categoría</fluent-option>
+                @for (option of transactionCategoryOptions; track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              @if (transactionForm.category().invalid() && transactionForm.category().touched()) {
+                <span class="form-field__error">{{ transactionForm.category().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Monto <span class="treasury__required">*</span></label>
+              <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="transactionForm.amount" />
+              @if (transactionForm.amount().invalid() && transactionForm.amount().touched()) {
+                <span class="form-field__error">{{ transactionForm.amount().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Moneda <span class="treasury__required">*</span></label>
+              <app-fluent-dropdown [formField]="transactionForm.currency">
+                @for (option of currencyOptions; track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              @if (transactionForm.currency().invalid() && transactionForm.currency().touched()) {
+                <span class="form-field__error">{{ transactionForm.currency().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Tipo de cambio <span class="treasury__required">*</span></label>
+              <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="transactionForm.exchange_rate" />
+              <span class="treasury__field-hint">1.0 para la misma moneda.</span>
+              @if (transactionForm.exchange_rate().invalid() && transactionForm.exchange_rate().touched()) {
+                <span class="form-field__error">{{ transactionForm.exchange_rate().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Fecha <span class="treasury__required">*</span></label>
+              <app-fluent-text-input type="date" [formField]="transactionForm.transaction_date" />
+              @if (transactionForm.transaction_date().invalid() && transactionForm.transaction_date().touched()) {
+                <span class="form-field__error">{{ transactionForm.transaction_date().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>N° operación</label>
+              <app-fluent-text-input [formField]="transactionForm.operation_number" />
+              <span class="treasury__field-hint">Referencia bancaria.</span>
+            </div>
+
+            <div class="form-field treasury__field--wide">
+              <label>Notas</label>
+              <app-fluent-text-input [formField]="transactionForm.notes" />
+            </div>
+          </div>
+
+          <div class="treasury__actions">
+            <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onTransactionSubmit()">
+              @if (saving()) {
+                <i class="bi bi-arrow-repeat treasury__spinner treasury__action-icon"></i>
+                Creando...
+              } @else {
+                <i class="bi bi-check-lg treasury__action-icon"></i>
+                Crear movimiento
+              }
+            </fluent-button>
+          </div>
+        </fieldset>
+      </form>
+
+      @if (transactionRows().length === 0 && !transactionsLoading()) {
+        <app-empty-state
+          icon="bi-arrow-left-right"
+          title="Sin movimientos"
+          message="Crea el primer movimiento bancario."
+        />
+      } @else {
+        <app-data-table
+          [columns]="transactionColumns"
+          [rows]="transactionRows()"
+          [loading]="transactionsLoading()"
+          [rowActions]="transactionActions"
+          (rowActionClick)="onTransactionAction($event)"
+        />
+      }
+    </section>
+  }
+
+  <app-confirm-dialog
+    #accountDeleteDialog
+    title="Eliminar cuenta"
+    message="¿Estás seguro de que deseas eliminar esta cuenta bancaria? Esta acción no se puede deshacer."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmAccountDelete()"
+  />
+
+  <app-confirm-dialog
+    #payableDeleteDialog
+    title="Eliminar obligación"
+    message="¿Estás seguro de que deseas eliminar esta obligación por pagar? Esta acción no se puede deshacer."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmPayableDelete()"
+  />
+
+  <app-confirm-dialog
+    #transactionReverseDialog
+    title="Revertir movimiento"
+    [message]="'¿Estás seguro de que deseas revertir este movimiento? Se creará una transacción de extorno y se ajustarán los saldos.'"
+    confirmLabel="Revertir"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmTransactionReverse()"
+  />
+</div>

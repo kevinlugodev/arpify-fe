@@ -1,0 +1,17 @@
+<div class="workflow-tip">
+  <div class="workflow-tip__header">
+    <i class="bi {{ icon() }} workflow-tip__icon"></i>
+    <div>
+      <h3 class="workflow-tip__title">{{ title() }}</h3>
+      <p class="workflow-tip__subtitle">{{ subtitle() }}</p>
+    </div>
+  </div>
+  <ol class="workflow-tip__steps">
+    @for (step of steps(); track $index) {
+      <li class="workflow-tip__step">
+        <span class="workflow-tip__number">{{ $index + 1 }}</span>
+        <span class="workflow-tip__text">{{ step }}</span>
+      </li>
+    }
+  </ol>
+</div>

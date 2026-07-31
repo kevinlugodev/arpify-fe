@@ -7,33 +7,16 @@
     (actionClick)="onCreate()"
   />
 
-  <div class="client-list__workflow">
-    <div class="client-list__workflow-header">
-      <i class="bi bi-signpost-split client-list__workflow-icon"></i>
-      <div>
-        <h3 class="client-list__workflow-title">Flujo recomendado</h3>
-        <p class="client-list__workflow-subtitle">Sigue estos pasos para mantener tu cartera de clientes ordenada.</p>
-      </div>
-    </div>
-    <ol class="client-list__workflow-steps">
-      <li class="client-list__workflow-step">
-        <span class="client-list__workflow-number">1</span>
-        <span class="client-list__workflow-text">Registra la ficha fiscal y comercial</span>
-      </li>
-      <li class="client-list__workflow-step">
-        <span class="client-list__workflow-number">2</span>
-        <span class="client-list__workflow-text">Asigna el contacto principal</span>
-      </li>
-      <li class="client-list__workflow-step">
-        <span class="client-list__workflow-number">3</span>
-        <span class="client-list__workflow-text">Configura la moneda y condiciones de crédito</span>
-      </li>
-      <li class="client-list__workflow-step">
-        <span class="client-list__workflow-number">4</span>
-        <span class="client-list__workflow-text">Consulta el detalle para editar o dar de baja</span>
-      </li>
-    </ol>
-  </div>
+  <app-workflow-tip
+    title="Flujo recomendado"
+    subtitle="Sigue estos pasos para mantener tu cartera de clientes ordenada."
+    [steps]="[
+      'Registra la ficha fiscal y comercial',
+      'Asigna el contacto principal',
+      'Configura la moneda y condiciones de crédito',
+      'Consulta el detalle para editar o dar de baja'
+    ]"
+  />
 
   <div class="client-list__filters">
     <app-search-field

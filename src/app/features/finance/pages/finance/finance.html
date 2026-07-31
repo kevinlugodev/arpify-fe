@@ -32,33 +32,16 @@
     />
   </div>
 
-  <div class="finance__workflow">
-    <div class="finance__workflow-header">
-      <i class="bi bi-signpost-split finance__workflow-icon"></i>
-      <div>
-        <h3 class="finance__workflow-title">Flujo recomendado</h3>
-        <p class="finance__workflow-subtitle">Sigue estos pasos para una declaración ordenada y completa.</p>
-      </div>
-    </div>
-    <ol class="finance__workflow-steps">
-      <li class="finance__workflow-step">
-        <span class="finance__workflow-number">1</span>
-        <span class="finance__workflow-text">Registra el perfil tributario</span>
-      </li>
-      <li class="finance__workflow-step">
-        <span class="finance__workflow-number">2</span>
-        <span class="finance__workflow-text">Crea el periodo mensual</span>
-      </li>
-      <li class="finance__workflow-step">
-        <span class="finance__workflow-number">3</span>
-        <span class="finance__workflow-text">Carga facturas de ventas y compras</span>
-      </li>
-      <li class="finance__workflow-step">
-        <span class="finance__workflow-number">4</span>
-        <span class="finance__workflow-text">Calcula la liquidación antes de declarar</span>
-      </li>
-    </ol>
-  </div>
+  <app-workflow-tip
+    title="Flujo recomendado"
+    subtitle="Sigue estos pasos para una declaración ordenada y completa."
+    [steps]="[
+      'Registra el perfil tributario',
+      'Crea el periodo mensual',
+      'Carga facturas de ventas y compras',
+      'Calcula la liquidación antes de declarar'
+    ]"
+  />
 
   <div class="finance__tabs">
     <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">

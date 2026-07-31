@@ -16,6 +16,7 @@ export const routes: Routes = [
       { path: 'mass-emails', loadComponent: () => import('./features/mass-emails/pages/mass-emails/mass-emails') },
       { path: 'audit', loadComponent: () => import('./features/audit/pages/audit/audit') },
       { path: 'finance', loadComponent: () => import('./features/finance/pages/finance/finance') },
+      { path: 'treasury', loadComponent: () => import('./features/treasury/pages/treasury/treasury') },
       { path: 'clients', loadComponent: () => import('./features/clients/pages/client-list/client-list') },
       { path: 'clients/new', loadComponent: () => import('./features/clients/pages/client-form/client-form') },
       { path: 'clients/:id', loadComponent: () => import('./features/clients/pages/client-detail/client-detail') },

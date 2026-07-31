@@ -14,6 +14,7 @@ import DataTable, { DataTableAction, DataTableColumn } from '../../../../shared/
 import EmptyState from '../../../../shared/components/empty-state/empty-state';
 import PageHeader from '../../../../shared/components/page-header/page-header';
 import SearchField from '../../../../shared/components/search-field/search-field';
+import WorkflowTip from '../../../../shared/components/workflow-tip/workflow-tip';
 import { FluentDropdown } from '../../../../shared/components/fluent-form-controls/fluent-form-controls';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { Customer, CustomerListFilters, CustomerListResponse, CustomerStatus } from '../../../../core/models/clients.model';
@@ -42,6 +43,7 @@ const STATUS_OPTIONS: StatusOption[] = [
     DataTable,
     SearchField,
     EmptyState,
+    WorkflowTip,
     FluentDropdown,
     ConfirmDialog,
   ],

@@ -23,6 +23,7 @@ export default class Sidebar {
     { label: 'Correos masivos', route: '/mass-emails', icon: 'bi-envelope-paper' },
     { label: 'Auditoría', route: '/audit', icon: 'bi-shield-check' },
     { label: 'Finanzas', route: '/finance', icon: 'bi-bank' },
+    { label: 'Tesorería', route: '/treasury', icon: 'bi-cash-stack' },
     { label: 'Clientes', route: '/clients', icon: 'bi-building' },
     { label: 'Mi cuenta', route: '/me', icon: 'bi-person' },
   ];

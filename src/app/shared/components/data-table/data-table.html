@@ -25,6 +25,7 @@
         <tr
           (click)="onRowClick(row)"
           [class.data-table__row--clickable]="clickable()"
+          [class]="rowClass()(row)"
         >
           @for (column of columns(); track column.key) {
             <td>

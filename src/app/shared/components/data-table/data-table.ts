@@ -45,6 +45,7 @@ export default class DataTable<T extends object> {
   readonly loading = input<boolean>(false);
   readonly rowActions = input<DataTableAction<T>[]>([]);
   readonly clickable = input<boolean>(false);
+  readonly rowClass = input<(row: T) => string>(() => '');
   readonly rowClick = output<T>();
   readonly rowActionClick = output<{ action: string; row: T }>();
   readonly statusChange = output<{ row: T; value: string }>();

@@ -8,4 +8,5 @@ export * from './mass-email.model';
 export * from './master-data.model';
 export * from './seed.model';
 export * from './team.model';
+export * from './treasury.model';
 export * from './user.model';

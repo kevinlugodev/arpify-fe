@@ -1,0 +1,17 @@
+<div class="welcome-banner">
+  <div class="welcome-banner__content">
+    <div class="welcome-banner__icon">
+      <i class="bi {{ icon() }}"></i>
+    </div>
+    <div class="welcome-banner__text">
+      <h2 class="welcome-banner__title">{{ title() }}</h2>
+      <p class="welcome-banner__subtitle">{{ subtitle() }}</p>
+    </div>
+  </div>
+  @if (actionLabel()) {
+    <button class="welcome-banner__action" type="button" (click)="actionClicked.emit()">
+      {{ actionLabel() }}
+      <i class="bi bi-arrow-right welcome-banner__action-icon"></i>
+    </button>
+  }
+</div>

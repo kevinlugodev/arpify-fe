@@ -1,9 +1,9 @@
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, ViewEncapsulation } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { toast } from 'ngx-sonner';
-import InfoTip from '../../../../shared/components/info-tip/info-tip';
 import PageHeader from '../../../../shared/components/page-header/page-header';
 import StatCard from '../../../../shared/components/stat-card/stat-card';
+import WelcomeBanner from '../../../../shared/components/welcome-banner/welcome-banner';
 import { WelcomeModal } from '../../../../shared/components/welcome-modal/welcome-modal';
 import { DashboardService } from '../../services/dashboard';
 import { apiResource } from '../../../../core/utils/resource-helpers';
@@ -12,7 +12,7 @@ import { DashboardMetrics } from '../../../../core/models/dashboard.model';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, PageHeader, StatCard, InfoTip, WelcomeModal],
+  imports: [RouterLink, PageHeader, StatCard, WelcomeBanner, WelcomeModal],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   encapsulation: ViewEncapsulation.None,

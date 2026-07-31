@@ -9,6 +9,7 @@ import InfoTip from '../../../../shared/components/info-tip/info-tip';
 import PageHeader from '../../../../shared/components/page-header/page-header';
 import SearchField from '../../../../shared/components/search-field/search-field';
 import StatCard from '../../../../shared/components/stat-card/stat-card';
+import WorkflowTip from '../../../../shared/components/workflow-tip/workflow-tip';
 import {
   FluentCheckbox,
   FluentDropdown,
@@ -154,6 +155,7 @@ const EMPTY_INVOICE: InvoiceFormModel = {
     InfoTip,
     StatCard,
     SearchField,
+    WorkflowTip,
     DataTable,
     EmptyState,
     FormField,
