@@ -44,6 +44,9 @@ importers:
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
+      simple-crypto-js:
+        specifier: ^3.0.1
+        version: 3.0.1
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
@@ -1631,6 +1634,9 @@ packages:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
+  crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+
   css-select@6.0.0:
     resolution: {integrity: sha512-rZZVSLle8v0+EY8QAkDWrKhpgt6SA5OtHsgBnsj6ZaLb5dmDVOWUDtQitd9ydxxvEjhewNudS6eTVU7uOyzvXw==}
 
@@ -2425,6 +2431,9 @@ packages:
   sigstore@4.1.1:
     resolution: {integrity: sha512-endqECJkfhozrXMK5ngu/UAA0xVcVEFdnHJCElGaExypjW+HK5i6zu3NteLoaX/iFbRUbC3+DjttQs0GARr+5w==}
     engines: {node: ^20.17.0 || >=22.9.0}
+
+  simple-crypto-js@3.0.1:
+    resolution: {integrity: sha512-dKhe6jT0WETtXX6NQn9GUTyD6Fp5F9X0ZcUI4XEqZ9dvt4/2h5QxkIl2d+2jH9SXrTBu9m7EsxC8CRaIS8i/dQ==}
 
   slice-ansi@7.1.2:
     resolution: {integrity: sha512-iOBWFgUX7caIZiuutICxVgX1SdxwAVFFKwt1EvMYYec/NWO5meOJ6K5uQxhrYBdQJne4KxiqZc+KptFOWFSI9w==}
@@ -4141,6 +4150,8 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
+  crypto-js@4.2.0: {}
+
   css-select@6.0.0:
     dependencies:
       boolbase: 1.0.0
@@ -5092,6 +5103,10 @@ snapshots:
       '@sigstore/verify': 3.1.1
     transitivePeerDependencies:
       - supports-color
+
+  simple-crypto-js@3.0.1:
+    dependencies:
+      crypto-js: 4.2.0
 
   slice-ansi@7.1.2:
     dependencies:

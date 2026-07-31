@@ -4,7 +4,6 @@
   height: 100dvh;
   overflow: hidden;
   background-color: var(--shell-content-bg);
-  transition: var(--transition-base);
 
   &__body {
     display: flex;
@@ -15,8 +14,7 @@
   &__content {
     flex: 1;
     overflow: auto;
-    padding: var(--space-md);
+    padding: var(--space-lg);
     background-color: var(--shell-content-bg);
-    transition: var(--transition-base);
   }
 }

@@ -39,6 +39,9 @@
             ],
             "styles": [
               "src/styles/main.scss"
+            ],
+            "allowedCommonJsDependencies": [
+              "simple-crypto-js"
             ]
           },
           "configurations": {

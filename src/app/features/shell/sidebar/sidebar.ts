@@ -22,6 +22,7 @@ export default class Sidebar {
     { label: 'Estructura organizacional', route: '/organizacion', icon: 'bi-diagram-3' },
     { label: 'Correos masivos', route: '/mass-emails', icon: 'bi-envelope-paper' },
     { label: 'Auditoría', route: '/audit', icon: 'bi-shield-check' },
+    { label: 'Finanzas', route: '/finance', icon: 'bi-bank' },
     { label: 'Mi cuenta', route: '/me', icon: 'bi-person' },
   ];
 }

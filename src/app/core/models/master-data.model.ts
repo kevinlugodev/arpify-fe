@@ -1,8 +1,16 @@
+export interface ResponsiblePerson {
+  id: string;
+  full_name: string;
+  email: string;
+  prefix: string;
+}
+
 export interface Management {
   id: string;
   tenant_id: string;
   name: string;
-  responsible_team_member_id: string | null;
+  status?: string;
+  responsible: ResponsiblePerson | null;
   created_at: string;
   updated_at: string;
 }
@@ -14,12 +22,10 @@ export interface ManagementListResponse {
 
 export interface CreateManagementRequest {
   name: string;
-  responsible_team_member_id?: string | null;
 }
 
 export interface UpdateManagementRequest {
   name?: string;
-  responsible_team_member_id?: string | null;
 }
 
 export interface Area {
@@ -29,8 +35,7 @@ export interface Area {
   management_name?: string;
   name: string;
   status?: string;
-  responsible_team_member_id: string | null;
-  responsible_name?: string;
+  responsible: ResponsiblePerson | null;
   created_at: string;
   updated_at: string;
 }
@@ -43,11 +48,9 @@ export interface AreaListResponse {
 export interface CreateAreaRequest {
   management_id: string;
   name: string;
-  responsible_team_member_id?: string | null;
 }
 
 export interface UpdateAreaRequest {
   management_id?: string;
   name?: string;
-  responsible_team_member_id?: string | null;
 }

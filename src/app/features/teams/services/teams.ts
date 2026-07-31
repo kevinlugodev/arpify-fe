@@ -43,8 +43,8 @@ export class TeamsService {
    * Obtiene un miembro del equipo por ID.
    * @param id Identificador del miembro.
    */
-  getTeamMember(id: string): Observable<ApiResponse<TeamMember>> {
-    return this.api.get<TeamMember>(`teams/${id}`);
+  getTeamMember(id: string): Observable<ApiResponse<{ team_member: TeamMember }>> {
+    return this.api.get<{ team_member: TeamMember }>(`teams/${id}`);
   }
 
   /**

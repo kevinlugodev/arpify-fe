@@ -1,0 +1,21 @@
+.app-email-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary-color-600);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  i {
+    font-size: 14px;
+  }
+}
+
+.app-email-link--empty {
+  color: var(--neutral-color-500);
+}

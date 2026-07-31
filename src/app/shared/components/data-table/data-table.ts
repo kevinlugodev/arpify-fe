@@ -1,10 +1,20 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, input, output, ViewEncapsulation } from '@angular/core';
 import EmptyState from '../empty-state/empty-state';
+import { EmailLink } from '../email-link/email-link';
+import { StatusDomain, StatusTag } from '../status-tag/status-tag';
+import { UserCell } from '../user-cell/user-cell';
+
+export type DataTableCellType = 'text' | 'status' | 'email' | 'user';
 
 export interface DataTableColumn<T = object> {
   key: keyof T | string;
   header: string;
   width?: string;
+  type?: DataTableCellType;
+  statusDomain?: StatusDomain;
+  userNameKey?: keyof T | string;
+  userEmailKey?: keyof T | string;
+  userPrefixKey?: keyof T | string;
 }
 
 export interface DataTableAction<T = object> {
@@ -16,7 +26,7 @@ export interface DataTableAction<T = object> {
 @Component({
   selector: 'app-data-table',
   standalone: true,
-  imports: [EmptyState],
+  imports: [EmptyState, StatusTag, EmailLink, UserCell],
   templateUrl: './data-table.html',
   styleUrl: './data-table.scss',
   encapsulation: ViewEncapsulation.None,
@@ -27,11 +37,37 @@ export default class DataTable<T extends object> {
   readonly rows = input.required<T[]>();
   readonly loading = input<boolean>(false);
   readonly rowActions = input<DataTableAction<T>[]>([]);
+  readonly clickable = input<boolean>(false);
   readonly rowClick = output<T>();
   readonly rowActionClick = output<{ action: string; row: T }>();
 
   protected getCellValue(row: T, column: DataTableColumn<T>): unknown {
-    return (row as Record<string, unknown>)[column.key as string];
+    return this.resolveValue(row, column.key as string);
+  }
+
+  protected resolveValue(row: T, key: keyof T | string | undefined): unknown {
+    if (!key) {
+      return undefined;
+    }
+
+    const keys = (key as string).split('.');
+    let value: unknown = row as Record<string, unknown>;
+
+    for (const k of keys) {
+      if (value == null) {
+        return undefined;
+      }
+      value = (value as Record<string, unknown>)[k];
+    }
+
+    return value;
+  }
+
+  protected asString(value: unknown): string {
+    if (value == null) {
+      return '';
+    }
+    return String(value);
   }
 
   protected onRowClick(row: T): void {

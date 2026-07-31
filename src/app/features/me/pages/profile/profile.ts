@@ -15,7 +15,6 @@ interface ProfileFormModel {
   last_name: string;
   phone: string;
   address: string;
-  photo_url: string | null;
 }
 
 interface PasswordFormModel {
@@ -29,7 +28,6 @@ const EMPTY_PROFILE: ProfileFormModel = {
   last_name: '',
   phone: '',
   address: '',
-  photo_url: null,
 };
 
 @Component({
@@ -55,28 +53,33 @@ export default class Profile {
   });
 
   protected readonly profileModel = signal<ProfileFormModel>(EMPTY_PROFILE);
-  protected readonly profileForm = form(this.profileModel, (schema) => {
-    required(schema.first_name, { message: 'El nombre es obligatorio.' });
-    required(schema.last_name, { message: 'El apellido es obligatorio.' });
-  });
+  protected readonly profileForm;
 
   protected readonly passwordModel = signal<PasswordFormModel>({
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
-  protected readonly passwordForm = form(this.passwordModel, (schema) => {
-    required(schema.currentPassword, { message: 'Ingresa tu contraseña actual.' });
-    required(schema.newPassword, { message: 'Ingresa una nueva contraseña.' });
-    required(schema.confirmPassword, { message: 'Confirma la nueva contraseña.' });
-  });
+  protected readonly passwordForm;
 
   protected readonly saving = signal(false);
   protected readonly changingPassword = signal(false);
+  protected readonly activeTab = signal<'profile' | 'security'>('profile');
 
   protected readonly loading = computed(() => this.profileResource.isLoading());
 
   constructor() {
+    this.profileForm = form(this.profileModel, (schema) => {
+      required(schema.first_name, { message: 'El nombre es obligatorio.' });
+      required(schema.last_name, { message: 'El apellido es obligatorio.' });
+    });
+
+    this.passwordForm = form(this.passwordModel, (schema) => {
+      required(schema.currentPassword, { message: 'Ingresa tu contraseña actual.' });
+      required(schema.newPassword, { message: 'Ingresa una nueva contraseña.' });
+      required(schema.confirmPassword, { message: 'Confirma la nueva contraseña.' });
+    });
+
     effect(() => {
       const data = this.profileResource.value();
       if (!data) {
@@ -84,11 +87,10 @@ export default class Profile {
         return;
       }
       this.profileModel.set({
-        first_name: data.first_name,
-        last_name: data.last_name,
-        phone: data.phone,
-        address: data.address,
-        photo_url: data.photo_url,
+        first_name: data.first_name ?? '',
+        last_name: data.last_name ?? '',
+        phone: data.phone ?? '',
+        address: data.address ?? '',
       });
     });
   }

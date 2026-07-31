@@ -2,64 +2,82 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 4rem;
-  padding-inline: var(--space-lg);
+  height: 3rem;
+  padding-inline: var(--space-md);
   background-color: var(--shell-header-bg);
-  border-bottom: 1px solid rgb(255 255 255 / 0.06);
+  border-bottom: 1px solid rgb(0 0 0 / 0.08);
   color: var(--neutral-color-0);
-  transition: var(--transition-base);
 
   &__brand {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    transition: var(--transition-base);
   }
 
   &__logo {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    font-size: 1rem;
-    color: var(--neutral-color-0);
-    background: linear-gradient(135deg, var(--primary-color-500), var(--primary-color-700));
-    border-radius: var(--border-radius-md);
-    transition: var(--transition-base);
-
-    &:hover {
-      transform: scale(1.05);
-    }
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.875rem;
+    color: var(--shell-header-bg);
+    background-color: var(--neutral-color-0);
+    border-radius: var(--border-radius-sm);
   }
 
   &__title {
-    font-weight: 700;
-    font-size: var(--type-ramp-plus-1-font-size);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 15px;
     color: var(--neutral-color-0);
-    letter-spacing: -0.01em;
+  }
+
+  &__app-name {
+    font-weight: 600;
+  }
+
+  &__separator {
+    width: 1px;
+    height: 1rem;
+    background-color: rgb(255 255 255 / 0.35);
+  }
+
+  &__module-name {
+    font-weight: 400;
   }
 
   &__actions {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
+    gap: var(--space-sm);
   }
 
-  &__tenant {
-    font-size: var(--type-ramp-base-font-size);
-    color: var(--neutral-color-300);
-    padding: var(--space-xs) var(--space-sm);
-    background-color: rgb(255 255 255 / 0.05);
-    border-radius: var(--border-radius-md);
-    border: 1px solid rgb(255 255 255 / 0.06);
-    transition: var(--transition-base);
-  }
+  &__icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    color: var(--neutral-color-0);
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
 
-  fluent-button[appearance='stealth'] {
-    --neutral-fill-rest: transparent;
-    --neutral-fill-hover: rgb(255 255 255 / 0.08);
-    --neutral-fill-active: rgb(255 255 255 / 0.12);
-    --neutral-foreground-rest: var(--neutral-color-0);
+    i {
+      font-size: 16px;
+    }
+
+    &:hover {
+      background-color: rgb(255 255 255 / 0.1);
+    }
+
+    &:active {
+      background-color: rgb(255 255 255 / 0.15);
+    }
   }
 }

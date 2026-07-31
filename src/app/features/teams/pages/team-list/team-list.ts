@@ -48,9 +48,9 @@ export default class TeamList {
   protected readonly columns: DataTableColumn<TeamMember>[] = [
     { key: 'first_name', header: 'Nombre' },
     { key: 'last_name', header: 'Apellido' },
-    { key: 'email', header: 'Correo' },
+    { key: 'email', header: 'Correo', type: 'email' },
     { key: 'position', header: 'Cargo' },
-    { key: 'status', header: 'Estado' },
+    { key: 'status', header: 'Estado', type: 'status', statusDomain: 'team' },
   ];
 
   protected onRowClick(member: TeamMember): void {

@@ -64,9 +64,14 @@
     grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
     gap: var(--space-md);
     align-items: end;
+  }
+
+  &__assign-action {
+    display: flex;
+    justify-self: start;
 
     fluent-button {
-      height: fit-content;
+      width: fit-content;
     }
   }
 }

@@ -1,0 +1,616 @@
+<div class="finance">
+  <app-page-header
+    title="Finanzas"
+    subtitle="Gestión tributaria, facturación y liquidación de impuestos"
+    icon="bi-bank"
+  />
+
+  <div class="finance__summary">
+    <app-stat-card
+      title="Perfil tributario"
+      [value]="hasProfile() ? 'Registrado' : 'Pendiente'"
+      icon="bi-building-check"
+      [trend]="hasProfile() ? 'Puedes crear periodos' : 'Registra el RUC y régimen'"
+    />
+    <app-stat-card
+      title="Periodos activos"
+      [value]="taxPeriods().length"
+      icon="bi-calendar3"
+      [trend]="'Último: ' + (taxPeriods().length ? getPeriodLabel(taxPeriods()[0]) : '—')"
+    />
+    <app-stat-card
+      title="Facturas del periodo"
+      [value]="totalInvoices()"
+      icon="bi-receipt"
+      [trend]="'Filtradas por periodo seleccionado'"
+    />
+    <app-stat-card
+      title="Total a pagar"
+      [value]="(totalToPay() | number: '1.2-2') + ' PEN'"
+      icon="bi-cash-stack"
+      [trend]="'IGV + renta del periodo'"
+    />
+  </div>
+
+  <div class="finance__workflow">
+    <div class="finance__workflow-header">
+      <i class="bi bi-signpost-split finance__workflow-icon"></i>
+      <div>
+        <h3 class="finance__workflow-title">Flujo recomendado</h3>
+        <p class="finance__workflow-subtitle">Sigue estos pasos para una declaración ordenada y completa.</p>
+      </div>
+    </div>
+    <ol class="finance__workflow-steps">
+      <li class="finance__workflow-step">
+        <span class="finance__workflow-number">1</span>
+        <span class="finance__workflow-text">Registra el perfil tributario</span>
+      </li>
+      <li class="finance__workflow-step">
+        <span class="finance__workflow-number">2</span>
+        <span class="finance__workflow-text">Crea el periodo mensual</span>
+      </li>
+      <li class="finance__workflow-step">
+        <span class="finance__workflow-number">3</span>
+        <span class="finance__workflow-text">Carga facturas de ventas y compras</span>
+      </li>
+      <li class="finance__workflow-step">
+        <span class="finance__workflow-number">4</span>
+        <span class="finance__workflow-text">Calcula la liquidación antes de declarar</span>
+      </li>
+    </ol>
+  </div>
+
+  <div class="finance__tabs">
+    <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+      <fluent-tab id="profile">Perfil tributario</fluent-tab>
+      <fluent-tab id="periods">Periodos</fluent-tab>
+      <fluent-tab id="invoices">Facturas</fluent-tab>
+      <fluent-tab id="calculation">Liquidación</fluent-tab>
+    </fluent-tablist>
+  </div>
+
+  @if (activeTab() === 'profile') {
+    <section class="finance__panel">
+      <header class="finance__panel-header">
+        <h2 class="finance__panel-title">
+          <i class="bi bi-building-check finance__panel-icon"></i>
+          Datos del contribuyente
+        </h2>
+        <p class="finance__panel-description">
+          Información permanente del contribuyente. Solo existe un perfil activo por tenant; el
+          sistema lo crea si aún no existe o lo actualiza si ya está registrado.
+        </p>
+      </header>
+
+      <form class="finance__form" (ngSubmit)="onSaveProfile()">
+        <div class="finance__fields">
+          <div class="form-field">
+            <label>Razón social <span class="finance__required">*</span></label>
+            <app-fluent-text-input [formField]="profileForm.legal_name" />
+            <span class="finance__field-hint">Nombre legal tal como aparece en SUNAT.</span>
+            @if (profileForm.legal_name().invalid() && profileForm.legal_name().touched()) {
+              <span class="form-field__error">{{
+                profileForm.legal_name().getError('required')?.message
+              }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Nombre comercial</label>
+            <app-fluent-text-input [formField]="profileForm.commercial_name" />
+            <span class="finance__field-hint">Opcional. Nombre de uso comercial.</span>
+          </div>
+
+          <div class="form-field">
+            <label>RUC <span class="finance__required">*</span></label>
+            <app-fluent-text-input [formField]="profileForm.ruc" />
+            <span class="finance__field-hint">11 dígitos numéricos.</span>
+            @if (profileForm.ruc().invalid() && profileForm.ruc().touched()) {
+              <span class="form-field__error">{{
+                profileForm.ruc().getError('required')?.message
+              }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Régimen tributario <span class="finance__required">*</span></label>
+            <app-fluent-dropdown [formField]="profileForm.tax_regime">
+              @for (regime of TAX_REGIMES; track regime.value) {
+                <fluent-option [value]="regime.value">{{ regime.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            <span class="finance__field-hint"
+              >Define las obligaciones y coeficientes del contribuyente.</span
+            >
+          </div>
+
+          <div class="form-field finance__field--wide finance__field--address">
+            <label>Dirección fiscal</label>
+            <app-fluent-text-input [formField]="profileForm.address" />
+            <span class="finance__field-hint">Dirección registrada en SUNAT.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Teléfono</label>
+            <app-fluent-text-input [formField]="profileForm.phone" />
+          </div>
+
+          <div class="form-field">
+            <label>Móvil</label>
+            <app-fluent-text-input [formField]="profileForm.mobile" />
+          </div>
+
+          <div class="form-field">
+            <label>Código de actividad</label>
+            <app-fluent-text-input [formField]="profileForm.main_activity_code" />
+            <span class="finance__field-hint">CIIU o código SUNAT.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Nombre de actividad</label>
+            <app-fluent-text-input [formField]="profileForm.main_activity_name" />
+            <span class="finance__field-hint">Descripción de la actividad principal.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Inicio de actividad</label>
+            <app-fluent-text-input type="date" [formField]="profileForm.activity_start_date" />
+          </div>
+
+          <div class="form-field finance__field--wide finance__field--checkbox">
+            <app-fluent-checkbox [formField]="profileForm.is_good_taxpayer">
+              Buen contribuyente
+            </app-fluent-checkbox>
+            <span class="finance__field-hint">Aplica beneficios de recupero anticipado.</span>
+          </div>
+
+          <div class="form-field finance__field--wide finance__field--checkbox">
+            <app-fluent-checkbox [formField]="profileForm.is_withholding_agent">
+              Agente de retención
+            </app-fluent-checkbox>
+            <span class="finance__field-hint">Aplica si el RUC figura como agente.</span>
+          </div>
+        </div>
+
+        <div class="finance__actions">
+          <fluent-button
+            type="button"
+            appearance="accent"
+            [disabled]="saving() || profileLoading()"
+            (click)="onSaveProfile()"
+          >
+            @if (saving()) {
+              <i class="bi bi-arrow-repeat finance__spinner finance__action-icon"></i>
+              Guardando...
+            } @else {
+              <i class="bi bi-check-lg finance__action-icon"></i>
+              Guardar perfil
+            }
+          </fluent-button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (activeTab() === 'periods') {
+    <section class="finance__panel">
+      <header class="finance__panel-header">
+        <h2 class="finance__panel-title">
+          <i class="bi bi-calendar3 finance__panel-icon"></i>
+          Periodos tributarios
+        </h2>
+        <p class="finance__panel-description">
+          Crea los periodos mensuales (año/mes) que vas a declarar. El estado inicial suele ser
+          <strong>borrador</strong> hasta que se calcule y declare la liquidación.
+        </p>
+      </header>
+
+      <form class="finance__inline-form" (ngSubmit)="onCreatePeriod()">
+        <div class="form-field">
+          <label>Año <span class="finance__required">*</span></label>
+          <app-fluent-text-input type="number" [formField]="periodForm.year" />
+        </div>
+        <div class="form-field">
+          <label>Mes <span class="finance__required">*</span></label>
+          <app-fluent-text-input type="number" [formField]="periodForm.month" />
+        </div>
+        <div class="form-field">
+          <label>Estado <span class="finance__required">*</span></label>
+          <app-fluent-dropdown [formField]="periodForm.status">
+            <fluent-option value="draft">Borrador</fluent-option>
+            <fluent-option value="declared">Declarado</fluent-option>
+            <fluent-option value="paid">Pagado</fluent-option>
+            <fluent-option value="closed">Cerrado</fluent-option>
+          </app-fluent-dropdown>
+        </div>
+        <div class="form-field">
+          <label>Fecha de vencimiento</label>
+          <app-fluent-text-input type="date" [formField]="periodForm.due_date" />
+        </div>
+        <div class="form-field finance__inline-field--button">
+          <fluent-button
+            type="button"
+            appearance="accent"
+            [disabled]="saving()"
+            (click)="onCreatePeriod()"
+          >
+            Crear periodo
+          </fluent-button>
+        </div>
+      </form>
+      @if (periodForm.year().invalid() && periodForm.year().touched()) {
+        <span class="form-field__error">{{ periodForm.year().getError('required')?.message }}</span>
+      }
+
+      @if (taxPeriods().length === 0 && !periodsLoading()) {
+        <app-empty-state
+          icon="bi-calendar-x"
+          title="Sin periodos"
+          message="Crea el primer periodo tributario para comenzar a cargar facturas."
+        />
+      } @else {
+        <app-data-table
+          [columns]="periodColumns"
+          [rows]="taxPeriods()"
+          [loading]="periodsLoading()"
+          [rowActions]="periodActions"
+          (rowActionClick)="onPeriodAction($event)"
+        />
+      }
+    </section>
+  }
+
+  @if (activeTab() === 'invoices') {
+    <section class="finance__panel">
+      <header class="finance__panel-header">
+        <h2 class="finance__panel-title">
+          <i class="bi bi-receipt finance__panel-icon"></i>
+          Comprobantes de pago
+        </h2>
+        <p class="finance__panel-description">
+          Registra facturas, boletas y notas de ventas y compras. Cada comprobante queda vinculado
+          al periodo tributario seleccionado.
+        </p>
+      </header>
+
+      <div class="finance__filters">
+        <div class="form-field">
+          <label>Periodo</label>
+          <app-fluent-dropdown
+            [value]="selectedPeriodId()"
+            (valueChange)="selectedPeriodId.set($event)"
+          >
+            @for (period of taxPeriods(); track period.id) {
+              <fluent-option [value]="period.id">{{ getPeriodLabel(period) }}</fluent-option>
+            }
+          </app-fluent-dropdown>
+        </div>
+        <div class="form-field">
+          <label>Flujo</label>
+          <app-fluent-dropdown
+            [value]="invoiceFlowFilter()"
+            (valueChange)="invoiceFlowFilter.set($event)"
+          >
+            <fluent-option value="">Todos</fluent-option>
+            <fluent-option value="sale">Ventas</fluent-option>
+            <fluent-option value="purchase">Compras</fluent-option>
+          </app-fluent-dropdown>
+        </div>
+        <div class="form-field">
+          <label>Tipo doc.</label>
+          <app-fluent-dropdown
+            [value]="invoiceTypeFilter()"
+            (valueChange)="invoiceTypeFilter.set($event)"
+          >
+            <fluent-option value="">Todos</fluent-option>
+            @for (type of INVOICE_TYPES; track type.value) {
+              <fluent-option [value]="type.value">{{ type.label }}</fluent-option>
+            }
+          </app-fluent-dropdown>
+        </div>
+        <app-search-field
+          class="finance__search"
+          placeholder="Buscar por RUC..."
+          [value]="invoiceSearchInput()"
+          (valueChange)="invoiceSearchInput.set($event)"
+        />
+      </div>
+
+      <form class="finance__form finance__form--compact" (ngSubmit)="onCreateInvoice()">
+        <fieldset class="finance__section">
+          <legend class="finance__section-title">Datos del comprobante</legend>
+          <div class="finance__fields finance__fields--compact">
+            <div class="form-field">
+              <label>Periodo <span class="finance__required">*</span></label>
+              <app-fluent-dropdown [formField]="invoiceForm.tax_period_id">
+                @for (period of taxPeriods(); track period.id) {
+                  <fluent-option [value]="period.id">{{ getPeriodLabel(period) }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+            </div>
+
+            <div class="form-field">
+              <label>Flujo <span class="finance__required">*</span></label>
+              <app-fluent-dropdown [formField]="invoiceForm.flow">
+                <fluent-option value="sale">Venta</fluent-option>
+                <fluent-option value="purchase">Compra</fluent-option>
+              </app-fluent-dropdown>
+            </div>
+
+            <div class="form-field">
+              <label>Tipo <span class="finance__required">*</span></label>
+              <app-fluent-dropdown [formField]="invoiceForm.document_type">
+                @for (type of INVOICE_TYPES; track type.value) {
+                  <fluent-option [value]="type.value">{{ type.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+            </div>
+
+            <div class="form-field">
+              <label>Serie <span class="finance__required">*</span></label>
+              <app-fluent-text-input [formField]="invoiceForm.serie" />
+              <span class="finance__field-hint">Ej. F001</span>
+            </div>
+
+            <div class="form-field">
+              <label>Número <span class="finance__required">*</span></label>
+              <app-fluent-text-input [formField]="invoiceForm.number" />
+              <span class="finance__field-hint">Ej. 00001234</span>
+            </div>
+
+            <div class="form-field">
+              <label>Emisión <span class="finance__required">*</span></label>
+              <app-fluent-text-input type="date" [formField]="invoiceForm.issue_date" />
+            </div>
+
+            <div class="form-field">
+              <label>Vencimiento</label>
+              <app-fluent-text-input type="date" [formField]="invoiceForm.due_date" />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="finance__section">
+          <legend class="finance__section-title">Contraparte</legend>
+          <div class="finance__fields finance__fields--compact">
+            <div class="form-field">
+              <label>RUC contraparte</label>
+              <app-fluent-text-input [formField]="invoiceForm.counterparty_ruc" />
+              <span class="finance__field-hint">11 dígitos.</span>
+            </div>
+
+            <div class="form-field">
+              <label>Razón social contraparte</label>
+              <app-fluent-text-input [formField]="invoiceForm.counterparty_name" />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="finance__section">
+          <legend class="finance__section-title">Montos y moneda</legend>
+          <div class="finance__fields finance__fields--compact">
+            <div class="form-field">
+              <label>Base imponible</label>
+              <app-fluent-text-input type="number" [formField]="invoiceForm.taxable_amount" />
+            </div>
+
+            <div class="form-field">
+              <label>IGV</label>
+              <app-fluent-text-input type="number" [formField]="invoiceForm.tax_amount" />
+            </div>
+
+            <div class="form-field">
+              <label>Total <span class="finance__required">*</span></label>
+              <app-fluent-text-input type="number" [formField]="invoiceForm.total_amount" />
+            </div>
+
+            <div class="form-field">
+              <label>Moneda <span class="finance__required">*</span></label>
+              <app-fluent-dropdown [formField]="invoiceForm.currency">
+                @for (currency of CURRENCIES; track currency.value) {
+                  <fluent-option [value]="currency.value">{{ currency.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              <span class="finance__field-hint">Selecciona la moneda del comprobante.</span>
+            </div>
+
+            <div class="form-field">
+              <label>Tipo de cambio <span class="finance__required">*</span></label>
+              <app-fluent-text-input type="number" [formField]="invoiceForm.exchange_rate" />
+              <span class="finance__field-hint">1.0 para PEN.</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="finance__section">
+          <legend class="finance__section-title">Estado SUNAT</legend>
+          <div class="finance__fields finance__fields--compact">
+            <div class="form-field">
+              <label>Estado SUNAT</label>
+              <app-fluent-dropdown [formField]="invoiceForm.sunat_status">
+                @for (status of SUNAT_STATUSES; track status.value) {
+                  <fluent-option [value]="status.value">{{ status.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              <span class="finance__field-hint">Estado de aceptación ante SUNAT.</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="finance__actions">
+          <fluent-button
+            type="button"
+            appearance="accent"
+            [disabled]="saving()"
+            (click)="onCreateInvoice()"
+          >
+            Agregar comprobante
+          </fluent-button>
+        </div>
+      </form>
+
+      @if (invoices().length === 0 && !invoicesLoading()) {
+        <app-empty-state
+          icon="bi-receipt"
+          title="Sin comprobantes"
+          message="No hay facturas para los filtros seleccionados."
+        />
+      } @else {
+        <app-data-table
+          [columns]="invoiceColumns"
+          [rows]="invoices()"
+          [loading]="invoicesLoading()"
+          [rowActions]="invoiceActions"
+          (rowActionClick)="onInvoiceAction($event)"
+        />
+      }
+    </section>
+  }
+
+  @if (activeTab() === 'calculation') {
+    <section class="finance__panel">
+      <header class="finance__panel-header">
+        <h2 class="finance__panel-title">
+          <i class="bi bi-calculator finance__panel-icon"></i>
+          Liquidación de impuestos
+        </h2>
+        <p class="finance__panel-description">
+          Calcula el resultado IGV y el pago a cuenta de renta a partir de las facturas cargadas.
+          Recuerda recalcular tras agregar o modificar comprobantes.
+        </p>
+      </header>
+
+      <div class="finance__calculation-controls">
+        <div class="form-field">
+          <label>Periodo a liquidar</label>
+          <app-fluent-dropdown
+            [value]="selectedPeriodId()"
+            (valueChange)="selectedPeriodId.set($event)"
+          >
+            @for (period of taxPeriods(); track period.id) {
+              <fluent-option [value]="period.id">{{ getPeriodLabel(period) }}</fluent-option>
+            }
+          </app-fluent-dropdown>
+        </div>
+
+        <div class="finance__calculation-actions">
+          <fluent-button
+            type="button"
+            appearance="accent"
+            [disabled]="saving() || !selectedPeriodId()"
+            (click)="onCalculate()"
+          >
+            <i class="bi bi-calculator finance__action-icon"></i>
+            Calcular
+          </fluent-button>
+          <fluent-button
+            type="button"
+            appearance="neutral"
+            [disabled]="saving() || !selectedPeriodId()"
+            (click)="onRecalculate()"
+          >
+            <i class="bi bi-arrow-clockwise finance__action-icon"></i>
+            Recalcular
+          </fluent-button>
+        </div>
+      </div>
+
+      @if (!selectedPeriodId()) {
+        <app-info-tip
+          message="Selecciona un periodo tributario para ver o generar su liquidación."
+        />
+      } @else if (!taxCalculation() && !calculationLoading()) {
+        <app-empty-state
+          icon="bi-calculator"
+          title="Sin liquidación"
+          message="Aún no se ha calculado la liquidación para este periodo. Presiona 'Calcular'."
+        />
+      } @else if (taxCalculation()) {
+        <div class="finance__calculation-grid">
+          <div class="finance__calculation-card">
+            <span class="finance__calculation-label">Ventas netas gravadas</span>
+            <span class="finance__calculation-value"
+              >{{ taxCalculation()!.igv_net_sales | number: '1.2-2' }} PEN</span
+            >
+          </div>
+          <div class="finance__calculation-card">
+            <span class="finance__calculation-label">Débito fiscal IGV</span>
+            <span class="finance__calculation-value"
+              >{{ taxCalculation()!.igv_tax_debit | number: '1.2-2' }} PEN</span
+            >
+          </div>
+          <div class="finance__calculation-card">
+            <span class="finance__calculation-label">Crédito fiscal IGV</span>
+            <span class="finance__calculation-value"
+              >{{ taxCalculation()!.igv_tax_credit | number: '1.2-2' }} PEN</span
+            >
+          </div>
+          <div class="finance__calculation-card">
+            <span class="finance__calculation-label">Resultado IGV</span>
+            <span class="finance__calculation-value"
+              >{{ taxCalculation()!.igv_result | number: '1.2-2' }} PEN</span
+            >
+          </div>
+          <div class="finance__calculation-card">
+            <span class="finance__calculation-label">Saldo a favor IGV</span>
+            <span class="finance__calculation-value"
+              >{{ taxCalculation()!.igv_credit_balance | number: '1.2-2' }} PEN</span
+            >
+          </div>
+          <div class="finance__calculation-card">
+            <span class="finance__calculation-label">Coeficiente renta</span>
+            <span class="finance__calculation-value">{{
+              taxCalculation()!.income_tax_coefficient | number: '1.4-4'
+            }}</span>
+          </div>
+          <div class="finance__calculation-card">
+            <span class="finance__calculation-label">Renta neta</span>
+            <span class="finance__calculation-value"
+              >{{ taxCalculation()!.income_tax_net_income | number: '1.2-2' }} PEN</span
+            >
+          </div>
+          <div class="finance__calculation-card">
+            <span class="finance__calculation-label">Pago a cuenta renta</span>
+            <span class="finance__calculation-value"
+              >{{ taxCalculation()!.income_tax_payment | number: '1.2-2' }} PEN</span
+            >
+          </div>
+          <div class="finance__calculation-card finance__calculation-card--total">
+            <span class="finance__calculation-label">Total a pagar</span>
+            <span class="finance__calculation-value"
+              >{{ taxCalculation()!.total_to_pay | number: '1.2-2' }} PEN</span
+            >
+          </div>
+        </div>
+
+        @if (taxCalculation()!.concepts.length > 0) {
+          <div class="finance__concepts">
+            <h3 class="finance__concepts-title">Detalle de conceptos</h3>
+            <table class="finance__concepts-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Concepto</th>
+                  <th>Base</th>
+                  <th>Impuesto</th>
+                  <th>Pago</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (concept of taxCalculation()!.concepts; track concept.id) {
+                  <tr>
+                    <td>{{ concept.code }}</td>
+                    <td>{{ concept.name }}</td>
+                    <td>{{ concept.base_amount | number: '1.2-2' }}</td>
+                    <td>{{ concept.tax_amount | number: '1.2-2' }}</td>
+                    <td>{{ concept.payment_amount | number: '1.2-2' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    </section>
+  }
+</div>

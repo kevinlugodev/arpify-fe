@@ -24,6 +24,6 @@
       (actionClick)="onCreate()"
     />
   } @else {
-    <app-data-table [columns]="columns" [rows]="members()" [loading]="loading()" (rowClick)="onRowClick($event)" />
+    <app-data-table [columns]="columns" [rows]="members()" [loading]="loading()" [clickable]="true" (rowClick)="onRowClick($event)" />
   }
 </div>

@@ -1,44 +1,72 @@
 <div class="profile">
   <app-page-header title="Mi cuenta" subtitle="Gestiona tu perfil y seguridad" icon="bi-person-circle" />
 
-  @if (profileForm().value(); as profile) {
+  <div class="profile__tabs">
+    <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+      <fluent-tab id="profile">Información personal</fluent-tab>
+      <fluent-tab id="security">Seguridad</fluent-tab>
+    </fluent-tablist>
+  </div>
+
+  @if (activeTab() === 'profile') {
     <section class="profile__section">
       <h3 class="profile__section-title">Información personal</h3>
-      <div class="profile__form">
-        <div class="form-field">
-          <label>Nombre</label>
-          <app-fluent-text-input [formField]="profileForm.first_name" />
-          @if (profileForm.first_name().invalid() && profileForm.first_name().touched()) {
-            <span class="form-field__error">{{ profileForm.first_name().getError('required')?.message }}</span>
-          }
-        </div>
-        <div class="form-field">
-          <label>Apellido</label>
-          <app-fluent-text-input [formField]="profileForm.last_name" />
-          @if (profileForm.last_name().invalid() && profileForm.last_name().touched()) {
-            <span class="form-field__error">{{ profileForm.last_name().getError('required')?.message }}</span>
-          }
-        </div>
-        <div class="form-field">
-          <label>Teléfono</label>
-          <app-fluent-text-input [formField]="profileForm.phone" />
-        </div>
-        <div class="form-field">
-          <label>Dirección</label>
-          <app-fluent-text-input [formField]="profileForm.address" />
-        </div>
-      </div>
-      <fluent-button appearance="accent" [disabled]="saving()" (click)="onSave()">
-        Guardar cambios
-      </fluent-button>
-    </section>
+      <p class="profile__section-description">
+        Mantén tus datos actualizados para que el equipo de recursos humanos y los responsables puedan contactarte.
+      </p>
 
+      <app-info-tip message="El correo electrónico no se puede editar desde esta pantalla. Si necesitas cambiarlo, contacta al administrador del tenant." />
+
+      @if (!loading()) {
+        <div class="profile__form">
+          <div class="form-field">
+            <label>Nombre</label>
+            <app-fluent-text-input [formField]="profileForm.first_name" />
+            <span class="profile__field-hint">Nombre con el que te identificarán en la plataforma.</span>
+            @if (profileForm.first_name().invalid() && profileForm.first_name().touched()) {
+              <span class="form-field__error">{{ profileForm.first_name().getError('required')?.message }}</span>
+            }
+          </div>
+          <div class="form-field">
+            <label>Apellido</label>
+            <app-fluent-text-input [formField]="profileForm.last_name" />
+            <span class="profile__field-hint">Apellido principal de tu identificación.</span>
+            @if (profileForm.last_name().invalid() && profileForm.last_name().touched()) {
+              <span class="form-field__error">{{ profileForm.last_name().getError('required')?.message }}</span>
+            }
+          </div>
+          <div class="form-field">
+            <label>Teléfono</label>
+            <app-fluent-text-input [formField]="profileForm.phone" />
+            <span class="profile__field-hint">Número de contacto para notificaciones urgentes.</span>
+          </div>
+          <div class="form-field">
+            <label>Dirección</label>
+            <app-fluent-text-input [formField]="profileForm.address" />
+            <span class="profile__field-hint">Dirección física registrada en tu expediente.</span>
+          </div>
+        </div>
+        <fluent-button class="profile__submit" type="button" appearance="accent" [disabled]="saving()" (click)="onSave()">
+          {{ saving() ? 'Guardando...' : 'Guardar cambios' }}
+        </fluent-button>
+      } @else {
+        <app-info-tip message="Cargando tu perfil... Si tarda, verifica que el endpoint /me esté disponible." />
+      }
+    </section>
+  } @else {
     <section class="profile__section">
       <h3 class="profile__section-title">Seguridad</h3>
-      <div class="profile__form">
+      <p class="profile__section-description">
+        Actualiza tu contraseña periódicamente y evita reutilizar contraseñas de otros servicios.
+      </p>
+
+      <app-info-tip message="Al cambiar la contraseña se revocarán todos los dispositivos vinculados y deberás iniciar sesión nuevamente." />
+
+      <div class="profile__form profile__form--security">
         <div class="form-field">
           <label>Contraseña actual</label>
           <app-fluent-text-input type="password" [formField]="passwordForm.currentPassword" />
+          <span class="profile__field-hint">Ingresa tu contraseña actual para verificar tu identidad.</span>
           @if (passwordForm.currentPassword().invalid() && passwordForm.currentPassword().touched()) {
             <span class="form-field__error">{{ passwordForm.currentPassword().getError('required')?.message }}</span>
           }
@@ -46,6 +74,7 @@
         <div class="form-field">
           <label>Nueva contraseña</label>
           <app-fluent-text-input type="password" [formField]="passwordForm.newPassword" />
+          <span class="profile__field-hint">Usa al menos 8 caracteres con letras, números y símbolos.</span>
           @if (passwordForm.newPassword().invalid() && passwordForm.newPassword().touched()) {
             <span class="form-field__error">{{ passwordForm.newPassword().getError('required')?.message }}</span>
           }
@@ -53,16 +82,15 @@
         <div class="form-field">
           <label>Confirmar contraseña</label>
           <app-fluent-text-input type="password" [formField]="passwordForm.confirmPassword" />
+          <span class="profile__field-hint">Repite la nueva contraseña para evitar errores de escritura.</span>
           @if (passwordForm.confirmPassword().invalid() && passwordForm.confirmPassword().touched()) {
             <span class="form-field__error">{{ passwordForm.confirmPassword().getError('required')?.message }}</span>
           }
         </div>
       </div>
-      <fluent-button appearance="accent" [disabled]="changingPassword()" (click)="onChangePassword()">
-        Cambiar contraseña
+      <fluent-button class="profile__submit" type="button" appearance="accent" [disabled]="changingPassword()" (click)="onChangePassword()">
+        {{ changingPassword() ? 'Cambiando...' : 'Cambiar contraseña' }}
       </fluent-button>
     </section>
-  } @else {
-    <app-info-tip message="Cargando tu perfil... Si tarda, verifica que el endpoint /me esté disponible." />
   }
 </div>

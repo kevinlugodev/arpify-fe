@@ -8,8 +8,7 @@
   // -----------------------------------------------------------
   // Typography
   // -----------------------------------------------------------
-  --font-family-base:
-    'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --font-family-base: 'Inter', sans-serif;
   --font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
   // -----------------------------------------------------------
@@ -68,10 +67,10 @@
   // -----------------------------------------------------------
   --space-xs: 0.5rem; // 8px
   --space-sm: 0.5rem; // 8px
-  --space-md: 1rem;   // 16px
+  --space-md: 1rem; // 16px
   --space-lg: 1.5rem; // 24px
-  --space-xl: 2rem;   // 32px
-  --space-xxl: 3rem;  // 48px
+  --space-xl: 2rem; // 32px
+  --space-xxl: 3rem; // 48px
 
   // -----------------------------------------------------------
   // Layout
@@ -95,33 +94,26 @@
   // Elevation — soft layered shadows using the accent tint
   // Opacities kept ultra-low (0.04-0.08) for a clean lift
   // -----------------------------------------------------------
-  --shadow-sm:
-    0 1px 2px 0 rgb(15 108 189 / 0.04),
-    0 1px 3px 0 rgb(15 108 189 / 0.04);
-  --shadow-md:
-    0 4px 8px 0 rgb(15 108 189 / 0.04),
-    0 2px 4px 0 rgb(15 108 189 / 0.04);
-  --shadow-lg:
-    0 8px 16px 0 rgb(15 108 189 / 0.05),
-    0 4px 8px 0 rgb(15 108 189 / 0.03);
-  --shadow-xl:
-    0 16px 32px 0 rgb(15 108 189 / 0.05),
-    0 8px 16px 0 rgb(15 108 189 / 0.04);
+  --shadow-sm: 0 1px 2px 0 rgb(15 108 189 / 0.04), 0 1px 3px 0 rgb(15 108 189 / 0.04);
+  --shadow-md: 0 4px 8px 0 rgb(15 108 189 / 0.04), 0 2px 4px 0 rgb(15 108 189 / 0.04);
+  --shadow-lg: 0 8px 16px 0 rgb(15 108 189 / 0.05), 0 4px 8px 0 rgb(15 108 189 / 0.03);
+  --shadow-xl: 0 16px 32px 0 rgb(15 108 189 / 0.05), 0 8px 16px 0 rgb(15 108 189 / 0.04);
 
   // Premium accent-tinted shadow for floating cards (login)
   --shadow-accent-floating:
-    0 20px 40px -10px rgb(0 120 212 / 0.08),
-    0 8px 16px -4px rgb(0 120 212 / 0.04);
+    0 20px 40px -10px rgb(0 120 212 / 0.08), 0 8px 16px -4px rgb(0 120 212 / 0.04);
 
   // -----------------------------------------------------------
-  // Shell layout colors
-  // Header is the ONLY dark element in the app.
+  // Shell layout colors — Microsoft Power Apps-inspired light mode
+  // Header uses the platform primary blue; sidebar is soft gray;
+  // content area is clean white.
   // -----------------------------------------------------------
-  --shell-header-bg: var(--neutral-color-950);
-  --shell-sidebar-bg: var(--neutral-color-50);
-  --shell-sidebar-active-bg: var(--neutral-color-0);
-  --shell-content-bg: var(--neutral-color-100);
-  --shell-border: var(--neutral-color-200);
+  --shell-header-bg: var(--primary-color-500);
+  --shell-sidebar-bg: #f3f2f1;
+  --shell-sidebar-active-bg: #ffffff;
+  --shell-sidebar-active-border: var(--primary-color-500);
+  --shell-content-bg: #ffffff;
+  --shell-border: #e1dfdd;
 
   // -----------------------------------------------------------
   // Auth light-mode glassmorphism tokens

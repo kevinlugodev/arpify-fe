@@ -15,6 +15,7 @@ export const routes: Routes = [
       { path: 'organizacion', loadComponent: () => import('./features/master-data/pages/master-data/master-data') },
       { path: 'mass-emails', loadComponent: () => import('./features/mass-emails/pages/mass-emails/mass-emails') },
       { path: 'audit', loadComponent: () => import('./features/audit/pages/audit/audit') },
+      { path: 'finance', loadComponent: () => import('./features/finance/pages/finance/finance') },
       { path: 'me', loadComponent: () => import('./features/me/pages/profile/profile') },
       { path: 'me/audit-logs', loadComponent: () => import('./features/me/pages/audit-logs/audit-logs') },
     ],

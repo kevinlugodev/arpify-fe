@@ -28,7 +28,6 @@
   }
 
   tbody tr {
-    cursor: pointer;
     transition: background-color 0.15s ease-in-out;
 
     &:hover {
@@ -42,6 +41,10 @@
     &:last-child td {
       border-bottom: none;
     }
+  }
+
+  &__row--clickable {
+    cursor: pointer;
   }
 
   &__loading {
@@ -62,22 +65,28 @@
   }
 
   &__actions-cell {
-    display: flex;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  &__actions-wrapper {
+    display: inline-flex;
     justify-content: flex-end;
     gap: var(--space-sm);
-    white-space: nowrap;
 
     fluent-button {
-      --gap: 6px;
-      display: inline-flex;
-      align-items: center;
-      gap: var(--gap);
       font-size: 12px;
       font-weight: 500;
+    }
+  }
 
-      i {
-        font-size: 14px;
-      }
+  &__action-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    i {
+      font-size: 14px;
     }
   }
 }

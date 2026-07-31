@@ -125,7 +125,15 @@ export default class MasterDataPage {
 
   protected readonly managementColumns: DataTableColumn<Management>[] = [
     { key: 'name', header: 'Nombre' },
-    { key: 'responsible_team_member_id', header: 'Responsable' },
+    { key: 'status', header: 'Estado', type: 'status', statusDomain: 'master-data' },
+    {
+      key: 'responsible',
+      header: 'Responsable',
+      type: 'user',
+      userNameKey: 'responsible.full_name',
+      userEmailKey: 'responsible.email',
+      userPrefixKey: 'responsible.prefix',
+    },
   ];
 
   protected readonly managementActions: DataTableAction<Management>[] = [
@@ -135,7 +143,14 @@ export default class MasterDataPage {
   protected readonly areaColumns: DataTableColumn<Area>[] = [
     { key: 'name', header: 'Nombre' },
     { key: 'management_name', header: 'Gerencia' },
-    { key: 'responsible_name', header: 'Responsable' },
+    {
+      key: 'responsible',
+      header: 'Responsable',
+      type: 'user',
+      userNameKey: 'responsible.full_name',
+      userEmailKey: 'responsible.email',
+      userPrefixKey: 'responsible.prefix',
+    },
   ];
 
   protected readonly areaActions: DataTableAction<Area>[] = [

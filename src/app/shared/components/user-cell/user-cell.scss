@@ -1,0 +1,21 @@
+.app-user-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--neutral-color-900);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

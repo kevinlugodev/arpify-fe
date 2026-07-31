@@ -1,10 +1,26 @@
 <header class="topbar">
   <div class="topbar__brand">
     <i class="bi bi-briefcase-fill topbar__logo"></i>
-    <span class="topbar__title">Arpify</span>
+    <div class="topbar__title">
+      <span class="topbar__app-name">Arpify</span>
+      @if (currentModuleLabel()) {
+        <span class="topbar__separator"></span>
+        <span class="topbar__module-name">{{ currentModuleLabel() }}</span>
+      }
+    </div>
   </div>
 
   <div class="topbar__actions">
+    <button
+      class="topbar__icon-button"
+      type="button"
+      aria-label="Configuración de cuenta"
+      title="Configuración de cuenta"
+      (click)="onAccountSettings()"
+    >
+      <i class="bi bi-gear"></i>
+    </button>
+
     <app-profile-menu
       [profile]="profile()"
       (profileClick)="onProfile()"

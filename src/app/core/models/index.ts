@@ -2,6 +2,7 @@ export * from './api-response.model';
 export * from './audit.model';
 export * from './auth.model';
 export * from './file.model';
+export * from './finance.model';
 export * from './mass-email.model';
 export * from './master-data.model';
 export * from './seed.model';

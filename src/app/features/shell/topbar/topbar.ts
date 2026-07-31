@@ -1,7 +1,19 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, ViewEncapsulation } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, ViewEncapsulation } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter, Subscription } from 'rxjs';
 import { AuthStore } from '../../../features/auth/store/auth.store';
 import ProfileMenu, { ProfileMenuData } from '../profile-menu/profile-menu';
+
+const ROUTE_MODULE_LABELS: Record<string, string> = {
+  '/': 'Inicio',
+  '/teams': 'Equipos',
+  '/teams/new': 'Nuevo miembro',
+  '/organizacion': 'Estructura organizacional',
+  '/mass-emails': 'Correos masivos',
+  '/audit': 'Auditoría',
+  '/me': 'Mi cuenta',
+  '/me/audit-logs': 'Registros de actividad',
+};
 
 /**
  * Construye un nombre legible a partir del correo cuando el backend
@@ -36,12 +48,12 @@ function buildInitials(displayName: string): string {
   encapsulation: ViewEncapsulation.None,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export default class Topbar {
+export default class Topbar implements OnDestroy {
   private readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);
+  private readonly routeSubscription: Subscription;
 
-  /** Datos del usuario autenticado. */
-  protected readonly store = this.authStore;
+  protected readonly currentModuleLabel = signal<string>('');
 
   /** Datos de perfil normalizados para el menú de usuario. */
   protected readonly profile = computed<ProfileMenuData>(() => {
@@ -54,6 +66,19 @@ export default class Topbar {
       initials: buildInitials(name),
     };
   });
+
+  constructor() {
+    this.currentModuleLabel.set(this.resolveModuleLabel(this.router.url));
+    this.routeSubscription = this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.currentModuleLabel.set(this.resolveModuleLabel((event as NavigationEnd).urlAfterRedirects));
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.routeSubscription.unsubscribe();
+  }
 
   protected async onSignOut(): Promise<void> {
     this.authStore.signOut();
@@ -70,5 +95,19 @@ export default class Topbar {
 
   protected onSwitchWorkspace(): void {
     void this.router.navigate(['/signin']);
+  }
+
+  private resolveModuleLabel(url: string): string {
+    const cleanUrl = url.split('?')[0] ?? url;
+    if (ROUTE_MODULE_LABELS[cleanUrl]) {
+      return ROUTE_MODULE_LABELS[cleanUrl];
+    }
+    if (cleanUrl.startsWith('/teams/') && cleanUrl.includes('/edit')) {
+      return 'Editar miembro';
+    }
+    if (cleanUrl.startsWith('/teams/')) {
+      return 'Detalle del miembro';
+    }
+    return '';
   }
 }

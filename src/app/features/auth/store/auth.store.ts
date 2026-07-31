@@ -8,14 +8,16 @@ import {
   SignInRequest,
   VerifyCodeRequest,
 } from '../../../core/models/auth.model';
+import { SecureStorage } from '../../../core/services/secure-storage';
 import { initialStoreStatus, StoreStatus } from '../../../core/utils/store-status';
 import { ApiError, toApiPromise } from '../../../core/utils/api-response';
-import { getErrorMessage, setStoreError, setStoreLoading, setStoreSuccess } from '../../../core/utils/store-helpers';
+import { setStoreError, setStoreLoading, setStoreSuccess } from '../../../core/utils/store-helpers';
 
 const ACCESS_TOKEN_KEY = 'arpify_access_token';
 const REFRESH_TOKEN_KEY = 'arpify_refresh_token';
 const TENANT_ID_KEY = 'arpify_tenant_id';
 const TENANT_SLUG_KEY = 'arpify_tenant_slug';
+const USER_KEY = 'arpify_user';
 
 interface AuthState {
   user: AuthenticatedUser | null;
@@ -26,47 +28,32 @@ interface AuthState {
   status: StoreStatus;
 }
 
-function loadFromStorage(key: string): string | null {
-  if (typeof localStorage === 'undefined') {
-    return null;
-  }
-  return localStorage.getItem(key);
-}
-
-function saveToStorage(key: string, value: string | null): void {
-  if (typeof localStorage === 'undefined') {
-    return;
-  }
-  if (value) {
-    localStorage.setItem(key, value);
-  } else {
-    localStorage.removeItem(key);
-  }
-}
-
-const initialState: AuthState = {
-  user: null,
-  accessToken: loadFromStorage(ACCESS_TOKEN_KEY),
-  refreshToken: loadFromStorage(REFRESH_TOKEN_KEY),
-  tenantId: loadFromStorage(TENANT_ID_KEY),
-  tenantSlug: loadFromStorage(TENANT_SLUG_KEY),
-  status: initialStoreStatus,
-};
-
 /**
  * Store global de autenticación y sesión.
  * Centraliza tokens, datos del usuario autenticado y tenant activo.
+ * Toda la información sensible se persiste en localStorage de forma encriptada
+ * mediante {@link SecureStorage}.
  */
 export const AuthStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
+  withState((secureStorage = inject(SecureStorage)) => {
+    const initialState: AuthState = {
+      user: secureStorage.getItem<AuthenticatedUser>(USER_KEY),
+      accessToken: secureStorage.getItem<string>(ACCESS_TOKEN_KEY),
+      refreshToken: secureStorage.getItem<string>(REFRESH_TOKEN_KEY),
+      tenantId: secureStorage.getItem<string>(TENANT_ID_KEY),
+      tenantSlug: secureStorage.getItem<string>(TENANT_SLUG_KEY),
+      status: initialStoreStatus,
+    };
+    return initialState;
+  }),
   withComputed(({ accessToken, user }) => ({
     /** Indica si existe un access token activo. */
     isAuthenticated: computed(() => !!accessToken()),
     /** Rol del usuario autenticado, o null si no hay sesión. */
     userRole: computed(() => user()?.role ?? null),
   })),
-  withMethods((store, authService = inject(AuthService)) => ({
+  withMethods((store, authService = inject(AuthService), secureStorage = inject(SecureStorage)) => ({
     /**
      * Inicia sesión con credenciales y persiste la sesión resultante.
      * @param request Email y contraseña del usuario.
@@ -82,9 +69,10 @@ export const AuthStore = signalStore(
           tenantId: response.user.tenant_id,
           status: { loading: false, error: null },
         });
-        saveToStorage(ACCESS_TOKEN_KEY, response.token_pair.access_token);
-        saveToStorage(REFRESH_TOKEN_KEY, response.token_pair.refresh_token);
-        saveToStorage(TENANT_ID_KEY, response.user.tenant_id);
+        secureStorage.setItem(USER_KEY, response.user);
+        secureStorage.setItem(ACCESS_TOKEN_KEY, response.token_pair.access_token);
+        secureStorage.setItem(REFRESH_TOKEN_KEY, response.token_pair.refresh_token);
+        secureStorage.setItem(TENANT_ID_KEY, response.user.tenant_id);
       } catch (error) {
         setStoreError(store, error, 'Error al iniciar sesión');
         throw error;
@@ -103,10 +91,11 @@ export const AuthStore = signalStore(
         tenantSlug: null,
         status: initialStoreStatus,
       });
-      saveToStorage(ACCESS_TOKEN_KEY, null);
-      saveToStorage(REFRESH_TOKEN_KEY, null);
-      saveToStorage(TENANT_ID_KEY, null);
-      saveToStorage(TENANT_SLUG_KEY, null);
+      secureStorage.removeItem(USER_KEY);
+      secureStorage.removeItem(ACCESS_TOKEN_KEY);
+      secureStorage.removeItem(REFRESH_TOKEN_KEY);
+      secureStorage.removeItem(TENANT_ID_KEY);
+      secureStorage.removeItem(TENANT_SLUG_KEY);
     },
 
     /**
@@ -170,8 +159,8 @@ export const AuthStore = signalStore(
           refreshToken: response.refresh_token,
           status: { loading: false, error: null },
         });
-        saveToStorage(ACCESS_TOKEN_KEY, response.access_token);
-        saveToStorage(REFRESH_TOKEN_KEY, response.refresh_token);
+        secureStorage.setItem(ACCESS_TOKEN_KEY, response.access_token);
+        secureStorage.setItem(REFRESH_TOKEN_KEY, response.refresh_token);
       } catch (error) {
         setStoreError(store, error, 'Error al refrescar la sesión');
         throw error;
@@ -184,7 +173,7 @@ export const AuthStore = signalStore(
      */
     setTenantSlug(slug: string): void {
       patchState(store, { tenantSlug: slug });
-      saveToStorage(TENANT_SLUG_KEY, slug);
+      secureStorage.setItem(TENANT_SLUG_KEY, slug);
     },
 
     /**
@@ -192,7 +181,7 @@ export const AuthStore = signalStore(
      */
     clearTenantSlug(): void {
       patchState(store, { tenantSlug: null });
-      saveToStorage(TENANT_SLUG_KEY, null);
+      secureStorage.removeItem(TENANT_SLUG_KEY);
     },
 
     /**

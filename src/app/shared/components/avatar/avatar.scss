@@ -1,0 +1,54 @@
+.app-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 600;
+  border-radius: 50%;
+  user-select: none;
+
+  &--sm {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  &--md {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+  }
+
+  // Microsoft-inspired corporate palette. Colors are intentionally soft
+  // so they work on light backgrounds without overwhelming the UI.
+
+  &--color-0 {
+    color: #0b5a9e;
+    background-color: #e8f1fa;
+  }
+
+  &--color-1 {
+    color: #0e700e;
+    background-color: #f1f8f1;
+  }
+
+  &--color-2 {
+    color: #8a6d0b;
+    background-color: #fff9e6;
+  }
+
+  &--color-3 {
+    color: #a4262c;
+    background-color: #fdf3f4;
+  }
+
+  &--color-4 {
+    color: #6b43c8;
+    background-color: #f2edff;
+  }
+
+  &--color-5 {
+    color: #0078d4;
+    background-color: #e5f3fc;
+  }
+}

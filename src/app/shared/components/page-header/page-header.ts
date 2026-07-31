@@ -14,6 +14,7 @@ export default class PageHeader {
   readonly subtitle = input<string>();
   readonly icon = input<string>();
   readonly actionLabel = input<string>();
+  readonly actionAppearance = input<'accent' | 'neutral' | 'outline' | 'subtle' | 'transparent'>('accent');
   readonly actionClick = output<void>();
 
   protected onActionClick(): void {

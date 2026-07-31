@@ -2,8 +2,10 @@ import {
   afterNextRender,
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
+  DestroyRef,
   effect,
   ElementRef,
+  inject,
   model,
   output,
   viewChild,
@@ -40,6 +42,12 @@ export class FluentTextInput implements FormValueControl<string> {
   readonly placeholder = model<string | undefined>(undefined);
 }
 
+type DropdownElement = HTMLElement & {
+  value?: string | null;
+  listbox?: HTMLElement;
+  options?: { value: string }[];
+};
+
 /**
  * Wrapper Angular para `<fluent-dropdown>` compatible con `[formField]` de Signal Forms.
  *
@@ -65,6 +73,7 @@ export class FluentTextInput implements FormValueControl<string> {
   `,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
+
 export class FluentDropdown implements FormValueControl<string> {
   readonly value = model.required<string>();
   readonly touch = output<void>();
@@ -72,6 +81,8 @@ export class FluentDropdown implements FormValueControl<string> {
   readonly placeholder = model<string | undefined>(undefined);
 
   private readonly dropdownRef = viewChild.required<ElementRef<HTMLElement>>('dropdown');
+  private readonly destroyRef = inject(DestroyRef);
+  private dropdownObserver?: MutationObserver;
 
   constructor() {
     afterNextRender(() => {
@@ -80,11 +91,33 @@ export class FluentDropdown implements FormValueControl<string> {
         return;
       }
 
-      // Sync initial value once the listbox has processed the slotted options.
-      this.syncValue(dropdown);
+      const sync = () => this.syncValue(dropdown);
 
-      // Re-sync if options change (e.g. dynamic lists).
-      dropdown.addEventListener('slotchange', () => this.syncValue(dropdown));
+      // Sync initial value once the listbox has processed the slotted options.
+      sync();
+
+      // Re-sync if the slotted listbox changes (e.g. when it is first assigned).
+      dropdown.addEventListener('slotchange', () => {
+        sync();
+        this.observeDropdown(dropdown);
+      });
+
+      // Re-sync when the listbox options change (e.g. async loading via @for).
+      this.observeDropdown(dropdown);
+
+      // Retry a few frames in case options/projections are still pending.
+      let attempts = 0;
+      const retry = () => {
+        if (attempts++ >= 10) {
+          return;
+        }
+        sync();
+        const next = this.value();
+        if (next && !this.hasOption(dropdown, next)) {
+          requestAnimationFrame(retry);
+        }
+      };
+      requestAnimationFrame(retry);
     });
 
     effect(() => {
@@ -95,18 +128,52 @@ export class FluentDropdown implements FormValueControl<string> {
     });
   }
 
-  private getDropdown(): HTMLElement & { value?: string } | null {
+  private getDropdown(): DropdownElement | null {
     return this.dropdownRef()?.nativeElement ?? null;
   }
 
-  private syncValue(dropdown: HTMLElement & { value?: string }): void {
+  private observeDropdown(dropdown: DropdownElement): void {
+    if (this.dropdownObserver) {
+      return;
+    }
+
+    this.dropdownObserver = new MutationObserver(() => this.syncValue(dropdown));
+    this.dropdownObserver.observe(dropdown, { childList: true, subtree: true });
+    this.destroyRef.onDestroy(() => this.dropdownObserver?.disconnect());
+  }
+
+  private hasOption(dropdown: DropdownElement, value: string): boolean {
+    const options = dropdown.options ?? [];
+    if (options.length > 0) {
+      return options.some((option) => option.value === value);
+    }
+    // Fallback when the custom element registry is not yet ready.
+    return Array.from(dropdown.querySelectorAll('fluent-option')).some((option) => option.getAttribute('value') === value);
+  }
+
+  private syncValue(dropdown: DropdownElement): void {
     const next = this.value();
-    if (next && dropdown.value !== next) {
-      try {
-        dropdown.value = next;
-      } catch {
-        // Dropdown may not be ready yet; it will be retried on slotchange.
+
+    // Do not touch the value while the listbox is not yet assigned; setting it
+    // before that point throws inside Fluent UI's selectOption implementation.
+    if (!dropdown.listbox) {
+      return;
+    }
+
+    if (!next) {
+      if (dropdown.value !== '') {
+        dropdown.value = '';
       }
+      return;
+    }
+
+    if (!this.hasOption(dropdown, next)) {
+      // Options may not be ready yet; MutationObserver/retry will retry.
+      return;
+    }
+
+    if (dropdown.value !== next) {
+      dropdown.value = next;
     }
   }
 

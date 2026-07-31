@@ -1,7 +1,11 @@
 .profile {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
+
+  &__tabs {
+    margin-top: var(--space-sm);
+  }
 
   &__section {
     padding: var(--space-lg);
@@ -11,16 +15,44 @@
   }
 
   &__section-title {
-    margin: 0 0 var(--space-md);
-    font-size: 1rem;
+    margin: 0 0 var(--space-xs);
+    font-size: 16px;
     font-weight: 600;
-    color: var(--neutral-color-800);
+    color: var(--neutral-color-900);
+  }
+
+  &__section-description {
+    margin: 0 0 var(--space-md);
+    font-size: 13px;
+    color: #605e5c;
+    line-height: 1.5;
   }
 
   &__form {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
     gap: var(--space-md);
+    margin: var(--space-md) 0;
+
+    &--security {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &__field-hint {
+    font-size: 12px;
+    color: #605e5c;
+    line-height: 1.4;
+  }
+
+  app-info-tip {
     margin-bottom: var(--space-md);
+  }
+
+  &__submit {
+    --accent-foreground-rest: var(--neutral-color-0);
+
+    min-width: 10rem;
+    color: var(--neutral-color-0);
   }
 }

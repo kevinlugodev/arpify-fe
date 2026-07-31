@@ -1,0 +1,400 @@
+.finance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+
+  &__workflow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background-color: var(--primary-color-50);
+    border: 1px solid var(--primary-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__workflow-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  &__workflow-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 18px;
+    color: var(--primary-color-600);
+    background-color: var(--neutral-color-0);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__workflow-title {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__workflow-subtitle {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--neutral-color-600);
+  }
+
+  &__workflow-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__workflow-step {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex: 1 1 200px;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--primary-color-100);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__workflow-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--neutral-color-0);
+    background-color: var(--primary-color-500);
+    border-radius: 50%;
+  }
+
+  &__workflow-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--neutral-color-800);
+  }
+
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-md);
+  }
+
+  &__tabs {
+    margin-top: var(--space-sm);
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__panel-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  &__panel-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__panel-icon {
+    color: var(--primary-color-500);
+  }
+
+  &__panel-description {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--neutral-color-600);
+    line-height: 1.4;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  &__form--compact {
+    gap: var(--space-md);
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin: 0;
+    padding: var(--space-md) var(--space-lg);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__section-title {
+    padding: 0 var(--space-sm);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--neutral-color-700);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-md);
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--neutral-color-700);
+    }
+  }
+
+  &__fields--compact {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+
+  &__field--wide {
+    grid-column: 1 / -1;
+  }
+
+  &__field--checkbox {
+    justify-content: flex-end;
+  }
+
+  &__field--address {
+    fluent-text-input {
+      max-width: none;
+      width: 100%;
+    }
+  }
+
+  &__field-hint {
+    font-size: 12px;
+    color: var(--neutral-color-500);
+    line-height: 1.3;
+  }
+
+  &__required {
+    color: var(--error-color);
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-md);
+  }
+
+  &__inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-md);
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 160px;
+      flex: 1;
+
+      label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--neutral-color-700);
+      }
+    }
+  }
+
+  &__inline-field--button {
+    flex: 0 0 auto;
+  }
+
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 160px;
+      flex: 1;
+
+      label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--neutral-color-700);
+      }
+    }
+  }
+
+  &__search {
+    flex: 1;
+    min-width: 220px;
+  }
+
+  &__calculation-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 200px;
+
+      label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--neutral-color-700);
+      }
+    }
+  }
+
+  &__calculation-actions {
+    display: flex;
+    gap: var(--space-md);
+    margin-left: auto;
+  }
+
+  &__calculation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-md);
+  }
+
+  &__calculation-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+
+    &--total {
+      background-color: var(--primary-color-50);
+      border-color: var(--primary-color-200);
+    }
+  }
+
+  &__calculation-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--neutral-color-600);
+  }
+
+  &__calculation-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__concepts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  &__concepts-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--neutral-color-800);
+  }
+
+  &__concepts-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+    color: var(--neutral-color-800);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+
+    th,
+    td {
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--neutral-color-200);
+    }
+
+    th {
+      background-color: var(--neutral-color-50);
+      font-weight: 600;
+      color: var(--neutral-color-700);
+      font-size: 12px;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  &__action-icon {
+    margin-right: 6px;
+
+    &--end {
+      margin-right: 0;
+      margin-left: 6px;
+    }
+  }
+
+  &__spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

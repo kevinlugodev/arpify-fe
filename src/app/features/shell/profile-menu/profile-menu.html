@@ -4,18 +4,10 @@
     type="button"
     aria-haspopup="true"
     [attr.aria-expanded]="isProfileMenuOpen()"
+    [attr.aria-label]="'Menú de usuario de ' + profile().name"
     (click)="toggleMenu($event)"
   >
-    <span class="profile-menu__info">
-      <span class="profile-menu__name">{{ profile().name }}</span>
-      <span class="profile-menu__email">{{ profile().email }}</span>
-    </span>
-    <fluent-avatar
-      class="profile-menu__avatar"
-      [attr.initials]="profile().initials"
-      shape="circle"
-      color="accent"
-    ></fluent-avatar>
+    <span class="profile-menu__initials">{{ profile().initials }}</span>
   </button>
 
   @if (isProfileMenuOpen()) {

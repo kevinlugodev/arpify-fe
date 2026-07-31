@@ -3,6 +3,108 @@
   flex-direction: column;
   gap: var(--space-lg);
 
+  // -----------------------------------------------------------
+  // Stepper / Wizard
+  // -----------------------------------------------------------
+  &__stepper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__step {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &--active &__step-circle {
+      background-color: var(--primary-color-500);
+      border-color: var(--primary-color-500);
+      color: var(--neutral-color-0);
+    }
+
+    &--active &__step-label {
+      color: var(--primary-color-600);
+      font-weight: 600;
+    }
+
+    &--completed &__step-circle {
+      background-color: var(--success-color);
+      border-color: var(--success-color);
+      color: var(--neutral-color-0);
+    }
+
+    &--completed &__step-connector {
+      background-color: var(--success-color);
+    }
+  }
+
+  &__step-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  &__step-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--neutral-color-500);
+    background-color: var(--neutral-color-0);
+    border: 2px solid var(--neutral-color-300);
+    border-radius: 50%;
+    transition: all 0.2s ease-in-out;
+
+    i {
+      font-size: 16px;
+    }
+  }
+
+  &__step-connector {
+    position: absolute;
+    top: 1rem;
+    left: calc(-50% + 1rem);
+    right: calc(50% + 1rem);
+    height: 2px;
+    background-color: var(--neutral-color-200);
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  &__step-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--neutral-color-700);
+    line-height: 1.3;
+    max-width: 8rem;
+  }
+
+  &__step-description {
+    font-size: 11px;
+    color: var(--neutral-color-500);
+    line-height: 1.3;
+    max-width: 8rem;
+  }
+
+  // -----------------------------------------------------------
+  // Form section
+  // -----------------------------------------------------------
   &__form {
     display: flex;
     flex-direction: column;
@@ -13,8 +115,7 @@
     padding: var(--space-lg);
     background-color: var(--neutral-color-0);
     border: 1px solid var(--neutral-color-200);
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--border-radius-md);
   }
 
   &__section-title {
@@ -22,13 +123,13 @@
     align-items: center;
     gap: var(--space-sm);
     margin: 0 0 var(--space-xs);
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--neutral-color-900);
   }
 
   &__section-icon {
-    font-size: 16px;
+    font-size: 18px;
     color: var(--primary-color-600);
   }
 
@@ -48,17 +149,69 @@
       grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
       max-width: 48rem;
     }
+
+    &--laboral {
+      grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+      max-width: none;
+    }
+  }
+
+  &__field--wide {
+    grid-column: 1 / -1;
+  }
+
+  &__required {
+    color: var(--error-color);
+  }
+
+  &__field-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #605e5c;
+    line-height: 1.4;
   }
 
   &__actions {
     display: flex;
+    align-items: center;
+    justify-content: flex-end;
     gap: var(--space-md);
     padding-top: var(--space-md);
   }
 
-  .form-field--checkbox {
+  &__action-icon {
+    margin-inline-end: 6px;
+
+    &--end {
+      margin-inline-end: 0;
+      margin-inline-start: 6px;
+    }
+  }
+
+  &__spinner {
+    animation: team-form-spin 1s linear infinite;
+  }
+
+  @keyframes team-form-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  &__account-option {
     display: flex;
-    align-items: center;
-    min-height: 2.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+    max-width: 48rem;
+    padding: var(--space-md);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+
+    app-info-tip {
+      width: 100%;
+    }
   }
 }
