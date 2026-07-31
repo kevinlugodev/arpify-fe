@@ -1,0 +1,251 @@
+<div class="client-form">
+  <app-page-header
+    [title]="isEditMode() ? 'Editar cliente' : 'Nuevo cliente'"
+    subtitle="Completa la ficha fiscal, comercial y de contacto del cliente"
+    icon="bi-building"
+    actionLabel="Cancelar"
+    actionAppearance="neutral"
+    (actionClick)="onCancel()"
+  />
+
+  <app-info-tip message="Los campos marcados con * son obligatorios. El país y la moneda por defecto se usan como valores base para facturación y cotización." />
+
+  @if (isEditMode() && loading()) {
+    <app-info-tip message="Cargando información del cliente..." />
+  } @else {
+    <form class="client-form__form" (ngSubmit)="openConfirm()">
+      <fieldset class="client-form__section">
+        <legend class="client-form__section-title">
+          <i class="bi bi-building-check client-form__section-icon"></i>
+          Información fiscal y comercial
+        </legend>
+        <p class="client-form__section-description">
+          Datos de identificación tributaria y del negocio. Estos valores son clave para emitir comprobantes y reportes.
+        </p>
+
+        <div class="client-form__fields">
+          <div class="form-field">
+            <label>RUC / Tax ID <span class="client-form__required">*</span></label>
+            <app-fluent-text-input [formField]="clientForm.tax_id" />
+            <span class="client-form__field-hint">Número de identificación tributaria del cliente.</span>
+            @if (clientForm.tax_id().invalid() && clientForm.tax_id().touched()) {
+              <span class="form-field__error">{{ clientForm.tax_id().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Razón social <span class="client-form__required">*</span></label>
+            <app-fluent-text-input [formField]="clientForm.legal_name" />
+            <span class="client-form__field-hint">Nombre legal tal como aparece en SUNAT o registro mercantil.</span>
+            @if (clientForm.legal_name().invalid() && clientForm.legal_name().touched()) {
+              <span class="form-field__error">{{ clientForm.legal_name().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Nombre comercial</label>
+            <app-fluent-text-input [formField]="clientForm.trade_name" />
+            <span class="client-form__field-hint">Nombre de uso comercial, si difiere de la razón social.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Sector de negocio</label>
+            <app-fluent-text-input [formField]="clientForm.business_sector" />
+            <span class="client-form__field-hint">Ejemplo: Tecnología, Manufactura, Retail.</span>
+          </div>
+
+          <div class="form-field">
+            <label>País <span class="client-form__required">*</span></label>
+            <app-fluent-dropdown [formField]="clientForm.country_code">
+              @for (country of countryOptions; track country.value) {
+                <fluent-option [value]="country.value">{{ country.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            <span class="client-form__field-hint">País de residencia fiscal.</span>
+            @if (clientForm.country_code().invalid() && clientForm.country_code().touched()) {
+              <span class="form-field__error">{{ clientForm.country_code().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Moneda por defecto <span class="client-form__required">*</span></label>
+            <app-fluent-dropdown [formField]="clientForm.default_currency">
+              @for (currency of currencyOptions; track currency.value) {
+                <fluent-option [value]="currency.value">{{ currency.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            <span class="client-form__field-hint">Moneda principal para transacciones con este cliente.</span>
+            @if (clientForm.default_currency().invalid() && clientForm.default_currency().touched()) {
+              <span class="form-field__error">{{ clientForm.default_currency().getError('required')?.message }}</span>
+            }
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="client-form__section">
+        <legend class="client-form__section-title">
+          <i class="bi bi-person-vcard client-form__section-icon"></i>
+          Contacto principal
+        </legend>
+        <p class="client-form__section-description">
+          Persona de contacto clave dentro de la empresa cliente. Será el interlocutor principal para cotizaciones y facturación.
+        </p>
+
+        <div class="client-form__fields">
+          <div class="form-field">
+            <label>Nombre del contacto</label>
+            <app-fluent-text-input [formField]="clientForm.key_contact_name" />
+            <span class="client-form__field-hint">Nombre completo del interlocutor principal.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Cargo del contacto</label>
+            <app-fluent-text-input [formField]="clientForm.key_contact_role" />
+            <span class="client-form__field-hint">Ejemplo: CEO, Gerente comercial.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Correo del contacto</label>
+            <app-fluent-text-input type="email" [formField]="clientForm.key_contact_email" />
+            <span class="client-form__field-hint">Correo principal para enviar propuestas y facturas.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Teléfono del contacto</label>
+            <app-fluent-text-input [formField]="clientForm.key_contact_phone" />
+            <span class="client-form__field-hint">Número directo del contacto.</span>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="client-form__section">
+        <legend class="client-form__section-title">
+          <i class="bi bi-geo-alt client-form__section-icon"></i>
+          Dirección fiscal
+        </legend>
+        <p class="client-form__section-description">
+          Ubicación registrada para fines de facturación y envío de documentos.
+        </p>
+
+        <div class="client-form__fields">
+          <div class="form-field client-form__field--wide">
+            <label>Dirección fiscal</label>
+            <app-fluent-text-input [formField]="clientForm.billing_address" />
+            <span class="client-form__field-hint">Calle, número, oficina y cualquier referencia necesaria.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Ciudad</label>
+            <app-fluent-text-input [formField]="clientForm.city" />
+          </div>
+
+          <div class="form-field">
+            <label>Provincia / Estado</label>
+            <app-fluent-text-input [formField]="clientForm.state_province" />
+          </div>
+
+          <div class="form-field">
+            <label>Código postal</label>
+            <app-fluent-text-input [formField]="clientForm.postal_code" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="client-form__section">
+        <legend class="client-form__section-title">
+          <i class="bi bi-credit-card client-form__section-icon"></i>
+          Condiciones de crédito y estado
+        </legend>
+        <p class="client-form__section-description">
+          Configura el límite de crédito, los días de pago y el estado del cliente en el sistema.
+        </p>
+
+        <div class="client-form__fields">
+          <div class="form-field">
+            <label>Límite de crédito</label>
+            <app-fluent-text-input type="number" [formField]="clientForm.credit_limit" />
+            <span class="client-form__field-hint">Monto máximo de crédito autorizado.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Plazo de pago (días)</label>
+            <app-fluent-text-input type="number" [formField]="clientForm.payment_terms_days" />
+            <span class="client-form__field-hint">Días de crédito otorgados al cliente.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Estado</label>
+            <app-fluent-dropdown [formField]="clientForm.status">
+              @for (option of statusOptions; track option.value) {
+                <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            <span class="client-form__field-hint">Prospecto, activo, inactivo o suspendido.</span>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="client-form__section">
+        <legend class="client-form__section-title">
+          <i class="bi bi-chat-left-text client-form__section-icon"></i>
+          Información adicional
+        </legend>
+
+        <div class="client-form__fields">
+          <div class="form-field">
+            <label>Correo general</label>
+            <app-fluent-text-input type="email" [formField]="clientForm.email" />
+            <span class="client-form__field-hint">Correo institucional del cliente.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Teléfono general</label>
+            <app-fluent-text-input [formField]="clientForm.phone" />
+            <span class="client-form__field-hint">Central telefónica o número principal.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Sitio web</label>
+            <app-fluent-text-input [formField]="clientForm.website_url" />
+            <span class="client-form__field-hint">URL del sitio web corporativo.</span>
+          </div>
+
+          <div class="form-field client-form__field--wide">
+            <label>Notas</label>
+            <app-fluent-text-input [formField]="clientForm.notes" />
+            <span class="client-form__field-hint">Comentarios internos sobre el cliente.</span>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="client-form__actions">
+        <fluent-button type="button" appearance="neutral" (click)="onCancel()">
+          Cancelar
+        </fluent-button>
+        <fluent-button
+          type="button"
+          appearance="accent"
+          [disabled]="saving()"
+          (click)="openConfirm()"
+        >
+          @if (saving()) {
+            <i class="bi bi-arrow-repeat client-form__spinner client-form__action-icon"></i>
+            Guardando...
+          } @else {
+            <i class="bi bi-check-lg client-form__action-icon"></i>
+            {{ isEditMode() ? 'Actualizar cliente' : 'Guardar cliente' }}
+          }
+        </fluent-button>
+      </div>
+    </form>
+  }
+
+  <app-confirm-dialog
+    #saveConfirmDialog
+    [title]="isEditMode() ? 'Actualizar cliente' : 'Crear cliente'"
+    [message]="isEditMode() ? '¿Confirmas que deseas actualizar la información de este cliente?' : '¿Confirmas que deseas crear este cliente con la información ingresada?'"
+    [confirmLabel]="isEditMode() ? 'Actualizar' : 'Crear'"
+    cancelLabel="Cancelar"
+    (confirm)="onSave()"
+  />
+</div>

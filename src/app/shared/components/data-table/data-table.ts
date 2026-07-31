@@ -3,8 +3,14 @@ import EmptyState from '../empty-state/empty-state';
 import { EmailLink } from '../email-link/email-link';
 import { StatusDomain, StatusTag } from '../status-tag/status-tag';
 import { UserCell } from '../user-cell/user-cell';
+import { FluentDropdown } from '../fluent-form-controls/fluent-form-controls';
 
-export type DataTableCellType = 'text' | 'status' | 'email' | 'user';
+export interface DataTableStatusOption {
+  value: string;
+  label: string;
+}
+
+export type DataTableCellType = 'text' | 'status' | 'status-select' | 'email' | 'user';
 
 export interface DataTableColumn<T = object> {
   key: keyof T | string;
@@ -12,6 +18,7 @@ export interface DataTableColumn<T = object> {
   width?: string;
   type?: DataTableCellType;
   statusDomain?: StatusDomain;
+  statusOptions?: DataTableStatusOption[];
   userNameKey?: keyof T | string;
   userEmailKey?: keyof T | string;
   userPrefixKey?: keyof T | string;
@@ -26,7 +33,7 @@ export interface DataTableAction<T = object> {
 @Component({
   selector: 'app-data-table',
   standalone: true,
-  imports: [EmptyState, StatusTag, EmailLink, UserCell],
+  imports: [EmptyState, StatusTag, EmailLink, UserCell, FluentDropdown],
   templateUrl: './data-table.html',
   styleUrl: './data-table.scss',
   encapsulation: ViewEncapsulation.None,
@@ -40,6 +47,7 @@ export default class DataTable<T extends object> {
   readonly clickable = input<boolean>(false);
   readonly rowClick = output<T>();
   readonly rowActionClick = output<{ action: string; row: T }>();
+  readonly statusChange = output<{ row: T; value: string }>();
 
   protected getCellValue(row: T, column: DataTableColumn<T>): unknown {
     return this.resolveValue(row, column.key as string);
@@ -77,5 +85,9 @@ export default class DataTable<T extends object> {
   protected onActionClick(event: Event, action: string, row: T): void {
     event.stopPropagation();
     this.rowActionClick.emit({ action, row });
+  }
+
+  protected onStatusChange(row: T, value: string): void {
+    this.statusChange.emit({ row, value });
   }
 }

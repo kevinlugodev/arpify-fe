@@ -1,0 +1,24 @@
+<dialog #dialog class="welcome-modal">
+  <div class="welcome-modal__image-wrapper">
+    <img
+      class="welcome-modal__image"
+      src="resources/abstract.jpg"
+      alt="Bienvenida a Arpify"
+    />
+  </div>
+
+  <div class="welcome-modal__content">
+    <h2 class="welcome-modal__title">Bienvenido a Arpify</h2>
+    <p class="welcome-modal__description">
+      Tu espacio de trabajo unificado para gestionar equipos, clientes, finanzas,
+      correos masivos y auditoría. Explora los accesos rápidos desde el inicio o
+      navega por el menú lateral para comenzar.
+    </p>
+
+    <div class="welcome-modal__actions">
+      <fluent-button appearance="accent" (click)="onAccept()">
+        Aceptar
+      </fluent-button>
+    </div>
+  </div>
+</dialog>

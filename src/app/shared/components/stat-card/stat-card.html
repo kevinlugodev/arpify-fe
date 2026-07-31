@@ -4,7 +4,13 @@
   </div>
   <div class="stat-card__content">
     <span class="stat-card__title">{{ title() }}</span>
-    <span class="stat-card__value">{{ value() }}</span>
+    <span class="stat-card__value">
+      @if (loading()) {
+        <i class="bi bi-arrow-repeat stat-card__spinner"></i>
+      } @else {
+        {{ value() }}
+      }
+    </span>
     @if (trend()) {
       <span class="stat-card__trend">{{ trend() }}</span>
     }

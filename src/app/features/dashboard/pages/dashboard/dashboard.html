@@ -1,4 +1,6 @@
 <div class="dashboard">
+  <app-welcome-modal />
+
   <app-page-header
     title="Inicio"
     subtitle="Resumen de tu espacio de trabajo"
@@ -10,10 +12,34 @@
   />
 
   <section class="dashboard__stats">
-    <app-stat-card title="Miembros del equipo" value="0" icon="bi-people" trend="Conecta con /teams" />
-    <app-stat-card title="Gerencias" value="0" icon="bi-diagram-3" trend="Configura en /organizacion" />
-    <app-stat-card title="Campañas activas" value="0" icon="bi-envelope-paper" trend="Gestiona en /mass-emails" />
-    <app-stat-card title="Registros de auditoría" value="0" icon="bi-shield-check" trend="Revisa en /audit" />
+    <app-stat-card
+      title="Miembros activos"
+      [value]="metrics()?.team_members_not_terminated_count ?? 0"
+      icon="bi-people"
+      trend="Equipo sin estado terminado"
+      [loading]="loadingMetrics()"
+    />
+    <app-stat-card
+      title="Gerencias activas"
+      [value]="metrics()?.active_managements_count ?? 0"
+      icon="bi-diagram-3"
+      trend="Configura en /organizacion"
+      [loading]="loadingMetrics()"
+    />
+    <app-stat-card
+      title="Áreas activas"
+      [value]="metrics()?.active_areas_count ?? 0"
+      icon="bi-building"
+      trend="Áreas operativas del tenant"
+      [loading]="loadingMetrics()"
+    />
+    <app-stat-card
+      title="Clientes activos"
+      [value]="metrics()?.active_customers_count ?? 0"
+      icon="bi-briefcase"
+      trend="Cartera activa en /clients"
+      [loading]="loadingMetrics()"
+    />
   </section>
 
   <section class="dashboard__shortcuts">

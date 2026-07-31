@@ -46,6 +46,7 @@ type DropdownElement = HTMLElement & {
   value?: string | null;
   listbox?: HTMLElement;
   options?: { value: string }[];
+  control?: { value?: string };
 };
 
 /**
@@ -142,6 +143,15 @@ export class FluentDropdown implements FormValueControl<string> {
     this.destroyRef.onDestroy(() => this.dropdownObserver?.disconnect());
   }
 
+  private hasAnyOption(dropdown: DropdownElement): boolean {
+    const options = dropdown.options ?? [];
+    if (options.length > 0) {
+      return true;
+    }
+    // Fallback when the custom element registry is not yet ready.
+    return dropdown.querySelectorAll('fluent-option').length > 0;
+  }
+
   private hasOption(dropdown: DropdownElement, value: string): boolean {
     const options = dropdown.options ?? [];
     if (options.length > 0) {
@@ -154,9 +164,14 @@ export class FluentDropdown implements FormValueControl<string> {
   private syncValue(dropdown: DropdownElement): void {
     const next = this.value();
 
-    // Do not touch the value while the listbox is not yet assigned; setting it
-    // before that point throws inside Fluent UI's selectOption implementation.
-    if (!dropdown.listbox) {
+    // Do not touch the value while the listbox or control are not yet assigned;
+    // setting it before that point throws inside Fluent UI's selectOption implementation.
+    if (!dropdown.listbox || !dropdown.control) {
+      return;
+    }
+
+    if (!this.hasAnyOption(dropdown)) {
+      // Options may not be ready yet; MutationObserver/retry will retry.
       return;
     }
 

@@ -35,6 +35,17 @@
                     [domain]="column.statusDomain ?? 'generic'"
                   />
                 }
+                @case ('status-select') {
+                  <app-fluent-dropdown
+                    [value]="asString(getCellValue(row, column))"
+                    (valueChange)="onStatusChange(row, $event)"
+                    (click)="$event.stopPropagation()"
+                  >
+                    @for (option of column.statusOptions; track option.value) {
+                      <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                    }
+                  </app-fluent-dropdown>
+                }
                 @case ('email') {
                   <app-email-link [email]="asString(getCellValue(row, column))" />
                 }

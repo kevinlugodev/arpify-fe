@@ -1,0 +1,85 @@
+<div class="client-list">
+  <app-page-header
+    title="Clientes"
+    subtitle="Gestiona las empresas clientes de tu organización"
+    icon="bi-building"
+    actionLabel="Nuevo cliente"
+    (actionClick)="onCreate()"
+  />
+
+  <div class="client-list__workflow">
+    <div class="client-list__workflow-header">
+      <i class="bi bi-signpost-split client-list__workflow-icon"></i>
+      <div>
+        <h3 class="client-list__workflow-title">Flujo recomendado</h3>
+        <p class="client-list__workflow-subtitle">Sigue estos pasos para mantener tu cartera de clientes ordenada.</p>
+      </div>
+    </div>
+    <ol class="client-list__workflow-steps">
+      <li class="client-list__workflow-step">
+        <span class="client-list__workflow-number">1</span>
+        <span class="client-list__workflow-text">Registra la ficha fiscal y comercial</span>
+      </li>
+      <li class="client-list__workflow-step">
+        <span class="client-list__workflow-number">2</span>
+        <span class="client-list__workflow-text">Asigna el contacto principal</span>
+      </li>
+      <li class="client-list__workflow-step">
+        <span class="client-list__workflow-number">3</span>
+        <span class="client-list__workflow-text">Configura la moneda y condiciones de crédito</span>
+      </li>
+      <li class="client-list__workflow-step">
+        <span class="client-list__workflow-number">4</span>
+        <span class="client-list__workflow-text">Consulta el detalle para editar o dar de baja</span>
+      </li>
+    </ol>
+  </div>
+
+  <div class="client-list__filters">
+    <app-search-field
+      class="client-list__search"
+      placeholder="Buscar por razón social, nombre comercial o RUC..."
+      [value]="searchInput()"
+      (valueChange)="searchInput.set($event)"
+    />
+
+    <div class="form-field client-list__status">
+      <label>Estado</label>
+      <app-fluent-dropdown [value]="statusFilter()" (valueChange)="onStatusChange($event)">
+        @for (option of statusOptions; track option.value) {
+          <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+        }
+      </app-fluent-dropdown>
+    </div>
+  </div>
+
+  @if (customers().length === 0 && !loading()) {
+    <app-empty-state
+      icon="bi-building"
+      title="Aún no hay clientes"
+      message="Crea el primer cliente para comenzar a gestionar tu cartera comercial."
+      actionLabel="Nuevo cliente"
+      (actionClick)="onCreate()"
+    />
+  } @else {
+    <app-data-table
+      [columns]="columns"
+      [rows]="customers()"
+      [loading]="loading()"
+      [rowActions]="rowActions"
+      [clickable]="true"
+      (rowClick)="onRowClick($event)"
+      (rowActionClick)="onRowAction($event)"
+    />
+  }
+
+  <app-confirm-dialog
+    #deleteConfirmDialog
+    title="Eliminar cliente"
+    [message]="'¿Estás seguro de que deseas eliminar a ' + (customerToDelete()?.legal_name ?? 'este cliente') + '? Esta acción no se puede deshacer.'"
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmDelete()"
+  />
+</div>

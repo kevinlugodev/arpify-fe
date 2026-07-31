@@ -7,6 +7,7 @@ import {
   DeactivateTeamMemberRequest,
   TeamMember,
   UpdateTeamMemberRequest,
+  UpdateTeamMemberStatusRequest,
 } from '../../../core/models/team.model';
 import { CreateFolderRequest, FileItem, Folder, FolderContentResponse } from '../../../core/models/file.model';
 import { initialStoreStatus, StoreStatus } from '../../../core/utils/store-status';
@@ -60,6 +61,24 @@ export const TeamsStore = signalStore(
         return response;
       } catch (error) {
         setStoreError(store, error, 'Error al actualizar el miembro');
+        throw error;
+      }
+    },
+
+    /**
+     * Actualiza únicamente el estado de un miembro del equipo.
+     * @param id Identificador del miembro.
+     * @param request Nuevo estado.
+     * @returns Miembro actualizado.
+     */
+    async updateTeamMemberStatus(id: string, request: UpdateTeamMemberStatusRequest): Promise<TeamMember> {
+      setStoreLoading(store);
+      try {
+        const response = await toApiPromise(teamsService.updateTeamMemberStatus(id, request));
+        setStoreSuccess(store);
+        return response.team_member;
+      } catch (error) {
+        setStoreError(store, error, 'Error al actualizar el estado del miembro');
         throw error;
       }
     },

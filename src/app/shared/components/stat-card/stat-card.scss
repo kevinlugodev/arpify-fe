@@ -56,4 +56,15 @@
     font-weight: 400;
     color: var(--success-color);
   }
+
+  &__spinner {
+    display: inline-block;
+    animation: stat-card-spin 1s linear infinite;
+  }
+}
+
+@keyframes stat-card-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -92,3 +92,7 @@ export interface AssignResponsibleRequest {
 export interface DeactivateTeamMemberRequest {
   reason?: string;
 }
+
+export interface UpdateTeamMemberStatusRequest {
+  status: TeamMemberStatus;
+}

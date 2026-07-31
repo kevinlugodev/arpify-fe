@@ -10,7 +10,14 @@
       }
     </div>
   </div>
-  @if (actionLabel()) {
-    <fluent-button [appearance]="actionAppearance()" (click)="onActionClick()">{{ actionLabel() }}</fluent-button>
+  @if (actionLabel() || extraActionLabel()) {
+    <div class="page-header__actions">
+      @if (extraActionLabel()) {
+        <fluent-button [appearance]="extraActionAppearance()" (click)="onExtraActionClick()">{{ extraActionLabel() }}</fluent-button>
+      }
+      @if (actionLabel()) {
+        <fluent-button [appearance]="actionAppearance()" (click)="onActionClick()">{{ actionLabel() }}</fluent-button>
+      }
+    </div>
   }
 </header>

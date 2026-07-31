@@ -17,7 +17,15 @@ export default class PageHeader {
   readonly actionAppearance = input<'accent' | 'neutral' | 'outline' | 'subtle' | 'transparent'>('accent');
   readonly actionClick = output<void>();
 
+  readonly extraActionLabel = input<string>();
+  readonly extraActionAppearance = input<'accent' | 'neutral' | 'outline' | 'subtle' | 'transparent'>('neutral');
+  readonly extraActionClick = output<void>();
+
   protected onActionClick(): void {
     this.actionClick.emit();
+  }
+
+  protected onExtraActionClick(): void {
+    this.extraActionClick.emit();
   }
 }

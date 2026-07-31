@@ -1,6 +1,6 @@
 import { Component, input, ViewEncapsulation } from '@angular/core';
 
-export type StatusDomain = 'team' | 'finance-period' | 'mass-email' | 'master-data' | 'generic';
+export type StatusDomain = 'team' | 'finance-period' | 'mass-email' | 'master-data' | 'clients' | 'generic';
 
 interface StatusConfig {
   label: string;
@@ -32,6 +32,12 @@ const STATUS_MAP: Record<StatusDomain, Record<string, StatusConfig>> = {
   'master-data': {
     active: { label: 'Activo', color: 'green', icon: 'bi-check-circle' },
     inactive: { label: 'Inactivo', color: 'gray', icon: 'bi-pause-circle' },
+  },
+  clients: {
+    active: { label: 'Activo', color: 'green', icon: 'bi-check-circle' },
+    inactive: { label: 'Inactivo', color: 'gray', icon: 'bi-pause-circle' },
+    lead: { label: 'Prospecto', color: 'blue', icon: 'bi-lightbulb' },
+    suspended: { label: 'Suspendido', color: 'red', icon: 'bi-exclamation-circle' },
   },
 };
 

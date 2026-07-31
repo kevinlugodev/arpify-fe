@@ -14,6 +14,7 @@ import {
   TeamListResponse,
   TeamMember,
   UpdateTeamMemberRequest,
+  UpdateTeamMemberStatusRequest,
 } from '../../../core/models';
 
 /**
@@ -54,6 +55,15 @@ export class TeamsService {
    */
   updateTeamMember(id: string, request: UpdateTeamMemberRequest): Observable<ApiResponse<TeamMember>> {
     return this.api.put<TeamMember>(`teams/${id}`, request);
+  }
+
+  /**
+   * Actualiza únicamente el estado de un miembro del equipo.
+   * @param id Identificador del miembro.
+   * @param request Nuevo estado.
+   */
+  updateTeamMemberStatus(id: string, request: UpdateTeamMemberStatusRequest): Observable<ApiResponse<{ team_member: TeamMember }>> {
+    return this.api.patch<{ team_member: TeamMember }>(`teams/${id}/status`, request);
   }
 
   /**

@@ -1,0 +1,218 @@
+<div class="client-detail">
+  @if (customer()) {
+    <app-page-header
+      [title]="customer()!.legal_name"
+      [subtitle]="'RUC: ' + customer()!.tax_id"
+      icon="bi-building"
+      actionLabel="Editar"
+      extraActionLabel="Eliminar"
+      extraActionAppearance="neutral"
+      (actionClick)="onEdit()"
+      (extraActionClick)="openDeleteConfirm()"
+    />
+
+    <app-info-tip message="Navega entre las pestañas para revisar la información fiscal, de contacto, dirección y condiciones comerciales del cliente." />
+
+    <div class="client-detail__tabs">
+      <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+        <fluent-tab id="general">General</fluent-tab>
+        <fluent-tab id="contact">Contacto</fluent-tab>
+        <fluent-tab id="address">Dirección</fluent-tab>
+        <fluent-tab id="commercial">Comercial</fluent-tab>
+      </fluent-tablist>
+    </div>
+
+    @if (activeTab() === 'general') {
+      <section class="client-detail__panel">
+        <header class="client-detail__panel-header">
+          <i class="bi bi-building-check client-detail__panel-icon"></i>
+          <h3 class="client-detail__panel-title">Información general</h3>
+        </header>
+
+        <div class="client-detail__fields">
+          <div class="client-detail__field">
+            <span class="client-detail__label">Razón social</span>
+            <span class="client-detail__value">{{ customer()!.legal_name }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Nombre comercial</span>
+            <span class="client-detail__value">{{ customer()!.trade_name || '—' }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">RUC / Tax ID</span>
+            <span class="client-detail__value">{{ customer()!.tax_id }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Sector de negocio</span>
+            <span class="client-detail__value">{{ customer()!.business_sector || '—' }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">País</span>
+            <span class="client-detail__value">{{ getCountryLabel(customer()!.country_code) }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Moneda por defecto</span>
+            <span class="client-detail__value">{{ getCurrencyLabel(customer()!.default_currency) }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Estado</span>
+            <app-status-tag [status]="customer()!.status" domain="clients" />
+          </div>
+        </div>
+      </section>
+    }
+
+    @if (activeTab() === 'contact') {
+      <section class="client-detail__panel">
+        <header class="client-detail__panel-header">
+          <i class="bi bi-person-vcard client-detail__panel-icon"></i>
+          <h3 class="client-detail__panel-title">Contacto principal</h3>
+        </header>
+
+        <div class="client-detail__fields">
+          <div class="client-detail__field">
+            <span class="client-detail__label">Nombre</span>
+            <span class="client-detail__value">{{ customer()!.key_contact_name || '—' }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Cargo</span>
+            <span class="client-detail__value">{{ customer()!.key_contact_role || '—' }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Correo del contacto</span>
+            @if (customer()!.key_contact_email) {
+              <a class="client-detail__link" href="mailto:{{ customer()!.key_contact_email }}">
+                <i class="bi bi-envelope"></i>
+                {{ customer()!.key_contact_email }}
+              </a>
+            } @else {
+              <span class="client-detail__value">—</span>
+            }
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Teléfono del contacto</span>
+            <span class="client-detail__value">{{ customer()!.key_contact_phone || '—' }}</span>
+          </div>
+        </div>
+
+        <hr class="client-detail__divider" />
+
+        <header class="client-detail__panel-header client-detail__panel-header--secondary">
+          <i class="bi bi-globe client-detail__panel-icon"></i>
+          <h3 class="client-detail__panel-title">Canales generales</h3>
+        </header>
+
+        <div class="client-detail__fields">
+          <div class="client-detail__field">
+            <span class="client-detail__label">Correo general</span>
+            @if (customer()!.email) {
+              <a class="client-detail__link" href="mailto:{{ customer()!.email }}">
+                <i class="bi bi-envelope"></i>
+                {{ customer()!.email }}
+              </a>
+            } @else {
+              <span class="client-detail__value">—</span>
+            }
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Teléfono general</span>
+            <span class="client-detail__value">{{ customer()!.phone || '—' }}</span>
+          </div>
+          <div class="client-detail__field client-detail__field--wide">
+            <span class="client-detail__label">Sitio web</span>
+            @if (customer()!.website_url) {
+              <a class="client-detail__link" href="{{ customer()!.website_url }}" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-box-arrow-up-right"></i>
+                {{ customer()!.website_url }}
+              </a>
+            } @else {
+              <span class="client-detail__value">—</span>
+            }
+          </div>
+        </div>
+      </section>
+    }
+
+    @if (activeTab() === 'address') {
+      <section class="client-detail__panel">
+        <header class="client-detail__panel-header">
+          <i class="bi bi-geo-alt client-detail__panel-icon"></i>
+          <h3 class="client-detail__panel-title">Dirección fiscal</h3>
+        </header>
+
+        <div class="client-detail__fields">
+          <div class="client-detail__field client-detail__field--wide">
+            <span class="client-detail__label">Dirección</span>
+            <span class="client-detail__value">{{ customer()!.billing_address || '—' }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Ciudad</span>
+            <span class="client-detail__value">{{ customer()!.city || '—' }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Provincia / Estado</span>
+            <span class="client-detail__value">{{ customer()!.state_province || '—' }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Código postal</span>
+            <span class="client-detail__value">{{ customer()!.postal_code || '—' }}</span>
+          </div>
+        </div>
+      </section>
+    }
+
+    @if (activeTab() === 'commercial') {
+      <section class="client-detail__panel">
+        <header class="client-detail__panel-header">
+          <i class="bi bi-credit-card client-detail__panel-icon"></i>
+          <h3 class="client-detail__panel-title">Condiciones comerciales</h3>
+        </header>
+
+        <div class="client-detail__fields">
+          <div class="client-detail__field">
+            <span class="client-detail__label">Moneda por defecto</span>
+            <span class="client-detail__value">{{ getCurrencyLabel(customer()!.default_currency) }}</span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Límite de crédito</span>
+            <span class="client-detail__value client-detail__value--highlight">
+              {{ customer()!.credit_limit | number: '1.2-2' }}
+            </span>
+          </div>
+          <div class="client-detail__field">
+            <span class="client-detail__label">Plazo de pago</span>
+            <span class="client-detail__value">
+              {{ customer()!.payment_terms_days ? customer()!.payment_terms_days + ' días' : '—' }}
+            </span>
+          </div>
+        </div>
+
+        <hr class="client-detail__divider" />
+
+        <header class="client-detail__panel-header client-detail__panel-header--secondary">
+          <i class="bi bi-journal-text client-detail__panel-icon"></i>
+          <h3 class="client-detail__panel-title">Notas</h3>
+        </header>
+        <p class="client-detail__notes">
+          {{ customer()!.notes || 'No hay notas registradas para este cliente.' }}
+        </p>
+      </section>
+    }
+  } @else if (!loading()) {
+    <app-empty-state
+      icon="bi-building-x"
+      title="Cliente no encontrado"
+      message="El cliente solicitado no existe o no tienes permisos para verlo."
+    />
+  }
+
+  <app-confirm-dialog
+    #deleteConfirmDialog
+    title="Eliminar cliente"
+    [message]="'¿Estás seguro de que deseas eliminar a ' + (customer()?.legal_name ?? 'este cliente') + '? Esta acción no se puede deshacer.'"
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onDelete()"
+  />
+</div>

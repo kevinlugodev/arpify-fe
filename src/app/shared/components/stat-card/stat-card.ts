@@ -13,4 +13,5 @@ export default class StatCard {
   readonly value = input.required<string | number>();
   readonly icon = input<string>('bi-graph-up');
   readonly trend = input<string>();
+  readonly loading = input<boolean>(false);
 }
