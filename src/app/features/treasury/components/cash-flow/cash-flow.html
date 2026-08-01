@@ -1,0 +1,93 @@
+<div class="cash-flow">
+  <header class="cash-flow__panel-header">
+    <h2 class="cash-flow__panel-title">
+      <i class="bi bi-graph-up-arrow cash-flow__panel-icon"></i>
+      Proyección de flujo de caja
+    </h2>
+    <p class="cash-flow__panel-description">
+      Estima el saldo proyectado por período a partir del saldo bancario actual,
+      los ingresos pendientes por cobrar y los egresos pendientes por pagar.
+    </p>
+  </header>
+
+  <app-info-tip
+    message="Selecciona un rango de fechas y el intervalo entre puntos de proyección."
+  />
+
+  <form class="cash-flow__form" (ngSubmit)="onProject()">
+    <fieldset class="cash-flow__section">
+      <legend class="cash-flow__section-title">Parámetros de proyección</legend>
+
+      <div class="cash-flow__fields">
+        <div class="form-field">
+          <label>Fecha de inicio <span class="cash-flow__required">*</span></label>
+          <app-fluent-text-input type="date" [formField]="cashFlowForm.start_date" />
+          <span class="cash-flow__field-hint">Inicio del horizonte de proyección.</span>
+          @if (cashFlowForm.start_date().invalid() && cashFlowForm.start_date().touched()) {
+            <span class="form-field__error">{{ cashFlowForm.start_date().getError('required')?.message }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Fecha de término <span class="cash-flow__required">*</span></label>
+          <app-fluent-text-input type="date" [formField]="cashFlowForm.end_date" />
+          <span class="cash-flow__field-hint">Término del horizonte de proyección.</span>
+          @if (cashFlowForm.end_date().invalid() && cashFlowForm.end_date().touched()) {
+            <span class="form-field__error">{{ cashFlowForm.end_date().getError('required')?.message }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Intervalo (días)</label>
+          <app-fluent-text-input type="number" [formField]="cashFlowForm.interval_days" />
+          <span class="cash-flow__field-hint">Días entre cada punto de proyección. Valor por defecto: 7.</span>
+        </div>
+      </div>
+
+      <div class="cash-flow__actions">
+        <fluent-button type="button" appearance="accent" [disabled]="forecastLoading()" (click)="onProject()">
+          @if (forecastLoading()) {
+            <i class="bi bi-arrow-repeat cash-flow__spinner cash-flow__action-icon"></i>
+            Proyectando...
+          } @else {
+            <i class="bi bi-calculator cash-flow__action-icon"></i>
+            Proyectar
+          }
+        </fluent-button>
+      </div>
+    </fieldset>
+  </form>
+
+  @if (hasProjected()) {
+    <section class="cash-flow__results">
+      <div class="cash-flow__stats">
+        <app-stat-card
+          title="Total en cuentas bancarias"
+          [value]="totalBankAccountsDisplay()"
+          icon="bi-bank"
+          [loading]="forecastLoading()"
+        />
+      </div>
+
+      @if (forecastItems().length === 0 && !forecastLoading()) {
+        <app-empty-state
+          icon="bi-graph-up-arrow"
+          title="Sin datos de proyección"
+          message="No se encontraron registros para el período seleccionado."
+        />
+      } @else {
+        <app-data-table
+          [columns]="forecastColumns"
+          [rows]="forecastRows()"
+          [loading]="forecastLoading()"
+        />
+      }
+    </section>
+  } @else {
+    <app-empty-state
+      icon="bi-graph-up-arrow"
+      title="Sin proyección"
+      message="Selecciona un período y presiona Proyectar para ver el flujo de caja estimado."
+    />
+  }
+</div>

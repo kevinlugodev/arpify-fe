@@ -41,6 +41,9 @@ export type TransactionCategory =
   | 'PARTNER_DRAW'
   | 'BANK_FEE'
   | 'INTERNAL_TRANSFER'
+  | 'SERVICE_ORDER_ADVANCE'
+  | 'PETTY_CASH_FUNDING'
+  | 'PETTY_CASH_EXPENSE'
   | 'OTHER';
 
 export type PaymentStatus = 'PENDING' | 'PARTIALLY_PAID' | 'PAID' | 'CANCELLED';
@@ -185,4 +188,201 @@ export interface BankTransactionFilters {
 
 export interface ReverseBankTransactionResponse {
   bank_transaction: BankTransaction;
+}
+
+export type ServiceOrderStatus = 'DRAFT' | 'APPROVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+
+export type AdvanceApplicationStatus = 'UNAPPLIED' | 'PARTIALLY_APPLIED' | 'FULLY_APPLIED';
+
+export interface ServiceOrder {
+  id: string;
+  tenant_id: string;
+  supplier_ruc: string | null;
+  supplier_name: string;
+  description: string;
+  total_amount: number;
+  advance_amount_paid: number;
+  advance_amount_applied: number;
+  status: ServiceOrderStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceOrderListResponse {
+  items: ServiceOrder[];
+  total: number;
+}
+
+export interface ServiceOrderFilters {
+  status?: ServiceOrderStatus;
+  supplier_name?: string;
+  limit?: number;
+  offset?: number;
+  [key: string]: string | number | boolean | undefined;
+}
+
+export interface ServiceOrderAdvance {
+  id: string;
+  tenant_id: string;
+  service_order_id: string;
+  bank_account_id: string;
+  bank_transaction_id: string;
+  amount: number;
+  currency: TreasuryCurrency;
+  application_status: AdvanceApplicationStatus;
+  transaction_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateServiceOrderRequest {
+  supplier_ruc?: string | null;
+  supplier_name: string;
+  description: string;
+  total_amount: number;
+  status?: ServiceOrderStatus;
+}
+
+export type UpdateServiceOrderRequest = Partial<CreateServiceOrderRequest>;
+
+export interface CreateServiceOrderAdvanceRequest {
+  bank_account_id: string;
+  amount: number;
+  currency: TreasuryCurrency;
+  transaction_date: string;
+  operation_number?: string;
+  notes?: string;
+}
+
+export interface LinkServiceOrderPayableRequest {
+  payable_id: string;
+}
+
+export interface PettyCashFund {
+  id: string;
+  tenant_id: string;
+  name: string;
+  responsible_name: string;
+  currency: TreasuryCurrency;
+  real_balance: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PettyCashFundListResponse {
+  items: PettyCashFund[];
+  total: number;
+}
+
+export interface PettyCashFundFilters {
+  is_active?: boolean;
+  limit?: number;
+  offset?: number;
+  [key: string]: string | number | boolean | undefined;
+}
+
+export interface CreatePettyCashFundRequest {
+  name: string;
+  responsible_name: string;
+  currency: TreasuryCurrency;
+}
+
+export type UpdatePettyCashFundRequest = Partial<CreatePettyCashFundRequest> & {
+  is_active?: boolean;
+};
+
+export interface ReplenishPettyCashFundRequest {
+  bank_account_id: string;
+  amount: number;
+  currency: TreasuryCurrency;
+  exchange_rate?: number;
+  transaction_date: string;
+  operation_number?: string;
+  notes?: string;
+}
+
+export interface CreatePettyCashExpenseRequest {
+  amount: number;
+  currency: TreasuryCurrency;
+  transaction_date: string;
+  description: string;
+  notes?: string;
+}
+
+export interface BankStatementItem {
+  id: string;
+  tenant_id: string;
+  bank_statement_id: string;
+  transaction_date: string;
+  operation_number: string;
+  description: string;
+  amount: number;
+  type: TransactionType;
+  is_matched: boolean;
+  bank_transaction_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BankStatement {
+  id: string;
+  tenant_id: string;
+  bank_account_id: string;
+  file_name: string;
+  period_start_date: string;
+  period_end_date: string;
+  items?: BankStatementItem[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BankStatementListResponse {
+  items: BankStatement[];
+  total: number;
+}
+
+export interface BankStatementFilters {
+  bank_account_id?: string;
+  limit?: number;
+  offset?: number;
+  [key: string]: string | number | boolean | undefined;
+}
+
+export interface CreateBankStatementRequest {
+  bank_account_id: string;
+  file_name: string;
+  period_start_date: string;
+  period_end_date: string;
+  items: Array<{
+    transaction_date: string;
+    operation_number?: string;
+    description: string;
+    amount: number;
+    type: TransactionType;
+  }>;
+}
+
+export interface MatchBankStatementItemRequest {
+  bank_transaction_id: string;
+}
+
+export interface CashFlowForecastItem {
+  date: string;
+  projected_balance: number;
+  pending_inflows: number;
+  pending_outflows: number;
+}
+
+export interface CashFlowForecast {
+  base_date: string;
+  items: CashFlowForecastItem[];
+  total_bank_accounts: number;
+}
+
+export interface CashFlowForecastFilters {
+  start_date: string;
+  end_date: string;
+  interval_days?: number;
+  [key: string]: string | number | undefined;
 }

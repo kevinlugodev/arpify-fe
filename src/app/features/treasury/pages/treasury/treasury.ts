@@ -14,6 +14,10 @@ import DataTable, { DataTableAction, DataTableColumn } from '../../../../shared/
 import EmptyState from '../../../../shared/components/empty-state/empty-state';
 import PageHeader from '../../../../shared/components/page-header/page-header';
 import WorkflowTip from '../../../../shared/components/workflow-tip/workflow-tip';
+import ServiceOrdersComponent from '../../components/service-orders/service-orders';
+import PettyCashComponent from '../../components/petty-cash/petty-cash';
+import BankStatementsComponent from '../../components/bank-statements/bank-statements';
+import CashFlowComponent from '../../components/cash-flow/cash-flow';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import {
   FluentCheckbox,
@@ -41,7 +45,7 @@ import { TreasuryStore } from '../../store/treasury.store';
 import { toApiPromise } from '../../../../core/utils/api-response';
 import { apiResource, apiResourceWithRequest } from '../../../../core/utils/resource-helpers';
 
-type TreasuryTab = 'accounts' | 'payables' | 'transactions';
+type TreasuryTab = 'accounts' | 'payables' | 'transactions' | 'service-orders' | 'petty-cash' | 'bank-statements' | 'cash-flow';
 
 interface AccountFormModel {
   name: string;
@@ -161,6 +165,10 @@ const EMPTY_TRANSACTION: TransactionFormModel = {
     FluentDropdown,
     FluentCheckbox,
     ConfirmDialog,
+    ServiceOrdersComponent,
+    PettyCashComponent,
+    BankStatementsComponent,
+    CashFlowComponent,
   ],
   templateUrl: './treasury.html',
   styleUrl: './treasury.scss',

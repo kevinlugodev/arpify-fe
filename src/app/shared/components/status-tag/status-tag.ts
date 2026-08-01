@@ -11,6 +11,8 @@ export type StatusDomain =
   | 'treasury-transaction-type'
   | 'treasury-transaction-category'
   | 'treasury-reconciliation'
+  | 'treasury-service-order'
+  | 'treasury-petty-cash-state'
   | 'active-state'
   | 'generic';
 
@@ -82,6 +84,17 @@ const STATUS_MAP: Record<StatusDomain, Record<string, StatusConfig>> = {
     UNRECONCILED: { label: 'Sin conciliar', color: 'gray', icon: 'bi-question-circle' },
     MATCHED: { label: 'Conciliado', color: 'green', icon: 'bi-check-circle' },
     DISCREPANCY: { label: 'Discrepancia', color: 'red', icon: 'bi-exclamation-triangle' },
+  },
+  'treasury-service-order': {
+    DRAFT: { label: 'Borrador', color: 'gray', icon: 'bi-pencil' },
+    APPROVED: { label: 'Aprobada', color: 'blue', icon: 'bi-check-circle' },
+    IN_PROGRESS: { label: 'En progreso', color: 'yellow', icon: 'bi-hourglass-split' },
+    COMPLETED: { label: 'Completada', color: 'green', icon: 'bi-check-circle-fill' },
+    CANCELLED: { label: 'Cancelada', color: 'red', icon: 'bi-x-circle' },
+  },
+  'treasury-petty-cash-state': {
+    true: { label: 'Activo', color: 'green', icon: 'bi-check-circle' },
+    false: { label: 'Inactivo', color: 'gray', icon: 'bi-pause-circle' },
   },
   'active-state': {
     true: { label: 'Activa', color: 'green', icon: 'bi-check-circle' },

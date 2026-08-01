@@ -21,6 +21,10 @@
       <fluent-tab id="accounts">Cuentas bancarias</fluent-tab>
       <fluent-tab id="payables">Obligaciones por pagar</fluent-tab>
       <fluent-tab id="transactions">Movimientos bancarios</fluent-tab>
+      <fluent-tab id="service-orders">Órdenes de servicio</fluent-tab>
+      <fluent-tab id="petty-cash">Caja chica</fluent-tab>
+      <fluent-tab id="bank-statements">Estados de cuenta</fluent-tab>
+      <fluent-tab id="cash-flow">Proyección de caja</fluent-tab>
     </fluent-tablist>
   </div>
 
@@ -423,6 +427,22 @@
         />
       }
     </section>
+  }
+
+  @if (activeTab() === 'service-orders') {
+    <app-service-orders [accounts]="accounts()" [payables]="payables()" />
+  }
+
+  @if (activeTab() === 'petty-cash') {
+    <app-petty-cash [accounts]="accounts()" />
+  }
+
+  @if (activeTab() === 'bank-statements') {
+    <app-bank-statements [accounts]="accounts()" />
+  }
+
+  @if (activeTab() === 'cash-flow') {
+    <app-cash-flow />
   }
 
   <app-confirm-dialog

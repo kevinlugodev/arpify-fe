@@ -1,0 +1,275 @@
+<div class="bank-statements">
+  <app-workflow-tip
+    title="Conciliación bancaria"
+    subtitle="Importa estados de cuenta y empareja cada ítem con su movimiento bancario para mantener los saldos alineados."
+    [steps]="[
+      'Selecciona la cuenta bancaria y carga el archivo',
+      'Ingresa los ítems del estado de cuenta (fecha, monto, tipo)',
+      'Selecciona un estado importado para ver sus ítems',
+      'Empareja cada ítem con la transacción bancaria correspondiente'
+    ]"
+  />
+
+  <section class="bank-statements__panel">
+    <header class="bank-statements__panel-header">
+      <h2 class="bank-statements__panel-title">
+        <i class="bi bi-file-earmark-text bank-statements__panel-icon"></i>
+        Importar estado de cuenta
+      </h2>
+      <p class="bank-statements__panel-description">
+        Registra un nuevo estado de cuenta bancario. Los ítems ingresados se podrán emparejar posteriormente con los movimientos reales de la cuenta.
+      </p>
+    </header>
+
+    <form class="bank-statements__form" (ngSubmit)="onSubmit()">
+      <fieldset class="bank-statements__section">
+        <legend class="bank-statements__section-title">Datos del estado de cuenta</legend>
+
+        <div class="bank-statements__fields">
+          <div class="form-field">
+            <label>Cuenta bancaria <span class="bank-statements__required">*</span></label>
+            <app-fluent-dropdown [formField]="statementForm.bank_account_id">
+              @for (option of accountOptions(); track option.value) {
+                <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            <span class="bank-statements__field-hint">Cuenta a la que pertenece el estado de cuenta.</span>
+            @if (statementForm.bank_account_id().invalid() && statementForm.bank_account_id().touched()) {
+              <span class="form-field__error">{{ statementForm.bank_account_id().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Nombre del archivo <span class="bank-statements__required">*</span></label>
+            <app-fluent-text-input [formField]="statementForm.file_name" />
+            <span class="bank-statements__field-hint">Ej. Estado_Cuenta_BCP_Julio_2026.pdf.</span>
+            @if (statementForm.file_name().invalid() && statementForm.file_name().touched()) {
+              <span class="form-field__error">{{ statementForm.file_name().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Fecha inicio del periodo</label>
+            <app-fluent-text-input type="date" [formField]="statementForm.period_start_date" />
+            <span class="bank-statements__field-hint">Primer día cubierto por el estado.</span>
+          </div>
+
+          <div class="form-field">
+            <label>Fecha fin del periodo</label>
+            <app-fluent-text-input type="date" [formField]="statementForm.period_end_date" />
+            <span class="bank-statements__field-hint">Último día cubierto por el estado.</span>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="bank-statements__section">
+        <legend class="bank-statements__section-title">Ítems del estado de cuenta</legend>
+
+        <app-info-tip message="Agrega cada línea del estado de cuenta. Solo se permite INFLOW o OUTFLOW; TRANSFER no está contemplado para ítems de estado de cuenta." />
+
+        @if (statementForm.items().value().length === 0) {
+          <app-empty-state
+            icon="bi-list-check"
+            title="Sin ítems"
+            message="Agrega al menos un ítem para importar el estado de cuenta."
+          />
+        } @else {
+          <div class="bank-statements__items">
+            @for (item of statementForm.items; track item) {
+              <div class="bank-statements__item">
+                <div class="bank-statements__item-fields">
+                  <div class="form-field">
+                    <label>Fecha <span class="bank-statements__required">*</span></label>
+                    <app-fluent-text-input type="date" [formField]="item.transaction_date" />
+                    @if (item.transaction_date().invalid() && item.transaction_date().touched()) {
+                      <span class="form-field__error">{{ item.transaction_date().getError('required')?.message }}</span>
+                    }
+                  </div>
+
+                  <div class="form-field">
+                    <label>Tipo <span class="bank-statements__required">*</span></label>
+                    <app-fluent-dropdown [formField]="item.type">
+                      <fluent-option value="">Selecciona tipo</fluent-option>
+                      @for (option of itemTypeOptions; track option.value) {
+                        <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                      }
+                    </app-fluent-dropdown>
+                    @if (item.type().invalid() && item.type().touched()) {
+                      <span class="form-field__error">{{ item.type().getError('required')?.message }}</span>
+                    }
+                  </div>
+
+                  <div class="form-field">
+                    <label>Monto <span class="bank-statements__required">*</span></label>
+                    <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="item.amount" />
+                    @if (item.amount().invalid() && item.amount().touched()) {
+                      <span class="form-field__error">{{ item.amount().getError('required')?.message }}</span>
+                    }
+                  </div>
+
+                  <div class="form-field">
+                    <label>N° operación</label>
+                    <app-fluent-text-input [formField]="item.operation_number" />
+                    <span class="bank-statements__field-hint">Referencia bancaria opcional.</span>
+                  </div>
+
+                  <div class="form-field bank-statements__field--wide">
+                    <label>Descripción <span class="bank-statements__required">*</span></label>
+                    <app-fluent-text-input [formField]="item.description" />
+                    @if (item.description().invalid() && item.description().touched()) {
+                      <span class="form-field__error">{{ item.description().getError('required')?.message }}</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="bank-statements__item-actions">
+                  <fluent-button
+                    type="button"
+                    appearance="neutral"
+                    (click)="removeItem($index)"
+                  >
+                    <i class="bi bi-trash bank-statements__action-icon"></i>
+                    Quitar
+                  </fluent-button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (statementForm.items().invalid() && statementForm.items().touched()) {
+          <span class="form-field__error">{{ statementForm.items().getError('minLength')?.message }}</span>
+        }
+
+        <div class="bank-statements__actions bank-statements__actions--left">
+          <fluent-button type="button" appearance="neutral" (click)="addItem()">
+            <i class="bi bi-plus-lg bank-statements__action-icon"></i>
+            Agregar ítem
+          </fluent-button>
+        </div>
+      </fieldset>
+
+      <div class="bank-statements__actions">
+        <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSubmit()">
+          @if (saving()) {
+            <i class="bi bi-arrow-repeat bank-statements__spinner bank-statements__action-icon"></i>
+            Importando...
+          } @else {
+            <i class="bi bi-upload bank-statements__action-icon"></i>
+            Importar estado de cuenta
+          }
+        </fluent-button>
+      </div>
+    </form>
+  </section>
+
+  <section class="bank-statements__panel">
+    <header class="bank-statements__panel-header">
+      <h2 class="bank-statements__panel-title">
+        <i class="bi bi-folder bank-statements__panel-icon"></i>
+        Estados de cuenta importados
+      </h2>
+      <p class="bank-statements__panel-description">
+        Selecciona un estado para ver sus ítems y emparejarlos con transacciones bancarias.
+      </p>
+    </header>
+
+    @if (statementRows().length === 0 && !statementsLoading()) {
+      <app-empty-state
+        icon="bi-folder"
+        title="Sin estados de cuenta"
+        message="Importa el primer estado de cuenta para comenzar la conciliación."
+      />
+    } @else {
+      <app-data-table
+        [columns]="statementColumns"
+        [rows]="statementRows()"
+        [loading]="statementsLoading()"
+        [rowActions]="statementActions"
+        [rowClass]="selectedRowClass"
+        [clickable]="true"
+        (rowClick)="onStatementRowClick($event)"
+        (rowActionClick)="onStatementAction($event)"
+      />
+    }
+  </section>
+
+  @if (selectedStatement()) {
+    <section class="bank-statements__panel">
+      <header class="bank-statements__panel-header">
+        <h2 class="bank-statements__panel-title">
+          <i class="bi bi-list-check bank-statements__panel-icon"></i>
+          Ítems de {{ selectedStatement()?.file_name }}
+        </h2>
+        <p class="bank-statements__panel-description">
+          Cada ítem puede emparejarse con un movimiento bancario existente. Los emparejados se marcan automáticamente.
+        </p>
+      </header>
+
+      @if (items().length === 0 && !itemsLoading()) {
+        <app-empty-state
+          icon="bi-list-check"
+          title="Sin ítems"
+          message="Este estado de cuenta no tiene ítems registrados."
+        />
+      } @else {
+        <app-data-table
+          [columns]="itemColumns"
+          [rows]="items()"
+          [loading]="itemsLoading()"
+          [rowActions]="itemActions"
+          (rowActionClick)="onItemAction($event)"
+        />
+      }
+
+      @if (itemToMatch()) {
+        <fieldset class="bank-statements__section bank-statements__section--match">
+          <legend class="bank-statements__section-title">Emparejar ítem seleccionado</legend>
+
+          <app-info-tip message="Selecciona la transacción bancaria que corresponde al ítem del estado de cuenta." />
+
+          <div class="bank-statements__fields bank-statements__fields--single">
+            <div class="form-field">
+              <label>Transacción bancaria <span class="bank-statements__required">*</span></label>
+              <app-fluent-dropdown [formField]="matchForm.bank_transaction_id">
+                <fluent-option value="">Selecciona una transacción</fluent-option>
+                @for (option of transactionOptions(); track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              <span class="bank-statements__field-hint">Solo se muestran movimientos de la misma cuenta y tipo que aún no estén emparejados.</span>
+              @if (matchForm.bank_transaction_id().invalid() && matchForm.bank_transaction_id().touched()) {
+                <span class="form-field__error">{{ matchForm.bank_transaction_id().getError('required')?.message }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="bank-statements__actions">
+            <fluent-button type="button" appearance="neutral" (click)="onCancelMatch()">
+              Cancelar
+            </fluent-button>
+            <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onConfirmMatch()">
+              @if (saving()) {
+                <i class="bi bi-arrow-repeat bank-statements__spinner bank-statements__action-icon"></i>
+                Emparejando...
+              } @else {
+                <i class="bi bi-link-45deg bank-statements__action-icon"></i>
+                Emparejar
+              }
+            </fluent-button>
+          </div>
+        </fieldset>
+      }
+    </section>
+  }
+
+  <app-confirm-dialog
+    #deleteDialog
+    title="Eliminar estado de cuenta"
+    message="¿Estás seguro de que deseas eliminar este estado de cuenta? Se perderán todos sus ítems y emparejamientos."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmDelete()"
+  />
+</div>

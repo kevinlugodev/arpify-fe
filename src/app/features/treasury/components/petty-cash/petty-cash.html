@@ -1,0 +1,271 @@
+<div class="petty-cash">
+  <app-workflow-tip
+    title="Flujo recomendado"
+    subtitle="Gestiona los fondos de caja chica, su reposición desde cuentas bancarias y el registro de gastos."
+    [steps]="[
+      'Crea un fondo de caja chica con su responsable y moneda',
+      'Reponer el fondo desde una cuenta bancaria cuando sea necesario',
+      'Registra los gastos diarios que reducen el saldo del fondo'
+    ]"
+  />
+
+  <section class="petty-cash__panel">
+    <header class="petty-cash__panel-header">
+      <h2 class="petty-cash__panel-title">
+        <i class="bi bi-cash-coin petty-cash__panel-icon"></i>
+        Fondos de caja chica
+      </h2>
+      <p class="petty-cash__panel-description">
+        Cada fondo representa una caja chica asignada a un responsable. El saldo real se actualiza al reponer o registrar gastos.
+      </p>
+    </header>
+
+    <form class="petty-cash__form" (ngSubmit)="onFundSubmit()">
+      <fieldset class="petty-cash__section">
+        <legend class="petty-cash__section-title">
+          {{ editingFundId() ? 'Editar fondo' : 'Nuevo fondo' }}
+        </legend>
+
+        <div class="petty-cash__fields">
+          <div class="form-field">
+            <label>Nombre <span class="petty-cash__required">*</span></label>
+            <app-fluent-text-input [formField]="fundForm.name" />
+            <span class="petty-cash__field-hint">Ej. Caja chica de oficina principal.</span>
+            @if (fundForm.name().invalid() && fundForm.name().touched()) {
+              <span class="form-field__error">{{ fundForm.name().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Responsable <span class="petty-cash__required">*</span></label>
+            <app-fluent-text-input [formField]="fundForm.responsible_name" />
+            <span class="petty-cash__field-hint">Persona encargada del fondo.</span>
+            @if (fundForm.responsible_name().invalid() && fundForm.responsible_name().touched()) {
+              <span class="form-field__error">{{ fundForm.responsible_name().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Moneda <span class="petty-cash__required">*</span></label>
+            <app-fluent-dropdown [formField]="fundForm.currency">
+              <fluent-option value="">Selecciona moneda</fluent-option>
+              @for (option of currencyOptions; track option.value) {
+                <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            @if (fundForm.currency().invalid() && fundForm.currency().touched()) {
+              <span class="form-field__error">{{ fundForm.currency().getError('required')?.message }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="petty-cash__actions">
+          @if (editingFundId()) {
+            <fluent-button type="button" appearance="neutral" (click)="resetFundForm()">
+              Cancelar
+            </fluent-button>
+          }
+          <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onFundSubmit()">
+            @if (saving()) {
+              <i class="bi bi-arrow-repeat petty-cash__spinner petty-cash__action-icon"></i>
+              Guardando...
+            } @else {
+              <i class="bi bi-check-lg petty-cash__action-icon"></i>
+              {{ editingFundId() ? 'Actualizar fondo' : 'Crear fondo' }}
+            }
+          </fluent-button>
+        </div>
+      </fieldset>
+    </form>
+
+    @if (funds().length === 0 && !fundsLoading()) {
+      <app-empty-state
+        icon="bi-cash-coin"
+        title="Sin fondos de caja chica"
+        message="Crea el primer fondo para comenzar a registrar reposiciones y gastos."
+      />
+    } @else {
+      <app-data-table
+        [columns]="fundColumns"
+        [rows]="funds()"
+        [loading]="fundsLoading()"
+        [rowActions]="fundActions"
+        (rowActionClick)="onFundAction($event)"
+      />
+    }
+
+    @if (selectedFundForReplenish()) {
+      <form class="petty-cash__form" (ngSubmit)="onReplenishSubmit()">
+        <fieldset class="petty-cash__section">
+          <legend class="petty-cash__section-title">
+            Reponer: {{ selectedFundForReplenish()?.name }}
+          </legend>
+
+          <app-info-tip
+            message="La reposición crea un movimiento bancario de egreso y aumenta el saldo real del fondo seleccionado."
+          />
+
+          <div class="petty-cash__fields">
+            <div class="form-field">
+              <label>Cuenta bancaria origen <span class="petty-cash__required">*</span></label>
+              <app-fluent-dropdown [formField]="replenishForm.bank_account_id">
+                <fluent-option value="">Selecciona cuenta</fluent-option>
+                @for (option of accountOptions(); track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              <span class="petty-cash__field-hint">Cuenta desde la que se retirará el monto.</span>
+              @if (replenishForm.bank_account_id().invalid() && replenishForm.bank_account_id().touched()) {
+                <span class="form-field__error">{{ replenishForm.bank_account_id().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Monto <span class="petty-cash__required">*</span></label>
+              <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="replenishForm.amount" />
+              @if (replenishForm.amount().invalid() && replenishForm.amount().touched()) {
+                <span class="form-field__error">{{ replenishForm.amount().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Moneda <span class="petty-cash__required">*</span></label>
+              <app-fluent-dropdown [formField]="replenishForm.currency">
+                @for (option of currencyOptions; track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              @if (replenishForm.currency().invalid() && replenishForm.currency().touched()) {
+                <span class="form-field__error">{{ replenishForm.currency().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Tipo de cambio</label>
+              <app-fluent-text-input type="text" inputmode="decimal" [decimals]="4" [formField]="replenishForm.exchange_rate" />
+              <span class="petty-cash__field-hint">1.0 si la moneda de la cuenta coincide con la del fondo.</span>
+            </div>
+
+            <div class="form-field">
+              <label>Fecha de transacción <span class="petty-cash__required">*</span></label>
+              <app-fluent-text-input type="date" [formField]="replenishForm.transaction_date" />
+              @if (replenishForm.transaction_date().invalid() && replenishForm.transaction_date().touched()) {
+                <span class="form-field__error">{{ replenishForm.transaction_date().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>N° operación</label>
+              <app-fluent-text-input [formField]="replenishForm.operation_number" />
+              <span class="petty-cash__field-hint">Referencia bancaria opcional.</span>
+            </div>
+
+            <div class="form-field petty-cash__field--wide">
+              <label>Notas</label>
+              <app-fluent-text-input [formField]="replenishForm.notes" />
+            </div>
+          </div>
+
+          <div class="petty-cash__actions">
+            <fluent-button type="button" appearance="neutral" (click)="resetReplenishForm()">
+              Cancelar
+            </fluent-button>
+            <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onReplenishSubmit()">
+              @if (saving()) {
+                <i class="bi bi-arrow-repeat petty-cash__spinner petty-cash__action-icon"></i>
+                Reponiendo...
+              } @else {
+                <i class="bi bi-plus-lg petty-cash__action-icon"></i>
+                Reponer fondo
+              }
+            </fluent-button>
+          </div>
+        </fieldset>
+      </form>
+    }
+
+    @if (selectedFundForExpense()) {
+      <form class="petty-cash__form" (ngSubmit)="onExpenseSubmit()">
+        <fieldset class="petty-cash__section">
+          <legend class="petty-cash__section-title">
+            Registrar gasto: {{ selectedFundForExpense()?.name }}
+          </legend>
+
+          <app-info-tip
+            message="El gasto reduce directamente el saldo real del fondo seleccionado."
+          />
+
+          <div class="petty-cash__fields">
+            <div class="form-field">
+              <label>Monto <span class="petty-cash__required">*</span></label>
+              <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="expenseForm.amount" />
+              @if (expenseForm.amount().invalid() && expenseForm.amount().touched()) {
+                <span class="form-field__error">{{ expenseForm.amount().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Moneda <span class="petty-cash__required">*</span></label>
+              <app-fluent-dropdown [formField]="expenseForm.currency">
+                @for (option of currencyOptions; track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              @if (expenseForm.currency().invalid() && expenseForm.currency().touched()) {
+                <span class="form-field__error">{{ expenseForm.currency().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Fecha <span class="petty-cash__required">*</span></label>
+              <app-fluent-text-input type="date" [formField]="expenseForm.transaction_date" />
+              @if (expenseForm.transaction_date().invalid() && expenseForm.transaction_date().touched()) {
+                <span class="form-field__error">{{ expenseForm.transaction_date().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field petty-cash__field--wide">
+              <label>Descripción <span class="petty-cash__required">*</span></label>
+              <app-fluent-text-input [formField]="expenseForm.description" />
+              <span class="petty-cash__field-hint">Concepto del gasto.</span>
+              @if (expenseForm.description().invalid() && expenseForm.description().touched()) {
+                <span class="form-field__error">{{ expenseForm.description().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field petty-cash__field--wide">
+              <label>Notas</label>
+              <app-fluent-text-input [formField]="expenseForm.notes" />
+              <span class="petty-cash__field-hint">Observaciones adicionales.</span>
+            </div>
+          </div>
+
+          <div class="petty-cash__actions">
+            <fluent-button type="button" appearance="neutral" (click)="resetExpenseForm()">
+              Cancelar
+            </fluent-button>
+            <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onExpenseSubmit()">
+              @if (saving()) {
+                <i class="bi bi-arrow-repeat petty-cash__spinner petty-cash__action-icon"></i>
+                Registrando...
+              } @else {
+                <i class="bi bi-check-lg petty-cash__action-icon"></i>
+                Registrar gasto
+              }
+            </fluent-button>
+          </div>
+        </fieldset>
+      </form>
+    }
+  </section>
+
+  <app-confirm-dialog
+    #fundDeleteDialog
+    title="Eliminar fondo"
+    message="¿Estás seguro de que deseas eliminar este fondo de caja chica? Esta acción no se puede deshacer."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmFundDelete()"
+  />
+</div>

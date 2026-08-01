@@ -1,0 +1,276 @@
+<div class="service-orders">
+  <app-workflow-tip
+    title="Órdenes de servicio"
+    subtitle="Gestiona contratos con proveedores, registra anticipos y aplica obligaciones por pagar."
+    [steps]="[
+      'Crea la orden de servicio con el proveedor y monto total',
+      'Registra anticipos desde una cuenta bancaria',
+      'Vincula obligaciones (payables) para aplicar el anticipo pagado'
+    ]"
+  />
+
+  <form class="service-orders__form" (ngSubmit)="onServiceOrderSubmit()">
+    <fieldset class="service-orders__section">
+      <legend class="service-orders__section-title">
+        {{ editingServiceOrderId() ? 'Editar orden de servicio' : 'Nueva orden de servicio' }}
+      </legend>
+
+      <div class="service-orders__fields">
+        <div class="form-field">
+          <label>Proveedor <span class="service-orders__required">*</span></label>
+          <app-fluent-text-input [formField]="serviceOrderForm.supplier_name" />
+          <span class="service-orders__field-hint">Nombre o razón social del proveedor.</span>
+          @if (serviceOrderForm.supplier_name().invalid() && serviceOrderForm.supplier_name().touched()) {
+            <span class="form-field__error">{{ serviceOrderForm.supplier_name().getError('required')?.message }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>RUC del proveedor</label>
+          <app-fluent-text-input [formField]="serviceOrderForm.supplier_ruc" />
+          <span class="service-orders__field-hint">Opcional. Identificador tributario.</span>
+        </div>
+
+        <div class="form-field service-orders__field--wide">
+          <label>Descripción <span class="service-orders__required">*</span></label>
+          <app-fluent-text-input [formField]="serviceOrderForm.description" />
+          <span class="service-orders__field-hint">Resumen del servicio contratado.</span>
+          @if (serviceOrderForm.description().invalid() && serviceOrderForm.description().touched()) {
+            <span class="form-field__error">{{ serviceOrderForm.description().getError('required')?.message }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Monto total <span class="service-orders__required">*</span></label>
+          <app-fluent-text-input
+            type="text"
+            inputmode="decimal"
+            [decimals]="2"
+            [formField]="serviceOrderForm.total_amount"
+          />
+          <span class="service-orders__field-hint">Monto total comprometido de la orden.</span>
+          @if (serviceOrderForm.total_amount().invalid() && serviceOrderForm.total_amount().touched()) {
+            <span class="form-field__error">{{ serviceOrderForm.total_amount().getError('required')?.message }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Estado <span class="service-orders__required">*</span></label>
+          <app-fluent-dropdown [formField]="serviceOrderForm.status">
+            @for (option of serviceOrderStatusOptions; track option.value) {
+              <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+            }
+          </app-fluent-dropdown>
+          @if (serviceOrderForm.status().invalid() && serviceOrderForm.status().touched()) {
+            <span class="form-field__error">{{ serviceOrderForm.status().getError('required')?.message }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="service-orders__actions">
+        @if (editingServiceOrderId()) {
+          <fluent-button type="button" appearance="neutral" (click)="resetServiceOrderForm()">
+            Cancelar
+          </fluent-button>
+        }
+        <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onServiceOrderSubmit()">
+          @if (saving()) {
+            <i class="bi bi-arrow-repeat service-orders__spinner service-orders__action-icon"></i>
+            Guardando...
+          } @else {
+            <i class="bi bi-check-lg service-orders__action-icon"></i>
+            {{ editingServiceOrderId() ? 'Actualizar orden' : 'Crear orden' }}
+          }
+        </fluent-button>
+      </div>
+    </fieldset>
+  </form>
+
+  @if (activeServiceOrderId()) {
+    <section class="service-orders__operation-panel">
+      <header class="service-orders__operation-header">
+        <h3 class="service-orders__operation-title">
+          @if (activeOperation() === 'advance') {
+            <i class="bi bi-cash-coin service-orders__operation-icon"></i>
+            Registrar anticipo
+          } @else {
+            <i class="bi bi-link service-orders__operation-icon"></i>
+            Vincular obligación
+          }
+        </h3>
+        <p class="service-orders__operation-description">
+          {{ activeServiceOrder()?.supplier_name }} — {{ activeServiceOrder()?.description }}
+        </p>
+      </header>
+
+      @if (activeOperation() === 'advance') {
+        <form class="service-orders__form" (ngSubmit)="onAdvanceSubmit()">
+          <fieldset class="service-orders__section">
+            <legend class="service-orders__section-title">Datos del anticipo</legend>
+
+            <app-info-tip
+              message="El anticipo genera un egreso bancario y aumenta el monto pagado de la orden. Asegúrate de que la cuenta tenga saldo disponible."
+            />
+
+            <div class="service-orders__fields">
+              <div class="form-field">
+                <label>Cuenta bancaria <span class="service-orders__required">*</span></label>
+                <app-fluent-dropdown [formField]="advanceForm.bank_account_id">
+                  @for (option of accountOptions(); track option.value) {
+                    <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                  }
+                </app-fluent-dropdown>
+                @if (advanceForm.bank_account_id().invalid() && advanceForm.bank_account_id().touched()) {
+                  <span class="form-field__error">{{ advanceForm.bank_account_id().getError('required')?.message }}</span>
+                }
+              </div>
+
+              <div class="form-field">
+                <label>Monto <span class="service-orders__required">*</span></label>
+                <app-fluent-text-input
+                  type="text"
+                  inputmode="decimal"
+                  [decimals]="2"
+                  [formField]="advanceForm.amount"
+                />
+                <span class="service-orders__field-hint">
+                  Monto restante disponible: {{ advanceRemaining() | number: '1.2-2' }}
+                </span>
+                @if (advanceForm.amount().invalid() && advanceForm.amount().touched()) {
+                  <span class="form-field__error">{{ advanceForm.amount().getError('required')?.message }}</span>
+                }
+              </div>
+
+              <div class="form-field">
+                <label>Moneda <span class="service-orders__required">*</span></label>
+                <app-fluent-dropdown [formField]="advanceForm.currency">
+                  @for (option of currencyOptions; track option.value) {
+                    <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                  }
+                </app-fluent-dropdown>
+                @if (advanceForm.currency().invalid() && advanceForm.currency().touched()) {
+                  <span class="form-field__error">{{ advanceForm.currency().getError('required')?.message }}</span>
+                }
+              </div>
+
+              <div class="form-field">
+                <label>Fecha <span class="service-orders__required">*</span></label>
+                <app-fluent-text-input type="date" [formField]="advanceForm.transaction_date" />
+                @if (advanceForm.transaction_date().invalid() && advanceForm.transaction_date().touched()) {
+                  <span class="form-field__error">{{ advanceForm.transaction_date().getError('required')?.message }}</span>
+                }
+              </div>
+
+              <div class="form-field">
+                <label>N° operación</label>
+                <app-fluent-text-input [formField]="advanceForm.operation_number" />
+                <span class="service-orders__field-hint">Referencia bancaria del egreso.</span>
+              </div>
+
+              <div class="form-field service-orders__field--wide">
+                <label>Notas</label>
+                <app-fluent-text-input [formField]="advanceForm.notes" />
+              </div>
+            </div>
+
+            <div class="service-orders__actions">
+              <fluent-button type="button" appearance="neutral" (click)="clearActiveOperation()">
+                Cancelar
+              </fluent-button>
+              <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onAdvanceSubmit()">
+                @if (saving()) {
+                  <i class="bi bi-arrow-repeat service-orders__spinner service-orders__action-icon"></i>
+                  Registrando...
+                } @else {
+                  <i class="bi bi-check-lg service-orders__action-icon"></i>
+                  Registrar anticipo
+                }
+              </fluent-button>
+            </div>
+          </fieldset>
+        </form>
+      }
+
+      @if (activeOperation() === 'link') {
+        <form class="service-orders__form" (ngSubmit)="onLinkPayableSubmit()">
+          <fieldset class="service-orders__section">
+            <legend class="service-orders__section-title">Vincular obligación por pagar</legend>
+
+            <app-info-tip
+              message="Selecciona una obligación pendiente para asociarla a esta orden. El anticipo pagado se aplicará según la lógica del backend."
+            />
+
+            <div class="service-orders__fields">
+              <div class="form-field service-orders__field--wide">
+                <label>Obligación <span class="service-orders__required">*</span></label>
+                <app-fluent-dropdown [formField]="linkPayableForm.payable_id">
+                  @for (option of payableOptions(); track option.value) {
+                    <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                  }
+                </app-fluent-dropdown>
+                <span class="service-orders__field-hint">Solo se muestran obligaciones pendientes o parcialmente pagadas.</span>
+                @if (linkPayableForm.payable_id().invalid() && linkPayableForm.payable_id().touched()) {
+                  <span class="form-field__error">{{ linkPayableForm.payable_id().getError('required')?.message }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="service-orders__actions">
+              <fluent-button type="button" appearance="neutral" (click)="clearActiveOperation()">
+                Cancelar
+              </fluent-button>
+              <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onLinkPayableSubmit()">
+                @if (saving()) {
+                  <i class="bi bi-arrow-repeat service-orders__spinner service-orders__action-icon"></i>
+                  Vinculando...
+                } @else {
+                  <i class="bi bi-check-lg service-orders__action-icon"></i>
+                  Vincular obligación
+                }
+              </fluent-button>
+            </div>
+          </fieldset>
+        </form>
+      }
+    </section>
+  }
+
+  <section class="service-orders__panel">
+    <header class="service-orders__panel-header">
+      <h2 class="service-orders__panel-title">
+        <i class="bi bi-clipboard-check service-orders__panel-icon"></i>
+        Órdenes registradas
+      </h2>
+      <p class="service-orders__panel-description">
+        Listado de órdenes de servicio con anticipos y obligaciones vinculadas.
+      </p>
+    </header>
+
+    @if (serviceOrders().length === 0 && !serviceOrdersLoading()) {
+      <app-empty-state
+        icon="bi-clipboard-check"
+        title="Sin órdenes de servicio"
+        message="Crea la primera orden para comenzar a registrar anticipos y obligaciones."
+      />
+    } @else {
+      <app-data-table
+        [columns]="columns"
+        [rows]="serviceOrders()"
+        [loading]="serviceOrdersLoading()"
+        [rowActions]="actions"
+        [rowClass]="editingRowClass"
+        (rowActionClick)="onServiceOrderAction($event)"
+      />
+    }
+  </section>
+
+  <app-confirm-dialog
+    #deleteDialog
+    title="Eliminar orden de servicio"
+    message="¿Estás seguro de que deseas eliminar esta orden de servicio? Esta acción no se puede deshacer."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmDelete()"
+  />
+</div>
