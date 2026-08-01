@@ -256,50 +256,76 @@
         </p>
       </header>
 
-      <div class="finance__filters">
-        <div class="form-field">
-          <label>Periodo</label>
-          <app-fluent-dropdown
-            [value]="selectedPeriodId()"
-            (valueChange)="selectedPeriodId.set($event)"
-          >
-            @for (period of taxPeriods(); track period.id) {
-              <fluent-option [value]="period.id">{{ getPeriodLabel(period) }}</fluent-option>
-            }
-          </app-fluent-dropdown>
-        </div>
-        <div class="form-field">
-          <label>Flujo</label>
-          <app-fluent-dropdown
-            [value]="invoiceFlowFilter()"
-            (valueChange)="invoiceFlowFilter.set($event)"
-          >
-            <fluent-option value="">Todos</fluent-option>
-            <fluent-option value="sale">Ventas</fluent-option>
-            <fluent-option value="purchase">Compras</fluent-option>
-          </app-fluent-dropdown>
-        </div>
-        <div class="form-field">
-          <label>Tipo doc.</label>
-          <app-fluent-dropdown
-            [value]="invoiceTypeFilter()"
-            (valueChange)="invoiceTypeFilter.set($event)"
-          >
-            <fluent-option value="">Todos</fluent-option>
-            @for (type of INVOICE_TYPES; track type.value) {
-              <fluent-option [value]="type.value">{{ type.label }}</fluent-option>
-            }
-          </app-fluent-dropdown>
-        </div>
-        <app-search-field
-          class="finance__search"
-          placeholder="Buscar por RUC..."
-          [value]="invoiceSearchInput()"
-          (valueChange)="invoiceSearchInput.set($event)"
-        />
-      </div>
+      @if (!invoiceFormVisible()) {
+        <div class="finance__filters-card">
+          <div class="finance__filters-header">
+            <h3 class="finance__filters-title">
+              <i class="bi bi-funnel finance__panel-icon"></i>
+              Filtros de búsqueda
+            </h3>
+            <fluent-button type="button" appearance="accent" (click)="openInvoiceForm()">
+              <i class="bi bi-plus-lg finance__action-icon"></i>
+              Nuevo comprobante
+            </fluent-button>
+          </div>
 
-      <form class="finance__form finance__form--compact" (ngSubmit)="onCreateInvoice()">
+          <div class="finance__filters">
+            <div class="form-field">
+              <label>Periodo</label>
+              <app-fluent-dropdown
+                [value]="selectedPeriodId()"
+                (valueChange)="selectedPeriodId.set($event)"
+              >
+                @for (period of taxPeriods(); track period.id) {
+                  <fluent-option [value]="period.id">{{ getPeriodLabel(period) }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+            </div>
+            <div class="form-field">
+              <label>Flujo</label>
+              <app-fluent-dropdown
+                [value]="invoiceFlowFilter()"
+                (valueChange)="invoiceFlowFilter.set($event)"
+              >
+                <fluent-option value="">Todos</fluent-option>
+                <fluent-option value="sale">Ventas</fluent-option>
+                <fluent-option value="purchase">Compras</fluent-option>
+              </app-fluent-dropdown>
+            </div>
+            <div class="form-field">
+              <label>Tipo doc.</label>
+              <app-fluent-dropdown
+                [value]="invoiceTypeFilter()"
+                (valueChange)="invoiceTypeFilter.set($event)"
+              >
+                <fluent-option value="">Todos</fluent-option>
+                @for (type of INVOICE_TYPES; track type.value) {
+                  <fluent-option [value]="type.value">{{ type.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+            </div>
+            <app-search-field
+              class="finance__search"
+              placeholder="Buscar por RUC..."
+              [value]="invoiceSearchInput()"
+              (valueChange)="invoiceSearchInput.set($event)"
+            />
+          </div>
+        </div>
+      } @else {
+        <div class="finance__form-header">
+          <h3 class="finance__form-title">
+            <i class="bi bi-receipt finance__panel-icon"></i>
+            Nuevo comprobante
+          </h3>
+          <fluent-button type="button" appearance="neutral" (click)="closeInvoiceForm()">
+            Cancelar
+          </fluent-button>
+        </div>
+      }
+
+      @if (invoiceFormVisible()) {
+        <form class="finance__form finance__form--compact" (ngSubmit)="onCreateInvoice()">
         <fieldset class="finance__section">
           <legend class="finance__section-title">Datos del comprobante</legend>
           <div class="finance__fields finance__fields--compact">
@@ -431,6 +457,7 @@
           </fluent-button>
         </div>
       </form>
+      }
 
       @if (invoices().length === 0 && !invoicesLoading()) {
         <app-empty-state

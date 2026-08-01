@@ -53,9 +53,16 @@
             </div>
 
             <div class="form-field">
-              <label>Banco</label>
-              <app-fluent-text-input [formField]="accountForm.bank_name" />
-              <span class="treasury__field-hint">Nombre de la entidad financiera.</span>
+              <label>Banco <span class="treasury__required">*</span></label>
+              <app-fluent-dropdown [formField]="accountForm.bank_id">
+                @for (option of bankOptions(); track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              <span class="treasury__field-hint">Selecciona el banco desde el catálogo.</span>
+              @if (accountForm.bank_id().invalid() && accountForm.bank_id().touched()) {
+                <span class="form-field__error">{{ accountForm.bank_id().getError('required')?.message }}</span>
+              }
             </div>
 
             <div class="form-field">

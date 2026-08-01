@@ -1,5 +1,35 @@
 export type TreasuryCurrency = 'PEN' | 'USD';
 
+export interface Bank {
+  id: string;
+  name: string;
+  short_name: string;
+  code: string;
+  country_code: string;
+  swift_code: string | null;
+  sbs_code: string | null;
+  website_url: string | null;
+  logo_url: string | null;
+  icon: string | null;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BankListResponse {
+  items: Bank[];
+  total: number;
+}
+
+export interface BankFilters {
+  active_only?: boolean;
+  country_code?: string;
+  limit?: number;
+  offset?: number;
+  [key: string]: string | number | boolean | undefined;
+}
+
 export type TransactionType = 'INFLOW' | 'OUTFLOW' | 'TRANSFER';
 
 export type TransactionCategory =
@@ -22,8 +52,9 @@ export type PayableDocumentType = 'RHE' | 'INVOICE' | 'TAX_SETTLEMENT';
 export interface BankAccount {
   id: string;
   tenant_id: string;
-  name: string;
+  bank_id: string;
   bank_name: string;
+  name: string;
   account_number: string;
   cci: string;
   currency: TreasuryCurrency;
@@ -35,8 +66,8 @@ export interface BankAccount {
 }
 
 export interface CreateBankAccountRequest {
+  bank_id: string;
   name: string;
-  bank_name?: string;
   account_number?: string;
   cci?: string;
   currency: TreasuryCurrency;

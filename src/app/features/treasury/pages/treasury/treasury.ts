@@ -21,6 +21,7 @@ import {
   FluentTextInput,
 } from '../../../../shared/components/fluent-form-controls/fluent-form-controls';
 import {
+  Bank,
   BankAccount,
   BankTransaction,
   CreateBankAccountRequest,
@@ -44,7 +45,7 @@ type TreasuryTab = 'accounts' | 'payables' | 'transactions';
 
 interface AccountFormModel {
   name: string;
-  bank_name: string;
+  bank_id: string;
   account_number: string;
   cci: string;
   currency: TreasuryCurrency | '';
@@ -114,7 +115,7 @@ const TRANSACTION_CATEGORY_OPTIONS: Option<TransactionCategory>[] = [
 
 const EMPTY_ACCOUNT: AccountFormModel = {
   name: '',
-  bank_name: '',
+  bank_id: '',
   account_number: '',
   cci: '',
   currency: '',
@@ -213,6 +214,16 @@ export default class TreasuryPage {
     }
   });
 
+  private readonly banksResource = apiResource<Bank[]>(async () => {
+    try {
+      const response = await toApiPromise(this.treasuryService.getBanks({ active_only: true, limit: 100 }));
+      return response.items;
+    } catch {
+      toast.error('Error al cargar catálogo de bancos');
+      return [];
+    }
+  });
+
   private readonly payablesResource = apiResource<Payable[]>(async () => {
     try {
       const response = await toApiPromise(this.treasuryService.getPayables({ limit: 100 }));
@@ -237,6 +248,17 @@ export default class TreasuryPage {
 
   protected readonly accounts = computed<BankAccount[]>(() => this.accountsResource.value() ?? []);
   protected readonly accountsLoading = computed(() => this.accountsResource.isLoading());
+
+  protected readonly banks = computed<Bank[]>(() => this.banksResource.value() ?? []);
+  protected readonly banksLoading = computed(() => this.banksResource.isLoading());
+
+  protected readonly bankOptions = computed<Option<string>[]>(() => [
+    { value: '', label: 'Selecciona un banco' },
+    ...this.banks().map((bank) => ({
+      value: bank.id,
+      label: `${bank.short_name} — ${bank.name}`,
+    })),
+  ]);
 
   protected readonly accountRows = computed(() =>
     this.accounts().map((account) => ({
@@ -348,6 +370,7 @@ export default class TreasuryPage {
   constructor() {
     this.accountForm = form(this.accountModel, (schema) => {
       required(schema.name, { message: 'El nombre de la cuenta es obligatorio.' });
+      required(schema.bank_id, { message: 'El banco es obligatorio.' });
       required(schema.currency, { message: 'La moneda es obligatoria.' });
     });
 
@@ -424,8 +447,8 @@ export default class TreasuryPage {
 
     const model = this.accountModel();
     const request: CreateBankAccountRequest = {
+      bank_id: model.bank_id,
       name: model.name,
-      bank_name: model.bank_name || undefined,
       account_number: model.account_number || undefined,
       cci: model.cci || undefined,
       currency: model.currency as TreasuryCurrency,
@@ -455,7 +478,7 @@ export default class TreasuryPage {
       this.editingAccountId.set(account.id);
       this.accountModel.set({
         name: account.name,
-        bank_name: account.bank_name ?? '',
+        bank_id: account.bank_id ?? '',
         account_number: account.account_number ?? '',
         cci: account.cci ?? '',
         currency: account.currency,

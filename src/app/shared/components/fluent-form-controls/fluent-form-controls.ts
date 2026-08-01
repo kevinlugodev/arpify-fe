@@ -101,6 +101,7 @@ type DropdownElement = HTMLElement & {
       (change)="onChange($event)"
       (blur)="touch.emit()"
       [attr.placeholder]="placeholder()"
+      [attr.disabled]="disabled() ? true : null"
     >
       <fluent-listbox>
         <ng-content />
@@ -115,6 +116,7 @@ export class FluentDropdown implements FormValueControl<string> {
   readonly touch = output<void>();
 
   readonly placeholder = model<string | undefined>(undefined);
+  readonly disabled = model<boolean>(false);
 
   private readonly dropdownRef = viewChild.required<ElementRef<HTMLElement>>('dropdown');
   private readonly destroyRef = inject(DestroyRef);

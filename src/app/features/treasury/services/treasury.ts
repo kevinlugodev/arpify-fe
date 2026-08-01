@@ -3,9 +3,12 @@ import { Observable } from 'rxjs';
 import { Api } from '../../../core/services/api';
 import { ApiResponse } from '../../../core/models/api-response.model';
 import {
+  Bank,
   BankAccount,
   BankAccountFilters,
   BankAccountListResponse,
+  BankFilters,
+  BankListResponse,
   BankTransaction,
   BankTransactionFilters,
   BankTransactionListResponse,
@@ -43,6 +46,16 @@ export class TreasuryService {
 
   deleteBankAccount(id: string): Observable<ApiResponse<unknown>> {
     return this.api.delete<unknown>(`treasury/bank-accounts/${id}`);
+  }
+
+  // --- Banks ---
+
+  getBanks(filters: BankFilters = {}): Observable<ApiResponse<BankListResponse>> {
+    return this.api.get<BankListResponse>('treasury/banks', filters);
+  }
+
+  getBank(id: string): Observable<ApiResponse<{ bank: Bank }>> {
+    return this.api.get<{ bank: Bank }>(`treasury/banks/${id}`);
   }
 
   // --- Payables ---

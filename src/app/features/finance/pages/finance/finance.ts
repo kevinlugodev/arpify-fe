@@ -179,6 +179,7 @@ export default class FinancePage {
   protected readonly invoiceTypeFilter = signal<string>('');
   protected readonly invoiceSearchInput = signal('');
   protected readonly invoiceSearch = signal('');
+  protected readonly invoiceFormVisible = signal<boolean>(false);
 
   protected readonly saving = computed(() => this.financeStore.status().loading);
 
@@ -480,6 +481,18 @@ export default class FinancePage {
 
   // --- Invoice handlers ---
 
+  protected openInvoiceForm(): void {
+    const periodId = this.selectedPeriodId();
+    this.invoiceModel.set({ ...EMPTY_INVOICE, tax_period_id: periodId });
+    this.invoiceFormVisible.set(true);
+  }
+
+  protected closeInvoiceForm(): void {
+    const periodId = this.selectedPeriodId();
+    this.invoiceModel.set({ ...EMPTY_INVOICE, tax_period_id: periodId });
+    this.invoiceFormVisible.set(false);
+  }
+
   protected async onCreateInvoice(): Promise<void> {
     this.invoiceForm().markAsTouched();
     if (this.invoiceForm().invalid()) {
@@ -512,7 +525,7 @@ export default class FinancePage {
     try {
       await this.financeStore.createInvoice(request);
       toast.success('Factura creada');
-      this.invoiceModel.set({ ...EMPTY_INVOICE, tax_period_id: model.tax_period_id });
+      this.closeInvoiceForm();
       this.invoicesResource.reload();
       this.taxCalculationResource.reload();
     } catch {
