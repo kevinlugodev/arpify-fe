@@ -1,0 +1,206 @@
+.asset-depreciation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+  }
+
+  &__header-title {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__icon {
+    color: var(--primary-color-600);
+  }
+
+  &__description {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--neutral-color-600);
+    line-height: 1.5;
+  }
+
+  &__controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 280px;
+      flex: 1;
+
+      label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--neutral-color-700);
+      }
+    }
+  }
+
+  &__asset-field {
+    max-width: 480px;
+  }
+
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-md);
+  }
+
+  &__summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__summary-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--neutral-color-600);
+  }
+
+  &__summary-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin: 0;
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__section-title {
+    padding: 0;
+    margin: 0 0 var(--space-xs);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__fields {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-md);
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 140px;
+      flex: 1;
+
+      label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--neutral-color-700);
+      }
+    }
+  }
+
+  &__field--button {
+    flex: 0 0 auto;
+  }
+
+  &__required {
+    color: var(--error-color);
+  }
+
+  &__field-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--neutral-color-600);
+    line-height: 1.4;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    padding-top: var(--space-md);
+  }
+
+  &__action-icon {
+    margin-inline-end: 6px;
+  }
+
+  &__spinner {
+    animation: asset-depreciation-spin 1s linear infinite;
+  }
+
+  &__panel {
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__panel-header {
+    margin-bottom: var(--space-md);
+  }
+
+  &__panel-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__panel-icon {
+    color: var(--primary-color-600);
+  }
+}
+
+@keyframes asset-depreciation-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

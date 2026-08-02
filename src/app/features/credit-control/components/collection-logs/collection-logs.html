@@ -1,0 +1,114 @@
+<div class="collection-logs">
+  <div class="form-field collection-logs__schedule-field">
+    <label>Cronograma <span class="collection-logs__required">*</span></label>
+    <app-fluent-dropdown [formField]="form.schedule_id" (change)="onScheduleChange()">
+      @for (option of scheduleOptions(); track option.value) {
+        <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+      }
+    </app-fluent-dropdown>
+    <span class="collection-logs__field-hint">Selecciona la cuenta por cobrar para ver y registrar bitácoras.</span>
+  </div>
+
+  @if (model().schedule_id) {
+    <form class="collection-logs__form" (ngSubmit)="onSubmit()">
+      <fieldset class="collection-logs__section">
+        <legend class="collection-logs__section-title">
+          {{ isEditing() ? 'Editar bitácora' : 'Nueva bitácora' }}
+        </legend>
+
+        <div class="collection-logs__fields">
+          <div class="form-field">
+            <label>Fecha de contacto <span class="collection-logs__required">*</span></label>
+            <app-fluent-text-input type="date" [formField]="form.contact_date" />
+            @if (form.contact_date().invalid() && form.contact_date().touched()) {
+              <span class="form-field__error">{{ form.contact_date().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Canal <span class="collection-logs__required">*</span></label>
+            <app-fluent-dropdown [formField]="form.contact_channel">
+              @for (option of channelOptions; track option.value) {
+                <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            @if (form.contact_channel().invalid() && form.contact_channel().touched()) {
+              <span class="form-field__error">{{ form.contact_channel().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Próximo seguimiento</label>
+            <app-fluent-text-input type="date" [formField]="form.next_follow_up_date" />
+          </div>
+
+          <div class="form-field collection-logs__field--wide">
+            <label>Notas <span class="collection-logs__required">*</span></label>
+            <app-fluent-text-input [formField]="form.notes" />
+            @if (form.notes().invalid() && form.notes().touched()) {
+              <span class="form-field__error">{{ form.notes().getError('required')?.message }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="collection-logs__actions">
+          @if (isEditing()) {
+            <fluent-button type="button" appearance="neutral" (click)="resetForm(model().schedule_id)">
+              Cancelar
+            </fluent-button>
+          }
+          <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSubmit()">
+            @if (saving()) {
+              <i class="bi bi-arrow-repeat collection-logs__spinner collection-logs__action-icon"></i>
+              Guardando...
+            } @else {
+              <i class="bi bi-check-lg collection-logs__action-icon"></i>
+              {{ isEditing() ? 'Actualizar bitácora' : 'Registrar bitácora' }}
+            }
+          </fluent-button>
+        </div>
+      </fieldset>
+    </form>
+
+    <section class="collection-logs__panel">
+      <header class="collection-logs__panel-header">
+        <h2 class="collection-logs__panel-title">
+          <i class="bi bi-journal-text collection-logs__panel-icon"></i>
+          Historial de contactos
+        </h2>
+      </header>
+
+      @if (logs().length === 0 && !logsLoading()) {
+        <app-empty-state
+          icon="bi-journal-text"
+          title="Sin bitácoras"
+          message="Registra el primer contacto de cobranza para este cronograma."
+        />
+      } @else {
+        <app-data-table
+          [columns]="columns"
+          [rows]="logs()"
+          [loading]="logsLoading()"
+          [rowActions]="actions"
+          (rowActionClick)="onAction($event)"
+        />
+      }
+    </section>
+  } @else {
+    <app-empty-state
+      icon="bi-journal-text"
+      title="Selecciona un cronograma"
+      message="Elige una cuenta por cobrar para gestionar sus bitácoras de cobranza."
+    />
+  }
+
+  <app-confirm-dialog
+    #deleteDialog
+    title="Eliminar bitácora"
+    message="¿Estás seguro de que deseas eliminar esta bitácora de cobranza?"
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmDelete()"
+  />
+</div>

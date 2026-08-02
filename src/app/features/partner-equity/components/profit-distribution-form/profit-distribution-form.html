@@ -1,0 +1,71 @@
+<form class="profit-distribution-form" (ngSubmit)="onSubmit()">
+  <fieldset class="profit-distribution-form__section">
+    <legend class="profit-distribution-form__section-title">Nueva distribución de utilidades</legend>
+
+    <div class="profit-distribution-form__fields">
+      <div class="form-field">
+        <label>Código <span class="profit-distribution-form__required">*</span></label>
+        <app-fluent-text-input [formField]="form.distribution_code" />
+        <span class="profit-distribution-form__field-hint">Ej. DIST-2026-08</span>
+        @if (form.distribution_code().invalid() && form.distribution_code().touched()) {
+          <span class="form-field__error">{{ form.distribution_code().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Monto bruto <span class="profit-distribution-form__required">*</span></label>
+        <app-fluent-text-input
+          type="text"
+          inputmode="decimal"
+          [decimals]="2"
+          [formField]="form.gross_pool_amount"
+        />
+        @if (form.gross_pool_amount().invalid() && form.gross_pool_amount().touched()) {
+          <span class="form-field__error">{{ form.gross_pool_amount().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>% Reserva <span class="profit-distribution-form__required">*</span></label>
+        <app-fluent-text-input
+          type="text"
+          inputmode="decimal"
+          [decimals]="2"
+          [formField]="form.reserve_percentage"
+        />
+        <span class="profit-distribution-form__field-hint">Impuestos y opex. Entre 0 y 100.</span>
+        @if (form.reserve_percentage().invalid() && form.reserve_percentage().touched()) {
+          <span class="form-field__error">{{ form.reserve_percentage().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Fecha <span class="profit-distribution-form__required">*</span></label>
+        <app-fluent-text-input type="date" [formField]="form.distribution_date" />
+        @if (form.distribution_date().invalid() && form.distribution_date().touched()) {
+          <span class="form-field__error">{{ form.distribution_date().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field profit-distribution-form__field--wide">
+        <label>Resumen</label>
+        <p class="profit-distribution-form__summary">
+          Reserva: <strong>{{ reservedAmount() | number: '1.2-2' }}</strong> —
+          Neto distribuible: <strong>{{ distributableAmount() | number: '1.2-2' }}</strong>
+        </p>
+      </div>
+    </div>
+
+    <div class="profit-distribution-form__actions">
+      <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSubmit()">
+        @if (saving()) {
+          <i class="bi bi-arrow-repeat profit-distribution-form__spinner profit-distribution-form__action-icon"></i>
+          Creando...
+        } @else {
+          <i class="bi bi-check-lg profit-distribution-form__action-icon"></i>
+          Crear distribución
+        }
+      </fluent-button>
+    </div>
+  </fieldset>
+</form>

@@ -1,0 +1,47 @@
+<form class="payroll-run-form" (ngSubmit)="onSubmit()">
+  <fieldset class="payroll-run-form__section">
+    <legend class="payroll-run-form__section-title">
+      {{ editingId() ? 'Editar planilla' : 'Nueva planilla mensual' }}
+    </legend>
+
+    <div class="payroll-run-form__fields">
+      <div class="form-field">
+        <label>Año <span class="payroll-run-form__required">*</span></label>
+        <app-fluent-text-input [formField]="payrollRunForm.period_year" />
+        @if (payrollRunForm.period_year().invalid() && payrollRunForm.period_year().touched()) {
+          <span class="form-field__error">{{ payrollRunForm.period_year().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Mes <span class="payroll-run-form__required">*</span></label>
+        <app-fluent-dropdown [formField]="payrollRunForm.period_month">
+          <fluent-option value="">Selecciona...</fluent-option>
+          @for (option of monthOptions; track option.value) {
+            <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+        @if (payrollRunForm.period_month().invalid() && payrollRunForm.period_month().touched()) {
+          <span class="form-field__error">{{ payrollRunForm.period_month().getError('required')?.message }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="payroll-run-form__actions">
+      @if (editingId()) {
+        <fluent-button type="button" appearance="neutral" (click)="onCancel()">
+          Cancelar
+        </fluent-button>
+      }
+      <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSubmit()">
+        @if (saving()) {
+          <i class="bi bi-arrow-repeat payroll-run-form__spinner payroll-run-form__action-icon"></i>
+          Guardando...
+        } @else {
+          <i class="bi bi-check-lg payroll-run-form__action-icon"></i>
+          {{ editingId() ? 'Actualizar planilla' : 'Crear planilla' }}
+        }
+      </fluent-button>
+    </div>
+  </fieldset>
+</form>

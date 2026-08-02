@@ -1,0 +1,22 @@
+.hr-payroll {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+
+  &__tabs {
+    padding: var(--space-md);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+}

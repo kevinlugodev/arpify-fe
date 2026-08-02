@@ -1,0 +1,72 @@
+<div class="fixed-assets">
+  <app-page-header
+    title="Activos Fijos"
+    subtitle="Registro, depreciación lineal y control de activos capitalizables"
+    icon="bi-building"
+  />
+
+  <app-workflow-tip
+    title="Flujo recomendado"
+    subtitle="Sigue estos pasos para mantener el control contable de tus activos."
+    [steps]="[
+      'Registra el activo con su costo, vida útil y valor residual',
+      'Ejecuta la depreciación mensual del período correspondiente',
+      'Consulta el histórico de depreciación por activo',
+      'Actualiza el estado a dado de baja cuando corresponda',
+    ]"
+  />
+
+  <div class="fixed-assets__tabs">
+    <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+      <fluent-tab id="list">Listado</fluent-tab>
+      <fluent-tab id="form">{{ editingAsset() ? 'Editar activo' : 'Nuevo activo' }}</fluent-tab>
+      <fluent-tab id="depreciation">Depreciación</fluent-tab>
+    </fluent-tablist>
+  </div>
+
+  @if (activeTab() === 'list') {
+    <section class="fixed-assets__panel">
+      <app-asset-list
+        [assets]="assets()"
+        [loading]="assetsLoading()"
+        [employees]="employees()"
+        (create)="onCreate()"
+        (edit)="onEdit($event)"
+        (remove)="onDelete($event)"
+        (depreciate)="onDepreciate($event)"
+      />
+    </section>
+  }
+
+  @if (activeTab() === 'form') {
+    <section class="fixed-assets__panel">
+      <app-asset-form
+        [assetToEdit]="editingAsset()"
+        [employees]="employees()"
+        (saved)="onSaved()"
+        (cancel)="onCancelled()"
+      />
+    </section>
+  }
+
+  @if (activeTab() === 'depreciation') {
+    <section class="fixed-assets__panel">
+      <app-asset-depreciation
+        [assets]="assets()"
+        [employees]="employees()"
+        [preselectedAssetId]="preselectedAssetId()"
+        (depreciated)="onDepreciated()"
+      />
+    </section>
+  }
+
+  <app-confirm-dialog
+    #deleteDialog
+    title="Eliminar activo fijo"
+    message="¿Estás seguro de que deseas eliminar este activo fijo? Esta acción no se puede deshacer."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmDelete()"
+  />
+</div>

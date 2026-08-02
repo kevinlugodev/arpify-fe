@@ -1,0 +1,128 @@
+.aging-report {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  &__summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+
+    &--total {
+      background: linear-gradient(135deg, var(--primary-color-600), var(--primary-color-700));
+      color: var(--neutral-color-0);
+      border-color: transparent;
+    }
+  }
+
+  &__summary-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    opacity: 0.9;
+  }
+
+  &__summary-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  &__buckets {
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__buckets-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0 0 var(--space-lg);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__buckets-icon {
+    color: var(--primary-color-600);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+
+  &__card-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__card-count {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--neutral-color-600);
+    white-space: nowrap;
+  }
+
+  &__card-body {
+    display: flex;
+    align-items: baseline;
+  }
+
+  &__card-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--neutral-color-900);
+  }
+
+  &__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    color: var(--neutral-color-600);
+  }
+
+  &__spinner {
+    animation: aging-report-spin 1s linear infinite;
+  }
+}
+
+@keyframes aging-report-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,185 @@
+<div class="partner-draws">
+  <app-workflow-tip
+    title="Retiros y liquidaciones"
+    subtitle="Registra adelantos de utilidades y liquidaciones documentadas con RHE."
+    [steps]="[
+      'Selecciona la cuenta de socio',
+      'Registra un adelanto desde una cuenta bancaria',
+      'Registra la liquidación con el número de RHE correspondiente'
+    ]"
+  />
+
+  <section class="partner-draws__operations">
+    <fluent-button type="button" appearance="accent" (click)="setOperation('advance')">
+      <i class="bi bi-cash-coin partner-draws__action-icon"></i>
+      Registrar adelanto
+    </fluent-button>
+    <fluent-button type="button" appearance="neutral" (click)="setOperation('settlement')">
+      <i class="bi bi-file-earmark-text partner-draws__action-icon"></i>
+      Registrar liquidación RHE
+    </fluent-button>
+  </section>
+
+  @if (activeOperation() === 'advance') {
+    <form class="partner-draws__form" (ngSubmit)="onAdvanceSubmit()">
+      <fieldset class="partner-draws__section">
+        <legend class="partner-draws__section-title">Registrar adelanto</legend>
+
+        <app-info-tip
+          message="El adelanto genera un egreso bancario en Tesorería. Verifica que el socio tenga saldo disponible y la cuenta bancaria tenga fondos."
+        />
+
+        <div class="partner-draws__fields">
+          <div class="form-field partner-draws__field--wide">
+            <label>Socio <span class="partner-draws__required">*</span></label>
+            <app-fluent-dropdown [formField]="advanceForm.partner_account_id">
+              @for (option of partnerOptions(); track option.value) {
+                <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            @if (advanceForm.partner_account_id().invalid() && advanceForm.partner_account_id().touched()) {
+              <span class="form-field__error">{{ advanceForm.partner_account_id().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Cuenta bancaria <span class="partner-draws__required">*</span></label>
+            <app-fluent-dropdown [formField]="advanceForm.bank_account_id">
+              @for (option of bankAccountOptions(); track option.value) {
+                <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            @if (advanceForm.bank_account_id().invalid() && advanceForm.bank_account_id().touched()) {
+              <span class="form-field__error">{{ advanceForm.bank_account_id().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Monto <span class="partner-draws__required">*</span></label>
+            <app-fluent-text-input
+              type="text"
+              inputmode="decimal"
+              [decimals]="2"
+              [formField]="advanceForm.amount"
+            />
+            <span class="partner-draws__field-hint">
+              Disponible: {{ selectedAccount()?.current_available_balance | number: '1.2-2' }}
+            </span>
+            @if (advanceForm.amount().invalid() && advanceForm.amount().touched()) {
+              <span class="form-field__error">{{ advanceForm.amount().getError('required')?.message }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="partner-draws__actions">
+          <fluent-button type="button" appearance="neutral" (click)="setOperation(null)">
+            Cancelar
+          </fluent-button>
+          <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onAdvanceSubmit()">
+            @if (saving()) {
+              <i class="bi bi-arrow-repeat partner-draws__spinner partner-draws__action-icon"></i>
+              Registrando...
+            } @else {
+              <i class="bi bi-check-lg partner-draws__action-icon"></i>
+              Registrar adelanto
+            }
+          </fluent-button>
+        </div>
+      </fieldset>
+    </form>
+  }
+
+  @if (activeOperation() === 'settlement') {
+    <form class="partner-draws__form" (ngSubmit)="onSettlementSubmit()">
+      <fieldset class="partner-draws__section">
+        <legend class="partner-draws__section-title">Registrar liquidación RHE</legend>
+
+        <app-info-tip
+          message="La liquidación es solo documental y no impacta saldos ni Tesorería."
+        />
+
+        <div class="partner-draws__fields">
+          <div class="form-field partner-draws__field--wide">
+            <label>Socio <span class="partner-draws__required">*</span></label>
+            <app-fluent-dropdown [formField]="settlementForm.partner_account_id">
+              @for (option of partnerOptions(); track option.value) {
+                <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            @if (settlementForm.partner_account_id().invalid() && settlementForm.partner_account_id().touched()) {
+              <span class="form-field__error">{{ settlementForm.partner_account_id().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>N° RHE <span class="partner-draws__required">*</span></label>
+            <app-fluent-text-input [formField]="settlementForm.rhe_document_number" />
+            @if (settlementForm.rhe_document_number().invalid() && settlementForm.rhe_document_number().touched()) {
+              <span class="form-field__error">{{ settlementForm.rhe_document_number().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Monto <span class="partner-draws__required">*</span></label>
+            <app-fluent-text-input
+              type="text"
+              inputmode="decimal"
+              [decimals]="2"
+              [formField]="settlementForm.amount"
+            />
+            @if (settlementForm.amount().invalid() && settlementForm.amount().touched()) {
+              <span class="form-field__error">{{ settlementForm.amount().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field partner-draws__field--wide">
+            <label>Notas</label>
+            <app-fluent-text-input [formField]="settlementForm.notes" />
+          </div>
+        </div>
+
+        <div class="partner-draws__actions">
+          <fluent-button type="button" appearance="neutral" (click)="setOperation(null)">
+            Cancelar
+          </fluent-button>
+          <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSettlementSubmit()">
+            @if (saving()) {
+              <i class="bi bi-arrow-repeat partner-draws__spinner partner-draws__action-icon"></i>
+              Registrando...
+            } @else {
+              <i class="bi bi-check-lg partner-draws__action-icon"></i>
+              Registrar liquidación
+            }
+          </fluent-button>
+        </div>
+      </fieldset>
+    </form>
+  }
+
+  <section class="partner-draws__panel">
+    <header class="partner-draws__panel-header">
+      <h2 class="partner-draws__panel-title">
+        <i class="bi bi-arrow-left-right partner-draws__panel-icon"></i>
+        Movimientos de socios
+      </h2>
+      <p class="partner-draws__panel-description">
+        Historial de distribuciones, adelantos y liquidaciones registrados.
+      </p>
+    </header>
+
+    @if (transactionRows().length === 0 && !loading()) {
+      <app-empty-state
+        icon="bi-arrow-left-right"
+        title="Sin movimientos"
+        message="Aún no se han registrado distribuciones, adelantos ni liquidaciones."
+      />
+    } @else {
+      <app-data-table
+        [columns]="transactionColumns"
+        [rows]="transactionRows()"
+        [loading]="loading()"
+        [rowActions]="transactionActions"
+      />
+    }
+  </section>
+</div>

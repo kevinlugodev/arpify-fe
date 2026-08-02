@@ -1,0 +1,40 @@
+<div class="aging-report">
+  <section class="aging-report__summary">
+    <div class="aging-report__summary-card aging-report__summary-card--total">
+      <span class="aging-report__summary-label">Saldo total pendiente</span>
+      <span class="aging-report__summary-value">{{ totalOutstanding() | number: '1.2-2' }}</span>
+    </div>
+    <div class="aging-report__summary-card">
+      <span class="aging-report__summary-label">Cuentas por cobrar</span>
+      <span class="aging-report__summary-value">{{ totalCount() }}</span>
+    </div>
+  </section>
+
+  <section class="aging-report__buckets">
+    <h2 class="aging-report__buckets-title">
+      <i class="bi bi-pie-chart aging-report__buckets-icon"></i>
+      Distribución por antigüedad
+    </h2>
+
+    <div class="aging-report__grid">
+      @for (bucket of buckets(); track bucket.key) {
+        <div class="aging-report__card">
+          <div class="aging-report__card-header">
+            <span class="aging-report__card-title">{{ bucket.label }}</span>
+            <span class="aging-report__card-count">{{ bucket.count }} cuenta{{ bucket.count === 1 ? '' : 's' }}</span>
+          </div>
+          <div class="aging-report__card-body">
+            <span class="aging-report__card-amount">{{ bucket.total | number: '1.2-2' }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  @if (loading()) {
+    <div class="aging-report__loading">
+      <i class="bi bi-arrow-repeat aging-report__spinner"></i>
+      Cargando reporte...
+    </div>
+  }
+</div>

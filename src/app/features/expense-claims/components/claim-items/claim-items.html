@@ -1,0 +1,227 @@
+<div class="claim-items">
+  <header class="claim-items__header">
+    <div>
+      <h2 class="claim-items__title">
+        <i class="bi bi-receipt claim-items__icon"></i>
+        Comprobantes de gasto
+      </h2>
+      <p class="claim-items__description">
+        {{ claim() ? 'Rendición: ' + claim()?.claim_number + ' — ' + claim()?.title : 'Selecciona una rendición para ver sus comprobantes.' }}
+      </p>
+    </div>
+  </header>
+
+  @if (!claim()) {
+    <app-empty-state
+      icon="bi-receipt"
+      title="Sin rendición seleccionada"
+      message="Selecciona una rendición desde el listado para gestionar sus comprobantes."
+    />
+  } @else {
+    <div class="claim-items__summary">
+      <div class="claim-items__summary-item">
+        <span class="claim-items__summary-label">Adelanto</span>
+        <span class="claim-items__summary-value">{{ claim()?.total_advanced | number: '1.2-2' }}</span>
+      </div>
+      <div class="claim-items__summary-item">
+        <span class="claim-items__summary-label">Gastos</span>
+        <span class="claim-items__summary-value">{{ claim()?.total_expenses | number: '1.2-2' }}</span>
+      </div>
+      <div class="claim-items__summary-item">
+        <span class="claim-items__summary-label">Saldo</span>
+        <span class="claim-items__summary-value">{{ claim()?.balance_amount | number: '1.2-2' }}</span>
+      </div>
+      <div class="claim-items__summary-item claim-items__summary-item--wide">
+        <span class="claim-items__summary-label">Resultado</span>
+        <span class="claim-items__summary-value">{{ balanceLabel() }}</span>
+      </div>
+    </div>
+
+    @if (canEditItems()) {
+      <form class="claim-items__form" (ngSubmit)="onItemSubmit()">
+        <fieldset class="claim-items__section">
+          <legend class="claim-items__section-title">
+            {{ editingItemId() ? 'Editar comprobante' : 'Nuevo comprobante' }}
+          </legend>
+
+          <div class="claim-items__fields">
+            <div class="form-field">
+              <label>Tipo de documento <span class="claim-items__required">*</span></label>
+              <app-fluent-dropdown [formField]="itemForm.document_type">
+                <fluent-option value="">Selecciona tipo</fluent-option>
+                @for (option of documentTypeOptions; track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              @if (itemForm.document_type().invalid() && itemForm.document_type().touched()) {
+                <span class="form-field__error">{{ itemForm.document_type().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Número de documento <span class="claim-items__required">*</span></label>
+              <app-fluent-text-input [formField]="itemForm.document_number" />
+              @if (itemForm.document_number().invalid() && itemForm.document_number().touched()) {
+                <span class="form-field__error">{{ itemForm.document_number().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Proveedor <span class="claim-items__required">*</span></label>
+              <app-fluent-text-input [formField]="itemForm.supplier_name" />
+              @if (itemForm.supplier_name().invalid() && itemForm.supplier_name().touched()) {
+                <span class="form-field__error">{{ itemForm.supplier_name().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>RUC/DNI del proveedor</label>
+              <app-fluent-text-input [formField]="itemForm.supplier_tax_id" />
+            </div>
+
+            <div class="form-field">
+              <label>Fecha de gasto <span class="claim-items__required">*</span></label>
+              <app-fluent-text-input type="date" [formField]="itemForm.expense_date" />
+              @if (itemForm.expense_date().invalid() && itemForm.expense_date().touched()) {
+                <span class="form-field__error">{{ itemForm.expense_date().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Monto <span class="claim-items__required">*</span></label>
+              <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="itemForm.amount" />
+              @if (itemForm.amount().invalid() && itemForm.amount().touched()) {
+                <span class="form-field__error">{{ itemForm.amount().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Moneda <span class="claim-items__required">*</span></label>
+              <app-fluent-dropdown [formField]="itemForm.currency">
+                <fluent-option value="">Selecciona moneda</fluent-option>
+                @for (option of currencyOptions; track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              @if (itemForm.currency().invalid() && itemForm.currency().touched()) {
+                <span class="form-field__error">{{ itemForm.currency().getError('required')?.message }}</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label>Categoría <span class="claim-items__required">*</span></label>
+              <app-fluent-dropdown [formField]="itemForm.category">
+                <fluent-option value="">Selecciona categoría</fluent-option>
+                @for (option of categoryOptions; track option.value) {
+                  <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                }
+              </app-fluent-dropdown>
+              @if (itemForm.category().invalid() && itemForm.category().touched()) {
+                <span class="form-field__error">{{ itemForm.category().getError('required')?.message }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="claim-items__actions">
+            @if (editingItemId()) {
+              <fluent-button type="button" appearance="neutral" (click)="resetItemForm()">
+                Cancelar
+              </fluent-button>
+            }
+            <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onItemSubmit()">
+              @if (saving()) {
+                <i class="bi bi-arrow-repeat claim-items__spinner claim-items__action-icon"></i>
+                Guardando...
+              } @else {
+                <i class="bi bi-check-lg claim-items__action-icon"></i>
+                {{ editingItemId() ? 'Actualizar comprobante' : 'Agregar comprobante' }}
+              }
+            </fluent-button>
+          </div>
+        </fieldset>
+      </form>
+    } @else {
+      <app-info-tip message="Los comprobantes solo se pueden agregar o editar cuando la rendición está en estado Borrador." />
+    }
+
+    @if (items().length === 0 && !itemsLoading()) {
+      <app-empty-state
+        icon="bi-receipt"
+        title="Sin comprobantes"
+        message="Agrega el primer comprobante de gasto a la rendición."
+      />
+    } @else {
+      <app-data-table
+        [columns]="itemColumns"
+        [rows]="items()"
+        [loading]="itemsLoading()"
+        [rowActions]="canEditItems() ? itemActions : []"
+        (rowActionClick)="onItemAction($event)"
+      />
+    }
+
+    @if (canSettle()) {
+      <form class="claim-items__form" (ngSubmit)="onSettle()">
+        <fieldset class="claim-items__section claim-items__section--settle">
+          <legend class="claim-items__section-title">Liquidar rendición</legend>
+
+          <app-info-tip [message]="balanceLabel()" />
+
+          <div class="claim-items__fields">
+            @if (balanceAmount() > 0) {
+              <div class="form-field">
+                <label>Cuenta bancaria <span class="claim-items__required">*</span></label>
+                <app-fluent-dropdown [formField]="settleForm.bank_account_id">
+                  <fluent-option value="">Selecciona cuenta</fluent-option>
+                  @for (option of bankAccountOptions(); track option.value) {
+                    <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                  }
+                </app-fluent-dropdown>
+                @if (settleForm.bank_account_id().invalid() && settleForm.bank_account_id().touched()) {
+                  <span class="form-field__error">{{ settleForm.bank_account_id().getError('required')?.message }}</span>
+                }
+              </div>
+            }
+
+            @if (balanceAmount() < 0) {
+              <div class="form-field">
+                <label>Caja chica <span class="claim-items__required">*</span></label>
+                <app-fluent-dropdown [formField]="settleForm.petty_cash_fund_id">
+                  <fluent-option value="">Selecciona caja chica</fluent-option>
+                  @for (option of fundOptions(); track option.value) {
+                    <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+                  }
+                </app-fluent-dropdown>
+                @if (settleForm.petty_cash_fund_id().invalid() && settleForm.petty_cash_fund_id().touched()) {
+                  <span class="form-field__error">{{ settleForm.petty_cash_fund_id().getError('required')?.message }}</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="claim-items__actions">
+            <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSettle()">
+              @if (saving()) {
+                <i class="bi bi-arrow-repeat claim-items__spinner claim-items__action-icon"></i>
+                Liquidando...
+              } @else {
+                <i class="bi bi-file-earmark-check claim-items__action-icon"></i>
+                Liquidar rendición
+              }
+            </fluent-button>
+          </div>
+        </fieldset>
+      </form>
+    }
+
+    <app-confirm-dialog
+      #itemDeleteDialog
+      title="Eliminar comprobante"
+      message="¿Estás seguro de que deseas eliminar este comprobante? Esta acción no se puede deshacer."
+      confirmLabel="Eliminar"
+      cancelLabel="Cancelar"
+      confirmAppearance="danger"
+      (confirm)="onConfirmItemDelete()"
+    />
+  }
+</div>

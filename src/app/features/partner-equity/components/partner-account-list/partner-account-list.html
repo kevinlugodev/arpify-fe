@@ -1,0 +1,28 @@
+<section class="partner-account-list">
+  <header class="partner-account-list__header">
+    <h2 class="partner-account-list__title">
+      <i class="bi bi-people partner-account-list__icon"></i>
+      Cuentas de socios
+    </h2>
+    <p class="partner-account-list__description">
+      Listado de socios con su porcentaje de participación y saldo disponible.
+    </p>
+  </header>
+
+  @if (rows().length === 0 && !loading()) {
+    <app-empty-state
+      icon="bi-people"
+      title="Sin cuentas de socios"
+      message="Crea la primera cuenta de socio vinculada a un colaborador."
+    />
+  } @else {
+    <app-data-table
+      [columns]="columns"
+      [rows]="rows()"
+      [loading]="loading()"
+      [rowActions]="actions"
+      [rowClass]="editingRowClass"
+      (rowActionClick)="onAction($event)"
+    />
+  }
+</section>

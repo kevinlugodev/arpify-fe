@@ -14,6 +14,17 @@ export type StatusDomain =
   | 'treasury-service-order'
   | 'treasury-petty-cash-state'
   | 'active-state'
+  | 'cost-center'
+  | 'credit-schedule-status'
+  | 'credit-channel'
+  | 'expense-claim-status'
+  | 'expense-claim-document'
+  | 'expense-claim-category'
+  | 'asset-status'
+  | 'asset-category'
+  | 'payroll-status'
+  | 'payroll-payment-status'
+  | 'partner-draw-type'
   | 'generic';
 
 interface StatusConfig {
@@ -99,6 +110,69 @@ const STATUS_MAP: Record<StatusDomain, Record<string, StatusConfig>> = {
   'active-state': {
     true: { label: 'Activa', color: 'green', icon: 'bi-check-circle' },
     false: { label: 'Inactiva', color: 'gray', icon: 'bi-pause-circle' },
+  },
+  'cost-center': {
+    active: { label: 'Activo', color: 'green', icon: 'bi-check-circle' },
+    inactive: { label: 'Inactivo', color: 'gray', icon: 'bi-pause-circle' },
+  },
+  'credit-schedule-status': {
+    PENDING: { label: 'Pendiente', color: 'yellow', icon: 'bi-hourglass' },
+    PARTIALLY_PAID: { label: 'Pago parcial', color: 'blue', icon: 'bi-cash-stack' },
+    PAID_ON_TIME: { label: 'Pagado a tiempo', color: 'green', icon: 'bi-check-circle' },
+    PAID_LATE: { label: 'Pagado con retraso', color: 'purple', icon: 'bi-clock-history' },
+    DEFAULTED: { label: 'Incobrable', color: 'red', icon: 'bi-exclamation-triangle' },
+  },
+  'credit-channel': {
+    EMAIL: { label: 'Correo', color: 'blue', icon: 'bi-envelope' },
+    PHONE: { label: 'Teléfono', color: 'green', icon: 'bi-telephone' },
+    WHATSAPP: { label: 'WhatsApp', color: 'green', icon: 'bi-whatsapp' },
+  },
+  'expense-claim-status': {
+    DRAFT: { label: 'Borrador', color: 'gray', icon: 'bi-pencil' },
+    SUBMITTED: { label: 'Enviada', color: 'blue', icon: 'bi-send' },
+    APPROVED: { label: 'Aprobada', color: 'green', icon: 'bi-check-circle' },
+    SETTLED: { label: 'Liquidada', color: 'purple', icon: 'bi-file-earmark-check' },
+    REJECTED: { label: 'Rechazada', color: 'red', icon: 'bi-x-circle' },
+  },
+  'expense-claim-document': {
+    INVOICE: { label: 'Factura', color: 'blue', icon: 'bi-file-earmark' },
+    BOLETA: { label: 'Boleta', color: 'purple', icon: 'bi-file-earmark-text' },
+    RECEIPT: { label: 'Recibo', color: 'green', icon: 'bi-receipt' },
+    TICKET: { label: 'Ticket', color: 'gray', icon: 'bi-ticket' },
+  },
+  'expense-claim-category': {
+    TRAVEL: { label: 'Viaje', color: 'blue', icon: 'bi-airplane' },
+    MEALS: { label: 'Alimentación', color: 'green', icon: 'bi-cup-hot' },
+    SUPPLIES: { label: 'Suministros', color: 'yellow', icon: 'bi-box-seam' },
+    TRANSPORT: { label: 'Transporte', color: 'purple', icon: 'bi-car-front' },
+    OTHER: { label: 'Otro', color: 'gray', icon: 'bi-three-dots' },
+  },
+  'asset-status': {
+    ACTIVE: { label: 'Activo', color: 'green', icon: 'bi-check-circle' },
+    FULLY_DEPRECIATED: { label: 'Depreciado', color: 'gray', icon: 'bi-battery-full' },
+    DISPOSED: { label: 'Dado de baja', color: 'red', icon: 'bi-x-circle' },
+  },
+  'asset-category': {
+    IT_EQUIPMENT: { label: 'Equipos TI', color: 'blue', icon: 'bi-laptop' },
+    FURNITURE: { label: 'Muebles', color: 'yellow', icon: 'bi-lamp' },
+    VEHICLES: { label: 'Vehículos', color: 'purple', icon: 'bi-car-front' },
+    MACHINERY: { label: 'Maquinaria', color: 'green', icon: 'bi-gear' },
+    OTHER: { label: 'Otro', color: 'gray', icon: 'bi-three-dots' },
+  },
+  'payroll-status': {
+    DRAFT: { label: 'Borrador', color: 'gray', icon: 'bi-pencil' },
+    APPROVED: { label: 'Aprobada', color: 'blue', icon: 'bi-check-circle' },
+    PAID: { label: 'Pagada', color: 'green', icon: 'bi-check-circle-fill' },
+    CANCELLED: { label: 'Cancelada', color: 'red', icon: 'bi-x-circle' },
+  },
+  'payroll-payment-status': {
+    PENDING: { label: 'Pendiente', color: 'yellow', icon: 'bi-hourglass' },
+    PAID: { label: 'Pagado', color: 'green', icon: 'bi-check-circle' },
+  },
+  'partner-draw-type': {
+    EARNED_DISTRIBUTION: { label: 'Utilidad ganada', color: 'green', icon: 'bi-graph-up-arrow' },
+    ADVANCE_DRAW: { label: 'Adelanto', color: 'yellow', icon: 'bi-cash' },
+    SETTLEMENT_PAYMENT: { label: 'Liquidación RHE', color: 'blue', icon: 'bi-file-earmark-text' },
   },
 };
 

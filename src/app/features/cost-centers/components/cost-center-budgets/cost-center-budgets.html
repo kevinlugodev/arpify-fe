@@ -1,0 +1,144 @@
+<div class="cost-center-budgets">
+  <header class="cost-center-budgets__header">
+    <h2 class="cost-center-budgets__title">
+      <i class="bi bi-cash-coin cost-center-budgets__icon"></i>
+      Presupuestos mensuales
+    </h2>
+    <p class="cost-center-budgets__description">
+      Asigna y controla presupuestos por período para cada centro de costo. El saldo se calcula restando lo comprometido y gastado.
+    </p>
+  </header>
+
+  <div class="cost-center-budgets__selector">
+    <div class="form-field">
+      <label>Centro de costo</label>
+      <app-fluent-dropdown
+        [value]="selectedCostCenterId()"
+        (valueChange)="selectedCostCenterId.set($event)"
+      >
+        @for (option of costCenterOptions(); track option.value) {
+          <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+        }
+      </app-fluent-dropdown>
+    </div>
+  </div>
+
+  @if (!selectedCostCenterId()) {
+    <app-info-tip message="Selecciona un centro de costo para ver y gestionar sus presupuestos." />
+  } @else {
+    <form class="cost-center-budgets__form" (ngSubmit)="onSubmit()">
+      <fieldset class="cost-center-budgets__section">
+        <legend class="cost-center-budgets__section-title">
+          {{ isEditing() ? 'Editar presupuesto' : 'Nuevo presupuesto' }}
+        </legend>
+
+        <div class="cost-center-budgets__fields">
+          <div class="form-field">
+            <label>Año <span class="cost-center-budgets__required">*</span></label>
+            <app-fluent-text-input type="number" [formField]="form.period_year" />
+            @if (form.period_year().invalid() && form.period_year().touched()) {
+              <span class="form-field__error">{{ form.period_year().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Mes <span class="cost-center-budgets__required">*</span></label>
+            <app-fluent-text-input type="number" [formField]="form.period_month" />
+            @if (form.period_month().invalid() && form.period_month().touched()) {
+              <span class="form-field__error">{{ form.period_month().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Presupuesto asignado <span class="cost-center-budgets__required">*</span></label>
+            <app-fluent-text-input
+              type="text"
+              inputmode="decimal"
+              [decimals]="2"
+              [formField]="form.allocated_budget"
+            />
+            @if (form.allocated_budget().invalid() && form.allocated_budget().touched()) {
+              <span class="form-field__error">{{ form.allocated_budget().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Comprometido</label>
+            <app-fluent-text-input
+              type="text"
+              inputmode="decimal"
+              [decimals]="2"
+              [formField]="form.committed_amount"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Gastado</label>
+            <app-fluent-text-input
+              type="text"
+              inputmode="decimal"
+              [decimals]="2"
+              [formField]="form.spent_amount"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Moneda <span class="cost-center-budgets__required">*</span></label>
+            <app-fluent-dropdown [formField]="form.currency">
+              <fluent-option value="">Selecciona...</fluent-option>
+              @for (option of currencyOptions; track option.value) {
+                <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            @if (form.currency().invalid() && form.currency().touched()) {
+              <span class="form-field__error">{{ form.currency().getError('required')?.message }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="cost-center-budgets__actions">
+          @if (isEditing()) {
+            <fluent-button type="button" appearance="neutral" (click)="resetForm()">
+              Cancelar
+            </fluent-button>
+          }
+          <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSubmit()">
+            @if (saving()) {
+              <i class="bi bi-arrow-repeat cost-center-budgets__spinner cost-center-budgets__action-icon"></i>
+              Guardando...
+            } @else {
+              <i class="bi bi-check-lg cost-center-budgets__action-icon"></i>
+              {{ isEditing() ? 'Actualizar presupuesto' : 'Crear presupuesto' }}
+            }
+          </fluent-button>
+        </div>
+      </fieldset>
+    </form>
+
+    @if (budgetRows().length === 0 && !budgetsLoading()) {
+      <app-empty-state
+        icon="bi-cash-coin"
+        title="Sin presupuestos"
+        message="Crea el primer presupuesto mensual para el centro seleccionado."
+      />
+    } @else {
+      <app-data-table
+        [columns]="columns"
+        [rows]="budgetRows()"
+        [loading]="budgetsLoading()"
+        [rowActions]="actions"
+        (rowActionClick)="onAction($event)"
+      />
+    }
+  }
+
+  <app-confirm-dialog
+    #deleteDialog
+    title="Eliminar presupuesto"
+    message="¿Estás seguro de que deseas eliminar este presupuesto? Esta acción no se puede deshacer."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmDelete()"
+  />
+</div>

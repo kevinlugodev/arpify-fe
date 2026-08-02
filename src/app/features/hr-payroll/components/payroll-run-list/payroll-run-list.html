@@ -1,0 +1,57 @@
+<section class="payroll-run-list__panel">
+  <header class="payroll-run-list__panel-header">
+    <h2 class="payroll-run-list__panel-title">
+      <i class="bi bi-calendar-month payroll-run-list__panel-icon"></i>
+      Planillas registradas
+    </h2>
+    <p class="payroll-run-list__panel-description">
+      Planillas mensuales con totales calculados y estados de aprobación.
+    </p>
+  </header>
+
+  @if (payrollRuns().length === 0 && !payrollRunsLoading()) {
+    <app-empty-state
+      icon="bi-calendar-month"
+      title="Sin planillas"
+      message="Crea la primera planilla mensual para agregar colaboradores."
+    />
+  } @else {
+    <app-data-table
+      [columns]="columns"
+      [rows]="rowData()"
+      [loading]="payrollRunsLoading()"
+      [rowActions]="actions"
+      (rowActionClick)="onAction($event)"
+    />
+  }
+</section>
+
+<app-confirm-dialog
+  #deleteDialog
+  title="Eliminar planilla"
+  message="¿Estás seguro de que deseas eliminar esta planilla? Esta acción no se puede deshacer."
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  confirmAppearance="danger"
+  (confirm)="onConfirmDelete()"
+/>
+
+<app-confirm-dialog
+  #approveDialog
+  title="Aprobar planilla"
+  message="Al aprobar se recalcularán los totales y se crearán las obligaciones de pago en Tesorería. ¿Deseas continuar?"
+  confirmLabel="Aprobar"
+  cancelLabel="Cancelar"
+  confirmAppearance="accent"
+  (confirm)="onConfirmApprove()"
+/>
+
+<app-confirm-dialog
+  #cancelDialog
+  title="Cancelar planilla"
+  message="¿Estás seguro de que deseas cancelar esta planilla? Una planilla cancelada no admite más cambios."
+  confirmLabel="Cancelar"
+  cancelLabel="Volver"
+  confirmAppearance="danger"
+  (confirm)="onConfirmCancel()"
+/>

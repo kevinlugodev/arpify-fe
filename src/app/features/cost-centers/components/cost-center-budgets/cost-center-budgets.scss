@@ -1,0 +1,88 @@
+.cost-center-budgets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+
+  &__header {
+    margin-bottom: var(--space-md);
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0 0 var(--space-xs);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__icon {
+    color: var(--primary-color-600);
+  }
+
+  &__description {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--neutral-color-600);
+    line-height: 1.5;
+  }
+
+  &__selector {
+    max-width: 24rem;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  &__section {
+    margin: 0;
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__section-title {
+    padding: 0;
+    margin: 0 0 var(--space-md);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  &__required {
+    color: var(--error-color);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    padding-top: var(--space-md);
+  }
+
+  &__action-icon {
+    margin-inline-end: 6px;
+  }
+
+  &__spinner {
+    animation: cost-center-budgets-spin 1s linear infinite;
+  }
+}
+
+@keyframes cost-center-budgets-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

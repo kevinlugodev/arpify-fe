@@ -1,0 +1,99 @@
+<section class="payroll-run-employees">
+  <header class="payroll-run-employees__header">
+    <h2 class="payroll-run-employees__title">
+      <i class="bi bi-people payroll-run-employees__icon"></i>
+      Colaboradores de la planilla {{ payrollRun().period_month }}/{{ payrollRun().period_year }}
+    </h2>
+    <p class="payroll-run-employees__description">
+      Total bruto: {{ payrollRun().total_gross_amount | number: '1.2-2' }} ·
+      Descuentos: {{ payrollRun().total_employee_deductions | number: '1.2-2' }} ·
+      Aportes: {{ payrollRun().total_employer_contributions | number: '1.2-2' }} ·
+      Neto: {{ payrollRun().total_net_payable | number: '1.2-2' }}
+    </p>
+  </header>
+
+  @if (isDraft()) {
+    <form class="payroll-run-employees__form" (ngSubmit)="onAddEmployee()">
+      <fieldset class="payroll-run-employees__section">
+        <legend class="payroll-run-employees__section-title">Agregar colaborador</legend>
+
+        <div class="payroll-run-employees__fields">
+          <div class="form-field payroll-run-employees__field--wide">
+            <label>Colaborador <span class="payroll-run-employees__required">*</span></label>
+            <app-fluent-dropdown [formField]="addEmployeeForm.employee_id">
+              @for (option of getAvailableEmployeeOptions(); track option.value) {
+                <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            @if (addEmployeeForm.employee_id().invalid() && addEmployeeForm.employee_id().touched()) {
+              <span class="form-field__error">{{ addEmployeeForm.employee_id().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Otros descuentos</label>
+            <app-fluent-text-input
+              type="text"
+              inputmode="decimal"
+              [decimals]="2"
+              [formField]="addEmployeeForm.other_deductions"
+            />
+            <span class="payroll-run-employees__field-hint">Monto adicional a descontar.</span>
+          </div>
+        </div>
+
+        <div class="payroll-run-employees__actions">
+          <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onAddEmployee()">
+            @if (saving()) {
+              <i class="bi bi-arrow-repeat payroll-run-employees__spinner payroll-run-employees__action-icon"></i>
+              Agregando...
+            } @else {
+              <i class="bi bi-plus-lg payroll-run-employees__action-icon"></i>
+              Agregar colaborador
+            }
+          </fluent-button>
+        </div>
+      </fieldset>
+    </form>
+  } @else {
+    <div class="payroll-run-employees__notice">
+      <i class="bi bi-info-circle"></i>
+      La planilla no está en borrador, por lo que no se pueden agregar o quitar colaboradores.
+    </div>
+  }
+
+  <section class="payroll-run-employees__panel">
+    <header class="payroll-run-employees__panel-header">
+      <h3 class="payroll-run-employees__panel-title">
+        <i class="bi bi-list-ul payroll-run-employees__panel-icon"></i>
+        Líneas de planilla
+      </h3>
+    </header>
+
+    @if (items().length === 0 && !itemsLoading()) {
+      <app-empty-state
+        icon="bi-people"
+        title="Sin colaboradores"
+        message="Agrega colaboradores a la planilla para calcular montos."
+      />
+    } @else {
+      <app-data-table
+        [columns]="columns"
+        [rows]="rowData()"
+        [loading]="itemsLoading()"
+        [rowActions]="isDraft() ? removeAction : []"
+        (rowActionClick)="onAction($event)"
+      />
+    }
+  </section>
+
+  <app-confirm-dialog
+    #removeDialog
+    title="Quitar colaborador"
+    message="¿Estás seguro de que deseas quitar este colaborador de la planilla?"
+    confirmLabel="Quitar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmRemove()"
+  />
+</section>

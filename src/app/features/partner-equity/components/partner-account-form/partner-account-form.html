@@ -1,0 +1,58 @@
+<form class="partner-account-form" (ngSubmit)="onSubmit()">
+  <fieldset class="partner-account-form__section">
+    <legend class="partner-account-form__section-title">
+      {{ editingAccount() ? 'Editar cuenta de socio' : 'Nueva cuenta de socio' }}
+    </legend>
+
+    <div class="partner-account-form__fields">
+      <div class="form-field partner-account-form__field--wide">
+        <label>Colaborador <span class="partner-account-form__required">*</span></label>
+        @if (editingAccount()) {
+          <p class="partner-account-form__readonly">{{ selectedEmployeeName() }}</p>
+          <span class="partner-account-form__field-hint">El colaborador no se puede modificar en una cuenta existente.</span>
+        } @else {
+          <app-fluent-dropdown [formField]="form.partner_employee_id">
+            @for (option of teamMemberOptions(); track option.value) {
+              <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+            }
+          </app-fluent-dropdown>
+          <span class="partner-account-form__field-hint">El colaborador debe estar registrado en el equipo.</span>
+        }
+        @if (form.partner_employee_id().invalid() && form.partner_employee_id().touched()) {
+          <span class="form-field__error">{{ form.partner_employee_id().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>% Participación <span class="partner-account-form__required">*</span></label>
+        <app-fluent-text-input
+          type="text"
+          inputmode="decimal"
+          [decimals]="2"
+          [formField]="form.equity_percentage"
+        />
+        <span class="partner-account-form__field-hint">Valor entre 0 y 100.</span>
+        @if (form.equity_percentage().invalid() && form.equity_percentage().touched()) {
+          <span class="form-field__error">{{ form.equity_percentage().getError('required')?.message }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="partner-account-form__actions">
+      @if (editingAccount()) {
+        <fluent-button type="button" appearance="neutral" (click)="onCancel()">
+          Cancelar
+        </fluent-button>
+      }
+      <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSubmit()">
+        @if (saving()) {
+          <i class="bi bi-arrow-repeat partner-account-form__spinner partner-account-form__action-icon"></i>
+          Guardando...
+        } @else {
+          <i class="bi bi-check-lg partner-account-form__action-icon"></i>
+          {{ editingAccount() ? 'Actualizar cuenta' : 'Crear cuenta' }}
+        }
+      </fluent-button>
+    </div>
+  </fieldset>
+</form>

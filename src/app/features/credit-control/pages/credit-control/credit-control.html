@@ -1,0 +1,58 @@
+<div class="credit-control">
+  <app-page-header
+    title="Control de Crédito y Cobranza"
+    subtitle="Seguimiento de cuentas por cobrar, pagos parciales/totales y acciones de cobranza"
+    icon="bi-credit-card"
+  />
+
+  <app-workflow-tip
+    title="Flujo recomendado"
+    subtitle="Sigue estos pasos para mantener el control de tus cuentas por cobrar."
+    [steps]="[
+      'Crea un cronograma cuando se emite una factura de venta con vencimiento futuro',
+      'Registra pagos a medida que el cliente liquida la deuda',
+      'Si el cliente no paga, registra bitácoras de contacto periódicamente',
+      'Consulta el aging report para priorizar cobranzas'
+    ]"
+  />
+
+  <div class="credit-control__tabs">
+    <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+      <fluent-tab id="schedules">Cronogramas</fluent-tab>
+      <fluent-tab id="payments">Pagos</fluent-tab>
+      <fluent-tab id="logs">Cobranzas</fluent-tab>
+      <fluent-tab id="aging">Aging report</fluent-tab>
+    </fluent-tablist>
+  </div>
+
+  @if (activeTab() === 'schedules') {
+    <app-schedule-list
+      [schedules]="schedules()"
+      [customers]="customers()"
+      [invoices]="invoices()"
+      [loading]="schedulesLoading() || customersLoading() || invoicesLoading()"
+      (scheduleSelect)="onScheduleSelect($event)"
+      (schedulesChanged)="reloadSchedules()"
+    />
+  }
+
+  @if (activeTab() === 'payments') {
+    <app-schedule-payments
+      [schedules]="schedules()"
+      [selectedScheduleId]="selectedScheduleId()"
+      (schedulesChanged)="reloadSchedules()"
+    />
+  }
+
+  @if (activeTab() === 'logs') {
+    <app-collection-logs
+      [schedules]="schedules()"
+      [selectedScheduleId]="selectedScheduleId()"
+      (schedulesChanged)="reloadSchedules()"
+    />
+  }
+
+  @if (activeTab() === 'aging') {
+    <app-aging-report />
+  }
+</div>

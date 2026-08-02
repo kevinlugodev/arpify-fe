@@ -1,0 +1,37 @@
+<section class="compensation-list__panel">
+  <header class="compensation-list__panel-header">
+    <h2 class="compensation-list__panel-title">
+      <i class="bi bi-cash-stack compensation-list__panel-icon"></i>
+      Compensaciones registradas
+    </h2>
+    <p class="compensation-list__panel-description">
+      Historial de salarios, regimenes laborales y sistemas de pensión por colaborador.
+    </p>
+  </header>
+
+  @if (compensations().length === 0 && !compensationsLoading()) {
+    <app-empty-state
+      icon="bi-cash-stack"
+      title="Sin compensaciones"
+      message="Registra la primera compensación para comenzar a armar planillas."
+    />
+  } @else {
+    <app-data-table
+      [columns]="columns"
+      [rows]="rowData()"
+      [loading]="compensationsLoading()"
+      [rowActions]="actions"
+      (rowActionClick)="onAction($event)"
+    />
+  }
+</section>
+
+<app-confirm-dialog
+  #deleteDialog
+  title="Eliminar compensación"
+  message="¿Estás seguro de que deseas eliminar esta compensación? Esta acción no se puede deshacer."
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  confirmAppearance="danger"
+  (confirm)="onConfirmDelete()"
+/>

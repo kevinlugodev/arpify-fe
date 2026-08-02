@@ -1,0 +1,66 @@
+<form class="schedule-form" (ngSubmit)="onSubmit()">
+  <fieldset class="schedule-form__section">
+    <legend class="schedule-form__section-title">
+      {{ isEditing() ? 'Editar cronograma' : 'Nuevo cronograma' }}
+    </legend>
+
+    <div class="schedule-form__fields">
+      <div class="form-field schedule-form__field--wide">
+        <label>Factura de venta <span class="schedule-form__required">*</span></label>
+        <app-fluent-dropdown [formField]="form.receivable_id">
+          @for (option of invoiceOptions(); track option.value) {
+            <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+        <span class="schedule-form__field-hint">Factura a la que se asocia la cuenta por cobrar.</span>
+        @if (form.receivable_id().invalid() && form.receivable_id().touched()) {
+          <span class="form-field__error">{{ form.receivable_id().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Cliente</label>
+        <app-fluent-dropdown [formField]="form.customer_id">
+          @for (option of customerOptions(); track option.value) {
+            <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+        <span class="schedule-form__field-hint">Opcional. Cliente asociado a la deuda.</span>
+      </div>
+
+      <div class="form-field">
+        <label>Fecha de vencimiento <span class="schedule-form__required">*</span></label>
+        <app-fluent-text-input type="date" [formField]="form.original_due_date" />
+        @if (form.original_due_date().invalid() && form.original_due_date().touched()) {
+          <span class="form-field__error">{{ form.original_due_date().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Monto a cobrar <span class="schedule-form__required">*</span></label>
+        <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="form.invoice_amount" />
+        <span class="schedule-form__field-hint">Envía 0 para usar el total de la factura.</span>
+        @if (form.invoice_amount().invalid() && form.invoice_amount().touched()) {
+          <span class="form-field__error">{{ form.invoice_amount().getError('required')?.message }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="schedule-form__actions">
+      @if (isEditing()) {
+        <fluent-button type="button" appearance="neutral" (click)="onCancel()">
+          Cancelar
+        </fluent-button>
+      }
+      <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSubmit()">
+        @if (saving()) {
+          <i class="bi bi-arrow-repeat schedule-form__spinner schedule-form__action-icon"></i>
+          Guardando...
+        } @else {
+          <i class="bi bi-check-lg schedule-form__action-icon"></i>
+          {{ isEditing() ? 'Actualizar cronograma' : 'Crear cronograma' }}
+        }
+      </fluent-button>
+    </div>
+  </fieldset>
+</form>

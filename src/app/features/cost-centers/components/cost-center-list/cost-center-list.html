@@ -1,0 +1,27 @@
+<section class="cost-center-list">
+  <header class="cost-center-list__header">
+    <h2 class="cost-center-list__title">
+      <i class="bi bi-diagram-3 cost-center-list__icon"></i>
+      Centros registrados
+    </h2>
+    <p class="cost-center-list__description">
+      Listado de centros de costo del tenant. Selecciona uno para editar o eliminar.
+    </p>
+  </header>
+
+  @if (costCenters().length === 0 && !loading()) {
+    <app-empty-state
+      icon="bi-diagram-3"
+      title="Sin centros de costo"
+      message="Crea el primer centro para comenzar a clasificar los gastos operativos."
+    />
+  } @else {
+    <app-data-table
+      [columns]="columns"
+      [rows]="costCenters()"
+      [loading]="loading()"
+      [rowActions]="actions"
+      (rowActionClick)="onAction($event)"
+    />
+  }
+</section>

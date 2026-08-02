@@ -1,0 +1,88 @@
+<div class="schedule-payments">
+  <div class="form-field schedule-payments__schedule-field">
+    <label>Cronograma <span class="schedule-payments__required">*</span></label>
+    <app-fluent-dropdown [formField]="form.schedule_id" (change)="onScheduleChange()">
+      @for (option of scheduleOptions(); track option.value) {
+        <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+      }
+    </app-fluent-dropdown>
+    <span class="schedule-payments__field-hint">Selecciona la cuenta por cobrar a la que deseas registrar un pago.</span>
+  </div>
+
+  @if (selectedSchedule(); as schedule) {
+    <section class="schedule-payments__panel">
+      <header class="schedule-payments__panel-header">
+        <h2 class="schedule-payments__panel-title">
+          <i class="bi bi-receipt schedule-payments__panel-icon"></i>
+          Detalle de la cuenta por cobrar
+        </h2>
+      </header>
+
+      <div class="schedule-payments__summary">
+        <div class="schedule-payments__summary-item">
+          <span class="schedule-payments__summary-label">Monto total</span>
+          <span class="schedule-payments__summary-value">{{ schedule.invoice_amount | number: '1.2-2' }}</span>
+        </div>
+        <div class="schedule-payments__summary-item">
+          <span class="schedule-payments__summary-label">Pagado</span>
+          <span class="schedule-payments__summary-value">{{ schedule.paid_amount | number: '1.2-2' }}</span>
+        </div>
+        <div class="schedule-payments__summary-item">
+          <span class="schedule-payments__summary-label">Saldo pendiente</span>
+          <span class="schedule-payments__summary-value">{{ remainingAmount() | number: '1.2-2' }}</span>
+        </div>
+        <div class="schedule-payments__summary-item">
+          <span class="schedule-payments__summary-label">Días vencido</span>
+          <span class="schedule-payments__summary-value">{{ schedule.days_overdue }}</span>
+        </div>
+        <div class="schedule-payments__summary-item">
+          <span class="schedule-payments__summary-label">Estado</span>
+          <app-status-tag [status]="schedule.collection_status" domain="credit-schedule-status" />
+        </div>
+      </div>
+    </section>
+
+    <form class="schedule-payments__form" (ngSubmit)="onSubmit()">
+      <fieldset class="schedule-payments__section">
+        <legend class="schedule-payments__section-title">Registrar pago</legend>
+
+        <div class="schedule-payments__fields">
+          <div class="form-field">
+            <label>Fecha de pago <span class="schedule-payments__required">*</span></label>
+            <app-fluent-text-input type="date" [formField]="form.actual_payment_date" />
+            @if (form.actual_payment_date().invalid() && form.actual_payment_date().touched()) {
+              <span class="form-field__error">{{ form.actual_payment_date().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Monto pagado <span class="schedule-payments__required">*</span></label>
+            <app-fluent-text-input type="text" inputmode="decimal" [decimals]="2" [formField]="form.paid_amount" />
+            <span class="schedule-payments__field-hint">Saldo pendiente: {{ remainingAmount() | number: '1.2-2' }}</span>
+            @if (form.paid_amount().invalid() && form.paid_amount().touched()) {
+              <span class="form-field__error">{{ form.paid_amount().getError('required')?.message }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="schedule-payments__actions">
+          <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSubmit()">
+            @if (saving()) {
+              <i class="bi bi-arrow-repeat schedule-payments__spinner schedule-payments__action-icon"></i>
+              Registrando...
+            } @else {
+              <i class="bi bi-check-lg schedule-payments__action-icon"></i>
+              Registrar pago
+            }
+          </fluent-button>
+        </div>
+      </fieldset>
+    </form>
+  } @else {
+    <app-empty-state
+      icon="bi-cash-coin"
+      title="Selecciona un cronograma"
+      message="Elige una cuenta por cobrar para ver su saldo y registrar un pago."
+    />
+  }
+</div>

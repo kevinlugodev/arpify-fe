@@ -1,0 +1,62 @@
+<div class="asset-list">
+  <header class="asset-list__header">
+    <div class="asset-list__header-title">
+      <h2 class="asset-list__title">
+        <i class="bi bi-box-seam asset-list__icon"></i>
+        Activos fijos
+      </h2>
+      <p class="asset-list__description">
+        Listado de activos capitalizables, su vida útil y estado contable actual.
+      </p>
+    </div>
+    <fluent-button type="button" appearance="accent" (click)="create.emit()">
+      <i class="bi bi-plus-lg asset-list__action-icon"></i>
+      Nuevo activo
+    </fluent-button>
+  </header>
+
+  <div class="asset-list__filters">
+    <app-search-field
+      class="asset-list__search"
+      placeholder="Buscar por código o nombre..."
+      [value]="search()"
+      (valueChange)="search.set($event)"
+    />
+
+    <div class="form-field">
+      <label>Categoría</label>
+      <app-fluent-dropdown [value]="categoryFilter()" (valueChange)="onCategoryChange($event)">
+        @for (option of categoryOptions; track option.value) {
+          <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+        }
+      </app-fluent-dropdown>
+    </div>
+
+    <div class="form-field">
+      <label>Estado</label>
+      <app-fluent-dropdown [value]="statusFilter()" (valueChange)="onStatusChange($event)">
+        @for (option of statusOptions; track option.value) {
+          <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+        }
+      </app-fluent-dropdown>
+    </div>
+  </div>
+
+  @if (rows().length === 0 && !loading()) {
+    <app-empty-state
+      icon="bi-box-seam"
+      title="Sin activos fijos"
+      message="Crea el primer activo para comenzar a registrar depreciaciones."
+      actionLabel="Nuevo activo"
+      (actionClick)="create.emit()"
+    />
+  } @else {
+    <app-data-table
+      [columns]="columns"
+      [rows]="rows()"
+      [loading]="loading()"
+      [rowActions]="actions"
+      (rowActionClick)="onAction($event)"
+    />
+  }
+</div>

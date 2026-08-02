@@ -1,0 +1,145 @@
+<div class="asset-form">
+  <header class="asset-form__header">
+    <div class="asset-form__header-title">
+      <h2 class="asset-form__title">
+        <i class="bi bi-{{ isEditing() ? 'pencil-square' : 'plus-square' }} asset-form__icon"></i>
+        {{ isEditing() ? 'Editar activo' : 'Nuevo activo' }}
+      </h2>
+      <p class="asset-form__description">
+        Registra los datos de compra, vida útil y asignación del activo fijo.
+      </p>
+    </div>
+  </header>
+
+  <form class="asset-form__form" (ngSubmit)="onSubmit()">
+    <fieldset class="asset-form__section">
+      <legend class="asset-form__section-title">Información general</legend>
+
+      <div class="asset-form__fields">
+        <div class="form-field">
+          <label>Código <span class="asset-form__required">*</span></label>
+          <app-fluent-text-input [formField]="form.asset_code" />
+          <span class="asset-form__field-hint">Ej. AST-LAP-001. Único por tenant.</span>
+          @if (form.asset_code().invalid() && form.asset_code().touched()) {
+            <span class="form-field__error">{{
+              form.asset_code().getError('required')?.message
+            }}</span>
+          }
+        </div>
+
+        <div class="form-field asset-form__field--wide">
+          <label>Nombre <span class="asset-form__required">*</span></label>
+          <app-fluent-text-input [formField]="form.name" />
+          <span class="asset-form__field-hint">Ej. MacBook Pro M3.</span>
+          @if (form.name().invalid() && form.name().touched()) {
+            <span class="form-field__error">{{ form.name().getError('required')?.message }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Categoría <span class="asset-form__required">*</span></label>
+          <app-fluent-dropdown [formField]="form.category">
+            <fluent-option value="">Selecciona...</fluent-option>
+            @for (option of categoryOptions; track option.value) {
+              <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+            }
+          </app-fluent-dropdown>
+          @if (form.category().invalid() && form.category().touched()) {
+            <span class="form-field__error">{{
+              form.category().getError('required')?.message
+            }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Fecha de compra <span class="asset-form__required">*</span></label>
+          <app-fluent-text-input type="date" [formField]="form.purchase_date" />
+          @if (form.purchase_date().invalid() && form.purchase_date().touched()) {
+            <span class="form-field__error">{{
+              form.purchase_date().getError('required')?.message
+            }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Costo de compra <span class="asset-form__required">*</span></label>
+          <app-fluent-text-input
+            type="text"
+            inputmode="decimal"
+            [decimals]="2"
+            [formField]="form.purchase_cost"
+          />
+          @if (form.purchase_cost().invalid() && form.purchase_cost().touched()) {
+            <span class="form-field__error">{{
+              form.purchase_cost().getError('required')?.message
+            }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Valor residual <span class="asset-form__required">*</span></label>
+          <app-fluent-text-input
+            type="text"
+            inputmode="decimal"
+            [decimals]="2"
+            [formField]="form.residual_value"
+          />
+          <span class="asset-form__field-hint">Valor al final de la vida útil.</span>
+          @if (form.residual_value().invalid() && form.residual_value().touched()) {
+            <span class="form-field__error">{{
+              form.residual_value().getError('required')?.message
+            }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Vida útil (meses) <span class="asset-form__required">*</span></label>
+          <app-fluent-text-input type="number" [formField]="form.useful_life_months" />
+          @if (form.useful_life_months().invalid() && form.useful_life_months().touched()) {
+            <span class="form-field__error">{{
+              form.useful_life_months().getError('required')?.message
+            }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label>Asignado a</label>
+          <app-fluent-dropdown [formField]="form.assigned_employee_id">
+            <fluent-option value="">Sin asignar</fluent-option>
+            @for (option of employeeOptions(); track option.value) {
+              <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+            }
+          </app-fluent-dropdown>
+        </div>
+
+        <div class="form-field">
+          <label>Estado <span class="asset-form__required">*</span></label>
+          <app-fluent-dropdown [formField]="form.status">
+            <fluent-option value="">Selecciona...</fluent-option>
+            @for (option of statusOptions; track option.value) {
+              <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+            }
+          </app-fluent-dropdown>
+          @if (form.status().invalid() && form.status().touched()) {
+            <span class="form-field__error">{{ form.status().getError('required')?.message }}</span>
+          }
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="asset-form__actions">
+      <fluent-button type="button" appearance="neutral" (click)="onCancel()">
+        Cancelar
+      </fluent-button>
+      <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSubmit()">
+        @if (saving()) {
+          <i class="bi bi-arrow-repeat asset-form__spinner asset-form__action-icon"></i>
+          Guardando...
+        } @else {
+          <i class="bi bi-check-lg asset-form__action-icon"></i>
+          {{ isEditing() ? 'Actualizar activo' : 'Crear activo' }}
+        }
+      </fluent-button>
+    </div>
+  </form>
+</div>

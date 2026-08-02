@@ -1,0 +1,130 @@
+<form class="compensation-form" (ngSubmit)="onSubmit()">
+  <fieldset class="compensation-form__section">
+    <legend class="compensation-form__section-title">
+      {{ editingId() ? 'Editar compensación' : 'Nueva compensación' }}
+    </legend>
+
+    <div class="compensation-form__fields">
+      <div class="form-field">
+        <label>Colaborador <span class="compensation-form__required">*</span></label>
+        <app-fluent-dropdown [formField]="compensationForm.employee_id">
+          <fluent-option value="">Selecciona...</fluent-option>
+          @for (option of employeesOptions(); track option.value) {
+            <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+        @if (compensationForm.employee_id().invalid() && compensationForm.employee_id().touched()) {
+          <span class="form-field__error">{{ compensationForm.employee_id().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Salario base <span class="compensation-form__required">*</span></label>
+        <app-fluent-text-input
+          type="text"
+          inputmode="decimal"
+          [decimals]="2"
+          [formField]="compensationForm.base_salary"
+        />
+        @if (compensationForm.base_salary().invalid() && compensationForm.base_salary().touched()) {
+          <span class="form-field__error">{{ compensationForm.base_salary().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Moneda <span class="compensation-form__required">*</span></label>
+        <app-fluent-dropdown [formField]="compensationForm.currency">
+          <fluent-option value="">Selecciona...</fluent-option>
+          @for (option of currencyOptions; track option.value) {
+            <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+        @if (compensationForm.currency().invalid() && compensationForm.currency().touched()) {
+          <span class="form-field__error">{{ compensationForm.currency().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Régimen laboral <span class="compensation-form__required">*</span></label>
+        <app-fluent-dropdown [formField]="compensationForm.labor_regime">
+          <fluent-option value="">Selecciona...</fluent-option>
+          @for (option of laborRegimeOptions; track option.value) {
+            <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+        @if (compensationForm.labor_regime().invalid() && compensationForm.labor_regime().touched()) {
+          <span class="form-field__error">{{ compensationForm.labor_regime().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Sistema de pensión <span class="compensation-form__required">*</span></label>
+        <app-fluent-dropdown [formField]="compensationForm['pension_system']">
+          <fluent-option value="">Selecciona...</fluent-option>
+          @for (option of pensionSystemOptions; track option.value) {
+            <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+        @if (compensationForm['pension_system']().invalid() && compensationForm['pension_system']().touched()) {
+          <span class="form-field__error">{{ compensationForm['pension_system']().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>CUSPP</label>
+        <app-fluent-text-input [formField]="compensationForm.cuspp_number" />
+        <span class="compensation-form__field-hint">Código único de identificación de pensionista.</span>
+      </div>
+
+      <div class="form-field">
+        <label>Banco</label>
+        <app-fluent-text-input [formField]="compensationForm.bank_name" />
+      </div>
+
+      <div class="form-field">
+        <label>Cuenta bancaria</label>
+        <app-fluent-text-input [formField]="compensationForm.bank_account_number" />
+      </div>
+
+      <div class="form-field">
+        <label>CCI</label>
+        <app-fluent-text-input [formField]="compensationForm.bank_cci" />
+      </div>
+
+      <div class="form-field">
+        <label>Fecha inicio vigencia <span class="compensation-form__required">*</span></label>
+        <app-fluent-text-input type="date" [formField]="compensationForm.effective_start_date" />
+        @if (compensationForm.effective_start_date().invalid() && compensationForm.effective_start_date().touched()) {
+          <span class="form-field__error">{{ compensationForm.effective_start_date().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Fecha fin vigencia</label>
+        <app-fluent-text-input type="date" [formField]="compensationForm.effective_end_date" />
+        <span class="compensation-form__field-hint">Dejar vacío si aún está vigente.</span>
+      </div>
+
+      <div class="form-field compensation-form__field--checkbox">
+        <app-fluent-checkbox [formField]="compensationForm.has_medical_insurance">Tiene seguro médico (EPS)</app-fluent-checkbox>
+      </div>
+    </div>
+
+    <div class="compensation-form__actions">
+      @if (editingId()) {
+        <fluent-button type="button" appearance="neutral" (click)="onCancel()">
+          Cancelar
+        </fluent-button>
+      }
+      <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSubmit()">
+        @if (saving()) {
+          <i class="bi bi-arrow-repeat compensation-form__spinner compensation-form__action-icon"></i>
+          Guardando...
+        } @else {
+          <i class="bi bi-check-lg compensation-form__action-icon"></i>
+          {{ editingId() ? 'Actualizar compensación' : 'Crear compensación' }}
+        }
+      </fluent-button>
+    </div>
+  </fieldset>
+</form>

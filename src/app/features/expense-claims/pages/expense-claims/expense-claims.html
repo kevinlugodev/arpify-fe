@@ -1,0 +1,97 @@
+<div class="expense-claims">
+  <app-page-header
+    title="Rendición de Gastos"
+    subtitle="Registra, revisa y liquida los gastos adelantados por los colaboradores."
+    icon="bi-receipt"
+  />
+
+  <app-workflow-tip
+    title="Flujo recomendado"
+    subtitle="Sigue estos pasos para gestionar las rendiciones de gastos."
+    [steps]="[
+      'El colaborador crea la rendición en Borrador',
+      'Agrega los comprobantes de gasto',
+      'Envía la rendición para aprobación',
+      'Un aprobador revisa y aprueba',
+      'Un administrador liquida según el saldo'
+    ]"
+  />
+
+  <section class="expense-claims__filters">
+    <div class="form-field">
+      <label>Buscar</label>
+      <app-fluent-text-input [formField]="filterForm.search" />
+    </div>
+
+    <div class="form-field">
+      <label>Estado</label>
+      <app-fluent-dropdown [formField]="filterForm.status">
+        @for (option of statusOptions; track option.value) {
+          <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+        }
+      </app-fluent-dropdown>
+    </div>
+
+    <div class="form-field">
+      <label>Colaborador</label>
+      <app-fluent-dropdown [formField]="filterForm.employee_id">
+        <fluent-option value="">Todos los colaboradores</fluent-option>
+        @for (option of employeeOptions(); track option.value) {
+          <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+        }
+      </app-fluent-dropdown>
+    </div>
+  </section>
+
+  <div class="expense-claims__tabs">
+    <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+      <fluent-tab id="list">Rendiciones</fluent-tab>
+      <fluent-tab id="form">{{ selectedClaim() ? 'Editar rendición' : 'Nueva rendición' }}</fluent-tab>
+      <fluent-tab id="items">Comprobantes</fluent-tab>
+    </fluent-tablist>
+  </div>
+
+  @if (activeTab() === 'list') {
+    <section class="expense-claims__panel">
+      <app-claim-list
+        [claims]="claims()"
+        [employees]="employees()"
+        [loading]="claimsLoading()"
+        (newClaim)="onNewClaim()"
+        (claimAction)="onClaimAction($event)"
+      />
+    </section>
+  }
+
+  @if (activeTab() === 'form') {
+    <section class="expense-claims__panel">
+      <app-claim-form
+        [claim]="selectedClaim()"
+        [employees]="employees()"
+        (saved)="onFormSaved()"
+        (cancel)="onFormCancel()"
+      />
+    </section>
+  }
+
+  @if (activeTab() === 'items') {
+    <section class="expense-claims__panel">
+      <app-claim-items
+        [claim]="selectedClaim()"
+        [accounts]="accounts()"
+        [funds]="funds()"
+        (saved)="onItemsSaved()"
+      />
+    </section>
+  }
+
+  <app-confirm-dialog
+    #claimDeleteDialog
+    title="Eliminar rendición"
+    message="¿Estás seguro de que deseas eliminar esta rendición? Esta acción no se puede deshacer."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmClaimDelete()"
+  />
+</div>

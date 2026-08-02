@@ -1,0 +1,127 @@
+<div class="partner-equity">
+  <app-page-header
+    title="Cuentas de Socios"
+    subtitle="Gestión de socios, distribución de utilidades, adelantos y liquidaciones."
+    icon="bi-people"
+  />
+
+  <app-workflow-tip
+    title="Flujo recomendado"
+    subtitle="Sigue estos pasos para gestionar las utilidades y retiros de los socios."
+    [steps]="[
+      'Crea las cuentas de socio con el porcentaje de participación',
+      'Registra una distribución de utilidades ingresando el monto bruto y reserva',
+      'El sistema acredita automáticamente a cada socio',
+      'El socio puede solicitar un adelanto si tiene saldo disponible',
+      'Registra la liquidación con el número de RHE correspondiente'
+    ]"
+  />
+
+  <div class="partner-equity__tabs">
+    <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+      <fluent-tab id="partner-accounts">Cuentas de socios</fluent-tab>
+      <fluent-tab id="profit-distributions">Distribuciones</fluent-tab>
+      <fluent-tab id="partner-draws">Retiros y liquidaciones</fluent-tab>
+    </fluent-tablist>
+  </div>
+
+  @if (activeTab() === 'partner-accounts') {
+    <section class="partner-equity__panel">
+      <app-partner-account-form
+        [teamMembers]="teamMembers()"
+        [editingAccount]="editingAccount()"
+        (submitSuccess)="onAccountFormSuccess()"
+        (cancel)="onAccountFormCancel()"
+      />
+
+      @if (selectedStatementAccountId()) {
+        <section class="partner-equity__statement">
+          <header class="partner-equity__statement-header">
+            <h3 class="partner-equity__statement-title">
+              <i class="bi bi-file-earmark-text partner-equity__statement-icon"></i>
+              Estado de cuenta: {{ statementAccountName() }}
+            </h3>
+            <fluent-button type="button" appearance="neutral" (click)="closeStatement()">
+              Cerrar
+            </fluent-button>
+          </header>
+
+          @if (statementLoading()) {
+            <p>Cargando estado de cuenta...</p>
+          } @else if (statement()) {
+            <div class="partner-equity__statement-summary">
+              <p>
+                <strong>% Participación:</strong> {{ statement()!.partner_account.equity_percentage }}% —
+                <strong>Saldo disponible:</strong> {{ statement()!.partner_account.current_available_balance }} —
+                <strong>Total movimientos:</strong> {{ statement()!.total }}
+              </p>
+            </div>
+
+            @if (statement()!.transactions.length === 0) {
+              <app-empty-state
+                icon="bi-file-earmark-text"
+                title="Sin movimientos"
+                message="Este socio aún no tiene movimientos registrados."
+              />
+            } @else {
+              <app-data-table
+                [columns]="[
+                  { key: 'type', header: 'Tipo', type: 'status', statusDomain: 'partner-draw-type' },
+                  { key: 'amount', header: 'Monto' },
+                  { key: 'rhe_document_number', header: 'RHE' },
+                  { key: 'notes', header: 'Notas' },
+                  { key: 'created_at', header: 'Fecha' }
+                ]"
+                [rows]="statement()!.transactions"
+                [loading]="false"
+              />
+            }
+          }
+        </section>
+      }
+
+      <app-partner-account-list
+        [accounts]="partnerAccounts()"
+        [teamMembers]="teamMembers()"
+        [loading]="partnerAccountsLoading()"
+        [editingAccountId]="editingAccount()?.id ?? null"
+        (edit)="onAccountEdit($event)"
+        (delete)="onAccountDelete($event)"
+        (viewStatement)="onViewStatement($event)"
+      />
+    </section>
+  }
+
+  @if (activeTab() === 'profit-distributions') {
+    <section class="partner-equity__panel">
+      <app-profit-distribution-form (submitSuccess)="onDistributionCreated()" />
+      <app-profit-distribution-list
+        [distributions]="profitDistributions()"
+        [loading]="profitDistributionsLoading()"
+      />
+    </section>
+  }
+
+  @if (activeTab() === 'partner-draws') {
+    <section class="partner-equity__panel">
+      <app-partner-draws
+        [accounts]="partnerAccounts()"
+        [bankAccounts]="bankAccounts()"
+        [teamMembers]="teamMembers()"
+        [transactions]="drawTransactions()"
+        [loading]="drawTransactionsLoading() || bankAccountsLoading()"
+        (reload)="onDrawsReload()"
+      />
+    </section>
+  }
+
+  <app-confirm-dialog
+    #deleteDialog
+    title="Eliminar cuenta de socio"
+    message="¿Estás seguro de que deseas eliminar esta cuenta de socio? Esta acción no se puede deshacer."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmAccountDelete()"
+  />
+</div>

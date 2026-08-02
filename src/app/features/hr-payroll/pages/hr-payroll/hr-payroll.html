@@ -1,0 +1,69 @@
+<div class="hr-payroll">
+  <app-page-header
+    title="Planillas"
+    subtitle="Gestión de compensaciones y planillas mensuales de colaboradores"
+    icon="bi-people"
+  />
+
+  <app-workflow-tip
+    title="Flujo recomendado"
+    subtitle="Sigue estos pasos para procesar la remuneración mensual."
+    [steps]="[
+      'Registra las compensaciones vigentes de cada colaborador',
+      'Crea la planilla mensual en estado borrador',
+      'Agrega colaboradores a la planilla y revisa los cálculos',
+      'Aprueba la planilla para generar obligaciones en Tesorería',
+      'Cancela la planilla si ya no procede'
+    ]"
+  />
+
+  <div class="hr-payroll__tabs">
+    <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+      <fluent-tab id="compensations">Compensaciones</fluent-tab>
+      <fluent-tab id="payroll-runs">Planillas</fluent-tab>
+    </fluent-tablist>
+  </div>
+
+  @if (activeTab() === 'compensations') {
+    <section class="hr-payroll__panel">
+      <app-compensation-form
+        [employeesOptions]="employeesOptions()"
+        [editingCompensation]="editingCompensation()"
+        (saved)="onCompensationSaved()"
+        (cancelled)="onCompensationCancelled()"
+      />
+
+      <app-compensation-list
+        [employeesOptions]="employeesOptions()"
+        [reloadTrigger]="compensationReloadTrigger()"
+        (editCompensation)="onCompensationEdit($event)"
+        (changed)="compensationReloadTrigger.update(value => value + 1)"
+      />
+    </section>
+  }
+
+  @if (activeTab() === 'payroll-runs') {
+    <section class="hr-payroll__panel">
+      <app-payroll-run-form
+        [editingPayrollRun]="editingPayrollRun()"
+        (saved)="onPayrollRunSaved()"
+        (cancelled)="onPayrollRunCancelled()"
+      />
+
+      <app-payroll-run-list
+        [reloadTrigger]="payrollRunReloadTrigger()"
+        (editPayrollRun)="onPayrollRunEdit($event)"
+        (selectPayrollRun)="onPayrollRunSelect($event)"
+        (changed)="onPayrollRunChanged()"
+      />
+
+      @if (selectedPayrollRun()) {
+        <app-payroll-run-employees
+          [payrollRun]="selectedPayrollRun()!"
+          [employeesOptions]="employeesOptions()"
+          (changed)="onPayrollRunEmployeesChanged()"
+        />
+      }
+    </section>
+  }
+</div>

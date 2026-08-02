@@ -1,0 +1,58 @@
+<div class="cost-centers">
+  <app-page-header
+    title="Centros de Costo"
+    subtitle="Clasificación de gastos operativos y presupuestos mensuales"
+    icon="bi-diagram-3"
+  />
+
+  <app-workflow-tip
+    title="Flujo recomendado"
+    subtitle="Sigue estos pasos para mantener los gastos clasificados y presupuestados."
+    [steps]="[
+      'Crea el centro de costo con su código y nombre',
+      'Asigna un presupuesto mensual al centro',
+      'Consulta centros y presupuestos periódicamente',
+      'Edita o inactiva centros según cambie la organización'
+    ]"
+  />
+
+  <div class="cost-centers__tabs">
+    <fluent-tablist [activeid]="activeTab()" (change)="activeTab.set($any($event.target).activeid)">
+      <fluent-tab id="centers">Centros de costo</fluent-tab>
+      <fluent-tab id="budgets">Presupuestos</fluent-tab>
+    </fluent-tablist>
+  </div>
+
+  @if (activeTab() === 'centers') {
+    <section class="cost-centers__panel">
+      <app-cost-center-form
+        [costCenter]="editingCostCenter()"
+        (saved)="onSave($event)"
+        (cancelled)="onCancel()"
+      />
+
+      <app-cost-center-list
+        [costCenters]="costCenters()"
+        [loading]="costCentersLoading()"
+        (edit)="onEdit($event)"
+        (delete)="onRequestDelete($event)"
+      />
+    </section>
+  }
+
+  @if (activeTab() === 'budgets') {
+    <section class="cost-centers__panel">
+      <app-cost-center-budgets [costCenters]="costCenters()" />
+    </section>
+  }
+
+  <app-confirm-dialog
+    #deleteDialog
+    title="Eliminar centro de costo"
+    message="¿Estás seguro de que deseas eliminar este centro de costo? Esta acción no se puede deshacer."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmDelete()"
+  />
+</div>

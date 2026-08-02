@@ -1,0 +1,35 @@
+.partner-account-list {
+  &__header {
+    margin-bottom: var(--space-lg);
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0 0 var(--space-xs);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__icon {
+    color: var(--primary-color-600);
+  }
+
+  &__description {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--neutral-color-600);
+    line-height: 1.5;
+  }
+
+  &__row--editing {
+    background-color: #fff9e6 !important;
+    box-shadow: inset 3px 0 0 0 #ffb900;
+  }
+}
+
+.data-table tbody tr.partner-account-list__row--editing:hover {
+  background-color: #fff3cc !important;
+}

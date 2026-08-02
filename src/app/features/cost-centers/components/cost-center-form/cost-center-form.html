@@ -1,0 +1,63 @@
+<form class="cost-center-form" (ngSubmit)="onSubmit()">
+  <fieldset class="cost-center-form__section">
+    <legend class="cost-center-form__section-title">
+      {{ isEditing() ? 'Editar centro de costo' : 'Nuevo centro de costo' }}
+    </legend>
+
+    <div class="cost-center-form__fields">
+      <div class="form-field">
+        <label>Código <span class="cost-center-form__required">*</span></label>
+        <app-fluent-text-input [formField]="form.code" />
+        <span class="cost-center-form__field-hint">Ej. CC-ENG. Máx. 30 caracteres y único por tenant.</span>
+        @if (form.code().invalid() && form.code().touched()) {
+          <span class="form-field__error">{{ form.code().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Nombre <span class="cost-center-form__required">*</span></label>
+        <app-fluent-text-input [formField]="form.name" />
+        <span class="cost-center-form__field-hint">Ej. Ingeniería. Máx. 100 caracteres.</span>
+        @if (form.name().invalid() && form.name().touched()) {
+          <span class="form-field__error">{{ form.name().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field cost-center-form__field--wide">
+        <label>Descripción</label>
+        <app-fluent-text-input [formField]="form.description" />
+        <span class="cost-center-form__field-hint">Opcional. Resumen de la unidad organizativa.</span>
+      </div>
+
+      <div class="form-field">
+        <label>Estado <span class="cost-center-form__required">*</span></label>
+        <app-fluent-dropdown [formField]="form.status">
+          <fluent-option value="">Selecciona...</fluent-option>
+          @for (option of statusOptions; track option.value) {
+            <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+        @if (form.status().invalid() && form.status().touched()) {
+          <span class="form-field__error">{{ form.status().getError('required')?.message }}</span>
+        }
+      </div>
+
+      <div class="form-field cost-center-form__field--checkbox">
+        <app-fluent-checkbox [formField]="form.is_active">Activo</app-fluent-checkbox>
+        <span class="cost-center-form__field-hint">Desmarca para dar de baja el centro.</span>
+      </div>
+    </div>
+
+    <div class="cost-center-form__actions">
+      @if (isEditing()) {
+        <fluent-button type="button" appearance="neutral" (click)="onCancel()">
+          Cancelar
+        </fluent-button>
+      }
+      <fluent-button type="button" appearance="accent" (click)="onSubmit()">
+        <i class="bi bi-check-lg cost-center-form__action-icon"></i>
+        {{ isEditing() ? 'Actualizar centro' : 'Crear centro' }}
+      </fluent-button>
+    </div>
+  </fieldset>
+</form>

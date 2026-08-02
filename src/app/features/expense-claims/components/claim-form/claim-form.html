@@ -1,0 +1,112 @@
+<div class="claim-form">
+  <header class="claim-form__header">
+    <h2 class="claim-form__title">
+      <i class="bi bi-{{ isEditing() ? 'pencil-square' : 'plus-circle' }} claim-form__icon"></i>
+      {{ isEditing() ? 'Editar rendición' : 'Nueva rendición' }}
+    </h2>
+    <p class="claim-form__description">
+      {{ isEditing() ? 'Modifica los datos permitidos de la rendición.' : 'Completa los datos para crear una rendición en borrador.' }}
+    </p>
+  </header>
+
+  @if (isReadonly()) {
+    <div class="claim-form__readonly-banner">
+      <i class="bi bi-info-circle"></i>
+      Esta rendición ya no es editable porque su estado es {{ claim()?.status }}.
+    </div>
+  }
+
+  <form class="claim-form__form" (ngSubmit)="onSubmit()">
+    <fieldset class="claim-form__section">
+      <legend class="claim-form__section-title">Datos de la rendición</legend>
+
+      <div class="claim-form__fields">
+        @if (isEditing()) {
+          <div class="form-field">
+            <label>Número de rendición</label>
+            <div class="claim-form__static-value">{{ claim()?.claim_number }}</div>
+          </div>
+
+          <div class="form-field">
+            <label>Colaborador</label>
+            <div class="claim-form__static-value">{{ getEmployeeName(claim()?.employee_id ?? '') }}</div>
+          </div>
+        } @else {
+          <div class="form-field">
+            <label>Número de rendición <span class="claim-form__required">*</span></label>
+            <app-fluent-text-input [formField]="claimForm.claim_number" />
+            @if (claimForm.claim_number().invalid() && claimForm.claim_number().touched()) {
+              <span class="form-field__error">{{ claimForm.claim_number().getError('required')?.message }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Colaborador <span class="claim-form__required">*</span></label>
+            <app-fluent-dropdown [formField]="claimForm.employee_id">
+              <fluent-option value="">Selecciona un colaborador</fluent-option>
+              @for (option of employeeOptions(); track option.value) {
+                <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+              }
+            </app-fluent-dropdown>
+            @if (claimForm.employee_id().invalid() && claimForm.employee_id().touched()) {
+              <span class="form-field__error">{{ claimForm.employee_id().getError('required')?.message }}</span>
+            }
+          </div>
+        }
+
+        <div class="form-field">
+          <label>Título <span class="claim-form__required">*</span></label>
+          <app-fluent-text-input [formField]="claimForm.title" />
+          @if (claimForm.title().invalid() && claimForm.title().touched()) {
+            <span class="form-field__error">{{ claimForm.title().getError('required')?.message }}</span>
+          }
+        </div>
+
+        @if (isEditing()) {
+          <div class="form-field">
+            <label>Monto adelantado</label>
+            <div class="claim-form__static-value">{{ claim()?.total_advanced }}</div>
+          </div>
+        } @else {
+          <div class="form-field">
+            <label>Monto adelantado <span class="claim-form__required">*</span></label>
+            <app-fluent-text-input
+              type="text"
+              inputmode="decimal"
+              [decimals]="2"
+              [formField]="claimForm.total_advanced"
+            />
+            @if (claimForm.total_advanced().invalid() && claimForm.total_advanced().touched()) {
+              <span class="form-field__error">{{ claimForm.total_advanced().getError('required')?.message }}</span>
+            }
+          </div>
+        }
+
+        <div class="form-field claim-form__field--wide">
+          <label>Motivo / propósito</label>
+          <app-fluent-text-input [formField]="claimForm.purpose" />
+        </div>
+      </div>
+
+      <div class="claim-form__actions">
+        <fluent-button type="button" appearance="neutral" (click)="onCancel()">
+          Cancelar
+        </fluent-button>
+        <fluent-button
+          type="button"
+          appearance="accent"
+          [disabled]="saving() || isReadonly()"
+          (click)="onSubmit()"
+        >
+          @if (saving()) {
+            <i class="bi bi-arrow-repeat claim-form__spinner claim-form__action-icon"></i>
+            Guardando...
+          } @else {
+            <i class="bi bi-check-lg claim-form__action-icon"></i>
+            {{ isEditing() ? 'Actualizar rendición' : 'Crear rendición' }}
+          }
+        </fluent-button>
+      </div>
+    </fieldset>
+  </form>
+</div>

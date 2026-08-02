@@ -1,0 +1,53 @@
+.payroll-run-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+
+  &__section {
+    margin: 0;
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__section-title {
+    padding: 0;
+    margin: 0 0 var(--space-md);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  &__required {
+    color: var(--error-color);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    padding-top: var(--space-md);
+  }
+
+  &__action-icon {
+    margin-inline-end: 6px;
+  }
+
+  &__spinner {
+    animation: payroll-run-form-spin 1s linear infinite;
+  }
+}
+
+@keyframes payroll-run-form-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

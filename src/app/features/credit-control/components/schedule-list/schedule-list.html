@@ -1,0 +1,48 @@
+<div class="schedule-list">
+  <app-schedule-form
+    [customers]="customers()"
+    [invoices]="invoices()"
+    [schedule]="editingSchedule()"
+    (saved)="onScheduleSaved()"
+    (cancelled)="onScheduleCancelled()"
+  />
+
+  <section class="schedule-list__panel">
+    <header class="schedule-list__panel-header">
+      <h2 class="schedule-list__panel-title">
+        <i class="bi bi-calendar-week schedule-list__panel-icon"></i>
+        Cronogramas registrados
+      </h2>
+      <p class="schedule-list__panel-description">
+        Cuentas por cobrar asociadas a facturas de venta. Selecciona una fila para registrar pagos o bitácoras de cobranza.
+      </p>
+    </header>
+
+    @if (rows().length === 0 && !loading()) {
+      <app-empty-state
+        icon="bi-calendar-week"
+        title="Sin cronogramas"
+        message="Crea el primer cronograma de pago vinculado a una factura de venta."
+      />
+    } @else {
+      <app-data-table
+        [columns]="columns"
+        [rows]="rows()"
+        [loading]="loading()"
+        [rowActions]="actions"
+        [rowClass]="editingRowClass"
+        (rowActionClick)="onAction($event)"
+      />
+    }
+  </section>
+
+  <app-confirm-dialog
+    #deleteDialog
+    title="Eliminar cronograma"
+    message="¿Estás seguro de que deseas eliminar este cronograma? Se eliminarán también sus bitácoras de cobranza."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmDelete()"
+  />
+</div>

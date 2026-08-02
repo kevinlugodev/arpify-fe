@@ -1,0 +1,43 @@
+<div class="claim-list">
+  <header class="claim-list__header">
+    <div>
+      <h2 class="claim-list__title">
+        <i class="bi bi-receipt claim-list__icon"></i>
+        Rendiciones de gastos
+      </h2>
+      <p class="claim-list__description">
+        Registra, revisa y liquida los gastos adelantados por los colaboradores.
+      </p>
+    </div>
+    <fluent-button type="button" appearance="accent" (click)="onNewClaim()">
+      <i class="bi bi-plus-lg claim-list__action-icon"></i>
+      Nueva rendición
+    </fluent-button>
+  </header>
+
+  @if (claimRows().length === 0 && !loading()) {
+    <app-empty-state
+      icon="bi-receipt"
+      title="Sin rendiciones"
+      message="Crea la primera rendición de gastos para comenzar."
+    />
+  } @else {
+    <app-data-table
+      [columns]="claimColumns"
+      [rows]="claimRows()"
+      [loading]="loading()"
+      [rowActions]="claimActions"
+      (rowActionClick)="onAction($event)"
+    />
+  }
+
+  <app-confirm-dialog
+    #deleteDialog
+    title="Eliminar rendición"
+    message="¿Estás seguro de que deseas eliminar esta rendición? Esta acción no se puede deshacer."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmDelete()"
+  />
+</div>

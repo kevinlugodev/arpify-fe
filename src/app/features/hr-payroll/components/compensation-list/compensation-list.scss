@@ -1,0 +1,33 @@
+.compensation-list {
+  &__panel {
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__panel-header {
+    margin-bottom: var(--space-lg);
+  }
+
+  &__panel-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0 0 var(--space-xs);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__panel-icon {
+    color: var(--primary-color-600);
+  }
+
+  &__panel-description {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--neutral-color-600);
+    line-height: 1.5;
+  }
+}

@@ -1,0 +1,147 @@
+<div class="asset-depreciation">
+  <header class="asset-depreciation__header">
+    <div class="asset-depreciation__header-title">
+      <h2 class="asset-depreciation__title">
+        <i class="bi bi-graph-down-arrow asset-depreciation__icon"></i>
+        Depreciación de activos
+      </h2>
+      <p class="asset-depreciation__description">
+        Ejecuta la depreciación lineal mensual y consulta el histórico por activo.
+      </p>
+    </div>
+  </header>
+
+  <div class="asset-depreciation__controls">
+    <div class="form-field asset-depreciation__asset-field">
+      <label>Activo <span class="asset-depreciation__required">*</span></label>
+      <app-fluent-dropdown
+        [value]="selectedAssetId()"
+        (valueChange)="selectedAssetId.set($event); onAssetChange()"
+      >
+        @for (option of assetOptions(); track option.value) {
+          <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+        }
+      </app-fluent-dropdown>
+    </div>
+  </div>
+
+  @if (selectedAsset(); as asset) {
+    <section class="asset-depreciation__summary">
+      <div class="asset-depreciation__summary-card">
+        <span class="asset-depreciation__summary-label">Nombre</span>
+        <span class="asset-depreciation__summary-value">{{ asset.name }}</span>
+      </div>
+      <div class="asset-depreciation__summary-card">
+        <span class="asset-depreciation__summary-label">Categoría</span>
+        <span class="asset-depreciation__summary-value">{{ asset.category }}</span>
+      </div>
+      <div class="asset-depreciation__summary-card">
+        <span class="asset-depreciation__summary-label">Costo</span>
+        <span class="asset-depreciation__summary-value">{{
+          asset.purchase_cost | number: '1.2-2'
+        }}</span>
+      </div>
+      <div class="asset-depreciation__summary-card">
+        <span class="asset-depreciation__summary-label">Valor residual</span>
+        <span class="asset-depreciation__summary-value">{{
+          asset.residual_value | number: '1.2-2'
+        }}</span>
+      </div>
+      <div class="asset-depreciation__summary-card">
+        <span class="asset-depreciation__summary-label">Dep. acumulada</span>
+        <span class="asset-depreciation__summary-value">{{
+          asset.accumulated_depreciation | number: '1.2-2'
+        }}</span>
+      </div>
+      <div class="asset-depreciation__summary-card">
+        <span class="asset-depreciation__summary-label">Valor contable</span>
+        <span class="asset-depreciation__summary-value">{{
+          asset.current_book_value | number: '1.2-2'
+        }}</span>
+      </div>
+      <div class="asset-depreciation__summary-card">
+        <span class="asset-depreciation__summary-label">Depreciación mensual</span>
+        <span class="asset-depreciation__summary-value">{{
+          monthlyDepreciation() | number: '1.2-2'
+        }}</span>
+      </div>
+    </section>
+
+    <form class="asset-depreciation__form" (ngSubmit)="onDepreciate()">
+      <fieldset class="asset-depreciation__section">
+        <legend class="asset-depreciation__section-title">Ejecutar depreciación</legend>
+
+        <app-info-tip
+          message="La depreciación lineal se calcula como (costo - valor residual) / vida útil. Solo se permite para activos en estado Activo y no se puede repetir el mismo período."
+        />
+
+        <div class="asset-depreciation__fields">
+          <div class="form-field">
+            <label>Año <span class="asset-depreciation__required">*</span></label>
+            <app-fluent-text-input type="number" [formField]="form.period_year" />
+            @if (form.period_year().invalid() && form.period_year().touched()) {
+              <span class="form-field__error">{{
+                form.period_year().getError('required')?.message
+              }}</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label>Mes <span class="asset-depreciation__required">*</span></label>
+            <app-fluent-text-input type="number" [formField]="form.period_month" />
+            <span class="asset-depreciation__field-hint">1 - 12.</span>
+            @if (form.period_month().invalid() && form.period_month().touched()) {
+              <span class="form-field__error">{{
+                form.period_month().getError('required')?.message
+              }}</span>
+            }
+          </div>
+
+          <div class="form-field asset-depreciation__field--button">
+            <fluent-button
+              type="button"
+              appearance="accent"
+              [disabled]="saving() || asset.status !== 'ACTIVE'"
+              (click)="onDepreciate()"
+            >
+              @if (saving()) {
+                <i
+                  class="bi bi-arrow-repeat asset-depreciation__spinner asset-depreciation__action-icon"
+                ></i>
+                Ejecutando...
+              } @else {
+                <i class="bi bi-calculator asset-depreciation__action-icon"></i>
+                Depreciar
+              }
+            </fluent-button>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+
+    <section class="asset-depreciation__panel">
+      <header class="asset-depreciation__panel-header">
+        <h3 class="asset-depreciation__panel-title">
+          <i class="bi bi-clock-history asset-depreciation__panel-icon"></i>
+          Histórico de depreciación
+        </h3>
+      </header>
+
+      @if (logs().length === 0 && !logsLoading()) {
+        <app-empty-state
+          icon="bi-clock-history"
+          title="Sin depreciaciones"
+          message="Aún no se ha registrado depreciación para este activo."
+        />
+      } @else {
+        <app-data-table [columns]="logColumns" [rows]="logs()" [loading]="logsLoading()" />
+      }
+    </section>
+  } @else {
+    <app-empty-state
+      icon="bi-graph-down-arrow"
+      title="Selecciona un activo"
+      message="Elige un activo para ver su información y ejecutar depreciaciones."
+    />
+  }
+</div>

@@ -1,0 +1,53 @@
+.partner-equity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+
+  &__tabs {
+    margin-top: var(--space-sm);
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-0);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__statement {
+    padding: var(--space-lg);
+    background-color: var(--neutral-color-50);
+    border: 1px solid var(--neutral-color-200);
+    border-radius: var(--border-radius-md);
+  }
+
+  &__statement-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+  }
+
+  &__statement-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--neutral-color-900);
+  }
+
+  &__statement-icon {
+    color: var(--primary-color-600);
+  }
+
+  &__statement-summary {
+    margin-bottom: var(--space-md);
+    font-size: 0.9375rem;
+    color: var(--neutral-color-700);
+  }
+}

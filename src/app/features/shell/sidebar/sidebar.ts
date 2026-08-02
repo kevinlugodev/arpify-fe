@@ -25,6 +25,12 @@ export default class Sidebar {
     { label: 'Finanzas', route: '/finance', icon: 'bi-bank' },
     { label: 'Tesorería', route: '/treasury', icon: 'bi-cash-stack' },
     { label: 'Clientes', route: '/clients', icon: 'bi-building' },
+    { label: 'Centros de costo', route: '/cost-centers', icon: 'bi-pie-chart' },
+    { label: 'Crédito y cobranza', route: '/credit-control', icon: 'bi-credit-card' },
+    { label: 'Rendiciones', route: '/expense-claims', icon: 'bi-receipt' },
+    { label: 'Activos fijos', route: '/fixed-assets', icon: 'bi-laptop' },
+    { label: 'Planillas', route: '/hr-payroll', icon: 'bi-file-earmark-text' },
+    { label: 'Socios', route: '/partner-equity', icon: 'bi-person-lines-fill' },
     { label: 'Mi cuenta', route: '/me', icon: 'bi-person' },
   ];
 }

@@ -1,0 +1,26 @@
+<section class="profit-distribution-list">
+  <header class="profit-distribution-list__header">
+    <h2 class="profit-distribution-list__title">
+      <i class="bi bi-pie-chart profit-distribution-list__icon"></i>
+      Distribuciones de utilidades
+    </h2>
+    <p class="profit-distribution-list__description">
+      Histórico de distribuciones de utilidades con reserva de impuestos y opex.
+    </p>
+  </header>
+
+  @if (rows().length === 0 && !loading()) {
+    <app-empty-state
+      icon="bi-pie-chart"
+      title="Sin distribuciones"
+      message="Crea la primera distribución para acreditar utilidades a los socios."
+    />
+  } @else {
+    <app-data-table
+      [columns]="columns"
+      [rows]="rows()"
+      [loading]="loading()"
+      [rowActions]="actions"
+    />
+  }
+</section>
