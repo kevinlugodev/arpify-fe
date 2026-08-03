@@ -1,0 +1,60 @@
+<form class="sign-up">
+  <h2 class="sign-up__title">Crear cuenta</h2>
+  <p class="sign-up__subtitle">Registra tu empresa y comienza a usar Arpify</p>
+
+  <div class="form-field">
+    <label for="companyName">Nombre de la empresa</label>
+    <app-fluent-text-input
+      id="companyName"
+      type="text"
+      placeholder="Acme Inc."
+      [formField]="signUpForm.companyName"
+    />
+    @if (signUpForm.companyName().invalid() && signUpForm.companyName().touched()) {
+      <span class="form-field__error">{{ signUpForm.companyName().getError('required')?.message }}</span>
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="email">Correo electrónico</label>
+    <app-fluent-text-input
+      id="email"
+      type="email"
+      placeholder="admin@acme.com"
+      [formField]="signUpForm.email"
+    />
+    @if (signUpForm.email().invalid() && signUpForm.email().touched()) {
+      <span class="form-field__error">{{ signUpForm.email().getError('required')?.message }}</span>
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="password">Contraseña</label>
+    <app-fluent-text-input
+      id="password"
+      type="password"
+      placeholder="••••••••"
+      [formField]="signUpForm.password"
+    />
+    @if (signUpForm.password().invalid() && signUpForm.password().touched()) {
+      <span class="form-field__error">{{ signUpForm.password().getError('required')?.message }}</span>
+    }
+    <app-info-tip message="Usa al menos 8 caracteres." />
+  </div>
+
+  <fluent-button
+    class="sign-up__submit"
+    appearance="accent"
+    type="button"
+    [disabled]="loading()"
+    (click)="onSubmit()"
+  >
+    @if (loading()) {
+      <span>Creando cuenta...</span>
+    } @else {
+      <span>Crear cuenta</span>
+    }
+  </fluent-button>
+
+  <a class="sign-up__link" routerLink="/signin">¿Ya tienes cuenta? Inicia sesión</a>
+</form>

@@ -288,6 +288,7 @@ export default class ClientForm {
         await this.clientsStore.createCustomer(create);
         toast.success('Cliente creado');
       }
+      this.clientForm().reset({ ...EMPTY_CUSTOMER });
       await this.router.navigate(['/clients']);
     } catch {
       toast.error(this.clientsStore.status().error ?? 'Error al guardar el cliente');

@@ -17,6 +17,7 @@ export default class ProfitDistributionListComponent {
   readonly loading = input<boolean>(false);
 
   readonly reload = output<void>();
+  readonly delete = output<ProfitDistribution>();
 
   protected readonly rows = computed<ProfitDistribution[]>(() => this.distributions());
 
@@ -26,8 +27,16 @@ export default class ProfitDistributionListComponent {
     { key: 'reserve_percentage', header: '% Reserva' },
     { key: 'reserved_tax_opex_amount', header: 'Reserva imp./opex' },
     { key: 'distributable_net_amount', header: 'Neto distribuible' },
-    { key: 'distribution_date', header: 'Fecha' },
+    { key: 'distribution_date', header: 'Fecha', type: 'date' },
   ];
 
-  protected readonly actions: DataTableAction<ProfitDistribution>[] = [];
+  protected readonly actions: DataTableAction<ProfitDistribution>[] = [
+    { key: 'delete', label: 'Eliminar', icon: 'bi-trash' },
+  ];
+
+  protected onAction(event: { action: string; row: ProfitDistribution }): void {
+    if (event.action === 'delete') {
+      this.delete.emit(event.row);
+    }
+  }
 }

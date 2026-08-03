@@ -24,7 +24,6 @@ interface CostCenterFormModel {
   code: string;
   name: string;
   description: string;
-  is_active: boolean;
   status: CostCenterStatus | '';
 }
 
@@ -42,14 +41,13 @@ const EMPTY_COST_CENTER: CostCenterFormModel = {
   code: '',
   name: '',
   description: '',
-  is_active: true,
   status: 'active',
 };
 
 @Component({
   selector: 'app-cost-center-form',
   standalone: true,
-  imports: [FormField, FluentTextInput, FluentDropdown, FluentCheckbox],
+  imports: [FormField, FluentTextInput, FluentDropdown],
   templateUrl: './cost-center-form.html',
   styleUrl: './cost-center-form.scss',
   encapsulation: ViewEncapsulation.None,
@@ -85,7 +83,6 @@ export default class CostCenterFormComponent {
         code: center.code,
         name: center.name,
         description: center.description ?? '',
-        is_active: center.is_active,
         status: center.status,
       });
     });
@@ -108,7 +105,6 @@ export default class CostCenterFormComponent {
       code: model.code,
       name: model.name,
       description: model.description || undefined,
-      is_active: model.is_active,
       status: model.status as CostCenterStatus,
     };
 

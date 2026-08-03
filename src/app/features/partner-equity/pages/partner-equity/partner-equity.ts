@@ -68,7 +68,12 @@ export default class PartnerEquityPage {
   protected readonly selectedStatementAccountId = signal<string | null>(null);
 
   private readonly deleteDialog = viewChild<ConfirmDialog>('deleteDialog');
+  private readonly deleteDistributionDialog = viewChild<ConfirmDialog>('deleteDistributionDialog');
+  private readonly deleteDrawDialog = viewChild<ConfirmDialog>('deleteDrawDialog');
+
   protected readonly accountToDelete = signal<PartnerAccount | null>(null);
+  protected readonly distributionToDelete = signal<ProfitDistribution | null>(null);
+  protected readonly drawTransactionToDelete = signal<PartnerDrawTransaction | null>(null);
 
   private readonly teamMembersResource = apiResource<TeamMember[]>(async () => {
     try {
@@ -224,8 +229,53 @@ export default class PartnerEquityPage {
     this.drawTransactionsResource.reload();
   }
 
+  protected onDistributionDelete(distribution: ProfitDistribution): void {
+    this.distributionToDelete.set(distribution);
+    this.deleteDistributionDialog()?.open();
+  }
+
+  protected async onConfirmDistributionDelete(): Promise<void> {
+    const distribution = this.distributionToDelete();
+    if (!distribution) {
+      return;
+    }
+
+    try {
+      await this.partnerEquityStore.deleteProfitDistribution(distribution.id);
+      toast.success('Distribución eliminada');
+      this.distributionToDelete.set(null);
+      this.profitDistributionsResource.reload();
+      this.partnerAccountsResource.reload();
+      this.drawTransactionsResource.reload();
+    } catch {
+      toast.error(this.partnerEquityStore.status().error ?? 'Error al eliminar la distribución');
+    }
+  }
+
   protected onDrawsReload(): void {
     this.partnerAccountsResource.reload();
     this.drawTransactionsResource.reload();
+  }
+
+  protected onDrawTransactionDelete(transaction: PartnerDrawTransaction): void {
+    this.drawTransactionToDelete.set(transaction);
+    this.deleteDrawDialog()?.open();
+  }
+
+  protected async onConfirmDrawTransactionDelete(): Promise<void> {
+    const transaction = this.drawTransactionToDelete();
+    if (!transaction) {
+      return;
+    }
+
+    try {
+      await this.partnerEquityStore.deleteDrawTransaction(transaction.id);
+      toast.success('Movimiento de socio eliminado');
+      this.drawTransactionToDelete.set(null);
+      this.drawTransactionsResource.reload();
+      this.partnerAccountsResource.reload();
+    } catch {
+      toast.error(this.partnerEquityStore.status().error ?? 'Error al eliminar el movimiento de socio');
+    }
   }
 }

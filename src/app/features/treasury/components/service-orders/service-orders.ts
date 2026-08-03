@@ -371,7 +371,7 @@ export default class ServiceOrdersComponent {
     try {
       await this.treasuryStore.createServiceOrderAdvance(orderId, request);
       toast.success('Anticipo registrado');
-      this.advanceModel.set({ ...EMPTY_ADVANCE });
+      this.advanceForm().reset({ ...EMPTY_ADVANCE });
       this.clearActiveOperation();
       this.serviceOrdersResource.reload();
     } catch {
@@ -400,7 +400,7 @@ export default class ServiceOrdersComponent {
     try {
       await this.treasuryStore.linkServiceOrderPayable(orderId, request);
       toast.success('Obligación vinculada');
-      this.linkPayableModel.set({ ...EMPTY_LINK_PAYABLE });
+      this.linkPayableForm().reset({ ...EMPTY_LINK_PAYABLE });
       this.clearActiveOperation();
       this.serviceOrdersResource.reload();
     } catch {
@@ -411,7 +411,7 @@ export default class ServiceOrdersComponent {
   protected clearActiveOperation(): void {
     this.activeServiceOrderId.set(null);
     this.activeOperation.set(null);
-    this.advanceModel.set({ ...EMPTY_ADVANCE });
-    this.linkPayableModel.set({ ...EMPTY_LINK_PAYABLE });
+    this.advanceForm().reset({ ...EMPTY_ADVANCE });
+    this.linkPayableForm().reset({ ...EMPTY_LINK_PAYABLE });
   }
 }

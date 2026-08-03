@@ -352,7 +352,7 @@ export default class TreasuryPage {
     { key: 'net_amount', header: 'Monto neto' },
     { key: 'paid_amount', header: 'Pagado' },
     { key: 'status', header: 'Estado', type: 'status', statusDomain: 'treasury-payable' },
-    { key: 'due_date', header: 'Vencimiento' },
+    { key: 'due_date', header: 'Vencimiento', type: 'date' },
   ];
 
   protected readonly payableActions: DataTableAction<Payable>[] = [
@@ -366,7 +366,7 @@ export default class TreasuryPage {
     { key: 'amount', header: 'Monto' },
     { key: 'currency', header: 'Moneda' },
     { key: 'bank_account_name', header: 'Cuenta origen' },
-    { key: 'transaction_date', header: 'Fecha' },
+    { key: 'transaction_date', header: 'Fecha', type: 'date' },
     { key: 'operation_number', header: 'N° operación' },
     { key: 'reconciliation_status', header: 'Conciliación', type: 'status', statusDomain: 'treasury-reconciliation' },
   ];
@@ -645,7 +645,7 @@ export default class TreasuryPage {
   }
 
   protected resetTransactionForm(): void {
-    this.transactionModel.set({ ...EMPTY_TRANSACTION });
+    this.transactionForm().reset({ ...EMPTY_TRANSACTION });
   }
 
   protected onTransactionAction(event: { action: string; row: BankTransaction & { bank_account_name: string } }): void {

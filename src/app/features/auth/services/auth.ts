@@ -9,6 +9,8 @@ import {
   ResetPasswordRequest,
   SignInRequest,
   SignInResponse,
+  SignUpRequest,
+  SignUpResponse,
   VerifyCodeRequest,
 } from '../../../core/models/auth.model';
 
@@ -26,6 +28,14 @@ export class AuthService {
    */
   signIn(request: SignInRequest): Observable<ApiResponse<SignInResponse>> {
     return this.api.post<SignInResponse>('auth/signin', request);
+  }
+
+  /**
+   * Crea una nueva cuenta de empresa (tenant) y su usuario OWNER.
+   * @param request Datos de registro.
+   */
+  signUp(request: SignUpRequest): Observable<ApiResponse<SignUpResponse>> {
+    return this.api.post<SignUpResponse>('auth/signup', request);
   }
 
   /**

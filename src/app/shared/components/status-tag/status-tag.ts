@@ -183,7 +183,10 @@ const STATUS_MAP: Record<StatusDomain, Record<string, StatusConfig>> = {
   selector: 'app-status-tag',
   standalone: true,
   template: `
-    <span class="app-status-tag app-status-tag--{{ config().color }}">
+    <span
+      class="app-status-tag app-status-tag--{{ config().color }}"
+      [attr.title]="title() || null"
+    >
       <i class="bi {{ config().icon }}"></i>
       {{ config().label }}
     </span>
@@ -194,6 +197,7 @@ const STATUS_MAP: Record<StatusDomain, Record<string, StatusConfig>> = {
 export class StatusTag {
   readonly status = input.required<string>();
   readonly domain = input.required<StatusDomain>();
+  readonly title = input<string | undefined>(undefined);
 
   protected config(): StatusConfig {
     const domainMap = STATUS_MAP[this.domain()] ?? {};

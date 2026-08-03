@@ -9,7 +9,8 @@
     message="No se encontraron registros para mostrar."
   />
 } @else {
-  <table class="data-table">
+  <div class="data-table__wrapper">
+    <table class="data-table">
     <thead>
       <tr>
         @for (column of columns(); track column.key) {
@@ -57,6 +58,15 @@
                     [prefix]="asString(resolveValue(row, column.userPrefixKey))"
                   />
                 }
+                @case ('date') {
+                  <ng-container>{{ getCellValue(row, column) | formatDate: 'date' }}</ng-container>
+                }
+                @case ('datetime') {
+                  <ng-container>{{ getCellValue(row, column) | formatDate: 'datetime' }}</ng-container>
+                }
+                @case ('relative') {
+                  <app-relative-time [date]="asString(getCellValue(row, column))" />
+                }
                 @default {
                   <ng-container>{{ getCellValue(row, column) }}</ng-container>
                 }
@@ -87,4 +97,5 @@
       }
     </tbody>
   </table>
+  </div>
 }

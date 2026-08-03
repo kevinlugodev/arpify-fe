@@ -72,7 +72,7 @@ export default class AssetListComponent {
     { key: 'asset_code', header: 'Código' },
     { key: 'name', header: 'Nombre' },
     { key: 'category', header: 'Categoría', type: 'status', statusDomain: 'asset-category' },
-    { key: 'purchase_date', header: 'Fecha compra' },
+    { key: 'purchase_date', header: 'Fecha compra', type: 'date' },
     { key: 'purchase_cost', header: 'Costo' },
     { key: 'residual_value', header: 'Valor residual' },
     { key: 'useful_life_months', header: 'Vida útil (meses)' },

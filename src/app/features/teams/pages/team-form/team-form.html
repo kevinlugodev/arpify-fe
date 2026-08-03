@@ -123,7 +123,7 @@
 
         <div class="team-form__fields team-form__fields--narrow">
           <div class="form-field">
-            <label>Tipo de documento</label>
+            <label>Tipo de documento <span class="team-form__required">*</span></label>
             <app-fluent-dropdown [formField]="memberForm.document_type">
               <fluent-option value="DNI">DNI</fluent-option>
               <fluent-option value="CE">Carné de extranjería</fluent-option>
@@ -131,12 +131,18 @@
               <fluent-option value="OTHER">Otro</fluent-option>
             </app-fluent-dropdown>
             <span class="team-form__field-hint">Documento oficial de identificación.</span>
+            @if (memberForm.document_type().invalid() && memberForm.document_type().touched()) {
+              <span class="form-field__error">{{ memberForm.document_type().getError('required')?.message }}</span>
+            }
           </div>
 
           <div class="form-field">
-            <label>Número de documento</label>
+            <label>Número de documento <span class="team-form__required">*</span></label>
             <app-fluent-text-input [formField]="memberForm.document_number" />
             <span class="team-form__field-hint">Ingresa solo números y letras, sin espacios.</span>
+            @if (memberForm.document_number().invalid() && memberForm.document_number().touched()) {
+              <span class="form-field__error">{{ memberForm.document_number().getError('required')?.message }}</span>
+            }
           </div>
         </div>
       </section>
@@ -154,9 +160,12 @@
 
         <div class="team-form__fields team-form__fields--laboral">
           <div class="form-field">
-            <label>Cargo</label>
+            <label>Cargo <span class="team-form__required">*</span></label>
             <app-fluent-text-input [formField]="memberForm.position" />
             <span class="team-form__field-hint">Ejemplo: Desarrolladora Frontend</span>
+            @if (memberForm.position().invalid() && memberForm.position().touched()) {
+              <span class="form-field__error">{{ memberForm.position().getError('required')?.message }}</span>
+            }
           </div>
 
           @if (!hidesOrganizationalFields()) {
@@ -184,14 +193,17 @@
           }
 
           <div class="form-field">
-            <label>Fecha de contratación</label>
+            <label>Fecha de contratación <span class="team-form__required">*</span></label>
             <app-fluent-text-input type="date" [formField]="memberForm.hire_date" />
             <span class="team-form__field-hint">Fecha de inicio en la organización.</span>
+            @if (memberForm.hire_date().invalid() && memberForm.hire_date().touched()) {
+              <span class="form-field__error">{{ memberForm.hire_date().getError('required')?.message }}</span>
+            }
           </div>
 
           @if (isEditMode()) {
             <div class="form-field">
-              <label>Estado</label>
+              <label>Estado <span class="team-form__required">*</span></label>
               <app-fluent-dropdown [formField]="memberForm.status">
                 <fluent-option value="active">Activo</fluent-option>
                 <fluent-option value="inactive">Inactivo</fluent-option>
@@ -199,6 +211,9 @@
                 <fluent-option value="terminated">Terminado</fluent-option>
                 <fluent-option value="suspended">Suspendido</fluent-option>
               </app-fluent-dropdown>
+              @if (memberForm.status().invalid() && memberForm.status().touched()) {
+                <span class="form-field__error">{{ memberForm.status().getError('required')?.message }}</span>
+              }
             </div>
           }
         </div>
@@ -234,12 +249,12 @@
       }
 
       @if (!isLastStep()) {
-        <fluent-button type="button" appearance="accent" (click)="nextStep()">
+        <fluent-button type="button" appearance="accent" [disabled]="!isStepValid(currentStep())" (click)="nextStep()">
           Siguiente
           <i class="bi bi-chevron-right team-form__action-icon team-form__action-icon--end"></i>
         </fluent-button>
       } @else {
-        <fluent-button type="button" appearance="accent" [disabled]="saving()" (click)="onSubmit()">
+        <fluent-button type="button" appearance="accent" [disabled]="saving() || memberForm().invalid()" (click)="onSubmit()">
           @if (saving()) {
             <i class="bi bi-arrow-repeat team-form__spinner team-form__action-icon"></i>
             Guardando...

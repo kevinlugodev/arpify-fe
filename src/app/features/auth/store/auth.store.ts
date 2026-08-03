@@ -6,6 +6,7 @@ import {
   RecoverPasswordRequest,
   ResetPasswordRequest,
   SignInRequest,
+  SignUpRequest,
   VerifyCodeRequest,
 } from '../../../core/models/auth.model';
 import { SecureStorage } from '../../../core/services/secure-storage';
@@ -75,6 +76,33 @@ export const AuthStore = signalStore(
         secureStorage.setItem(TENANT_ID_KEY, response.user.tenant_id);
       } catch (error) {
         setStoreError(store, error, 'Error al iniciar sesión');
+        throw error;
+      }
+    },
+
+    /**
+     * Crea una nueva cuenta de empresa e inicia sesión automáticamente.
+     * @param request Datos de registro.
+     */
+    async signUp(request: SignUpRequest): Promise<void> {
+      setStoreLoading(store);
+      try {
+        const response = await toApiPromise(authService.signUp(request));
+        patchState(store, {
+          user: response.user,
+          accessToken: response.token_pair.access_token,
+          refreshToken: response.token_pair.refresh_token,
+          tenantId: response.user.tenant_id,
+          tenantSlug: response.tenant.slug,
+          status: { loading: false, error: null },
+        });
+        secureStorage.setItem(USER_KEY, response.user);
+        secureStorage.setItem(ACCESS_TOKEN_KEY, response.token_pair.access_token);
+        secureStorage.setItem(REFRESH_TOKEN_KEY, response.token_pair.refresh_token);
+        secureStorage.setItem(TENANT_ID_KEY, response.user.tenant_id);
+        secureStorage.setItem(TENANT_SLUG_KEY, response.tenant.slug);
+      } catch (error) {
+        setStoreError(store, error, 'Error al crear la cuenta');
         throw error;
       }
     },

@@ -105,7 +105,7 @@ export default class CashFlowComponent {
 
   protected readonly forecastRows = computed<CashFlowForecastRow[]>(() =>
     this.forecastItems().map((item) => ({
-      date: this.formatDate(item.date),
+      date: item.date,
       projected_balance: this.formatAmount(item.projected_balance),
       pending_inflows: this.formatAmount(item.pending_inflows),
       pending_outflows: this.formatAmount(item.pending_outflows),
@@ -113,7 +113,7 @@ export default class CashFlowComponent {
   );
 
   protected readonly forecastColumns: DataTableColumn<CashFlowForecastRow>[] = [
-    { key: 'date', header: 'Fecha' },
+    { key: 'date', header: 'Fecha', type: 'date' },
     { key: 'projected_balance', header: 'Saldo proyectado' },
     { key: 'pending_inflows', header: 'Ingresos pendientes' },
     { key: 'pending_outflows', header: 'Egresos pendientes' },
@@ -138,21 +138,6 @@ export default class CashFlowComponent {
       start_date: model.start_date,
       end_date: model.end_date,
       interval_days: Number(model.interval_days || 7),
-    });
-  }
-
-  private formatDate(value: string): string {
-    if (!value) {
-      return '';
-    }
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return value;
-    }
-    return date.toLocaleDateString('es-PE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
     });
   }
 

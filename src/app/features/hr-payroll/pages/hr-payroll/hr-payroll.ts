@@ -57,19 +57,16 @@ export default class HrPayrollPage {
   private readonly employeesResource = apiResource<Option<string>[]>(async () => {
     try {
       const response = await toApiPromise(this.teamsService.getTeamMembers({ limit: 200 }));
-      return [
-        { value: '', label: 'Selecciona...' },
-        ...response.items.map((member) => ({
-          value: member.id,
-          label: `${member.first_name} ${member.last_name} (${member.email})`,
-        })),
-      ];
+      return response.items.map((member) => ({
+        value: member.id,
+        label: `${member.first_name} ${member.last_name} (${member.email})`,
+      }));
     } catch {
-      return [{ value: '', label: 'Selecciona...' }];
+      return [];
     }
   });
 
-  protected readonly employeesOptions = computed<Option<string>[]>(() => this.employeesResource.value() ?? [{ value: '', label: 'Selecciona...' }]);
+  protected readonly employeesOptions = computed<Option<string>[]>(() => this.employeesResource.value() ?? []);
   protected readonly employeesLoading = computed(() => this.employeesResource.isLoading());
 
   protected onCompensationSaved(): void {

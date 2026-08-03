@@ -25,6 +25,24 @@ export interface SignInResponse {
   user: AuthenticatedUser;
 }
 
+export interface SignUpRequest {
+  email: string;
+  password: string;
+  company_name: string;
+}
+
+export interface TenantInfo {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface SignUpResponse {
+  token_pair: TokenPair;
+  user: AuthenticatedUser;
+  tenant: TenantInfo;
+}
+
 export interface RefreshTokenRequest {
   refresh_token: string;
 }

@@ -172,6 +172,11 @@ export default class TeamForm {
       required(schema.first_name, { message: 'El nombre es obligatorio.' });
       required(schema.last_name, { message: 'El apellido es obligatorio.' });
       required(schema.email, { message: 'El correo es obligatorio.' });
+      required(schema.document_type, { message: 'El tipo de documento es obligatorio.' });
+      required(schema.document_number, { message: 'El número de documento es obligatorio.' });
+      required(schema.position, { message: 'El cargo es obligatorio.' });
+      required(schema.hire_date, { message: 'La fecha de contratación es obligatoria.' });
+      required(schema.status, { message: 'El estado es obligatorio.' });
     });
 
     effect(() => {
@@ -207,16 +212,18 @@ export default class TeamForm {
    */
   protected canGoNext(): boolean {
     this.memberForm().markAsTouched();
+    return this.isStepValid(this.currentStep());
+  }
 
-    switch (this.currentStep()) {
+  protected isStepValid(step: number): boolean {
+    const form = this.memberForm() as any;
+    switch (step) {
       case 1:
-        return !(
-          this.memberForm.first_name().invalid() ||
-          this.memberForm.last_name().invalid() ||
-          this.memberForm.email().invalid()
-        );
+        return !(form.first_name().invalid() || form.last_name().invalid() || form.email().invalid());
       case 2:
+        return !(form.document_type().invalid() || form.document_number().invalid());
       case 3:
+        return !(form.position().invalid() || form.hire_date().invalid() || form.status().invalid());
       case 4:
         return true;
       default:

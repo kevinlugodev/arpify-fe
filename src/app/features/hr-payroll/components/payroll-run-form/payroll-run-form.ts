@@ -114,7 +114,7 @@ export default class PayrollRunFormComponent {
         toast.success('Planilla creada');
       }
       this.saved.emit();
-      this.payrollRunModel.set({ ...EMPTY_PAYROLL_RUN });
+      this.payrollRunForm().reset({ ...EMPTY_PAYROLL_RUN });
     } catch {
       toast.error(this.hrPayrollStore.status().error ?? 'Error al guardar la planilla');
     }
@@ -122,6 +122,6 @@ export default class PayrollRunFormComponent {
 
   protected onCancel(): void {
     this.cancelled.emit();
-    this.payrollRunModel.set({ ...EMPTY_PAYROLL_RUN });
+    this.payrollRunForm().reset({ ...EMPTY_PAYROLL_RUN });
   }
 }

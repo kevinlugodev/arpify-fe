@@ -181,7 +181,7 @@ export default class CompensationFormComponent {
         toast.success('Compensación creada');
       }
       this.saved.emit();
-      this.compensationModel.set({ ...EMPTY_COMPENSATION });
+      this.compensationForm().reset({ ...EMPTY_COMPENSATION });
     } catch {
       toast.error(this.hrPayrollStore.status().error ?? 'Error al guardar la compensación');
     }
@@ -189,6 +189,6 @@ export default class CompensationFormComponent {
 
   protected onCancel(): void {
     this.cancelled.emit();
-    this.compensationModel.set({ ...EMPTY_COMPENSATION });
+    this.compensationForm().reset({ ...EMPTY_COMPENSATION });
   }
 }

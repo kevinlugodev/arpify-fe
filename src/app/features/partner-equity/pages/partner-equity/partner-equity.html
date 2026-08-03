@@ -70,7 +70,7 @@
                   { key: 'amount', header: 'Monto' },
                   { key: 'rhe_document_number', header: 'RHE' },
                   { key: 'notes', header: 'Notas' },
-                  { key: 'created_at', header: 'Fecha' }
+                  { key: 'created_at', header: 'Fecha', type: 'relative' }
                 ]"
                 [rows]="statement()!.transactions"
                 [loading]="false"
@@ -98,6 +98,7 @@
       <app-profit-distribution-list
         [distributions]="profitDistributions()"
         [loading]="profitDistributionsLoading()"
+        (delete)="onDistributionDelete($event)"
       />
     </section>
   }
@@ -111,6 +112,7 @@
         [transactions]="drawTransactions()"
         [loading]="drawTransactionsLoading() || bankAccountsLoading()"
         (reload)="onDrawsReload()"
+        (delete)="onDrawTransactionDelete($event)"
       />
     </section>
   }
@@ -123,5 +125,25 @@
     cancelLabel="Cancelar"
     confirmAppearance="danger"
     (confirm)="onConfirmAccountDelete()"
+  />
+
+  <app-confirm-dialog
+    #deleteDistributionDialog
+    title="Eliminar distribución de utilidades"
+    message="¿Estás seguro de que deseas eliminar esta distribución? Se revertirán los saldos acreditados a los socios."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmDistributionDelete()"
+  />
+
+  <app-confirm-dialog
+    #deleteDrawDialog
+    title="Eliminar movimiento de socio"
+    message="¿Estás seguro de que deseas eliminar este movimiento? Se revertirán los saldos afectados."
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    confirmAppearance="danger"
+    (confirm)="onConfirmDrawTransactionDelete()"
   />
 </div>

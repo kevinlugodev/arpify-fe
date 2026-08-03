@@ -36,6 +36,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/components/auth-layout/auth-layout'),
     children: [
       { path: 'signin', loadComponent: () => import('./features/auth/pages/sign-in/sign-in') },
+      { path: 'signup', loadComponent: () => import('./features/auth/pages/sign-up/sign-up') },
       { path: 'recover-password', loadComponent: () => import('./features/auth/pages/recover-password/recover-password') },
     ],
   },

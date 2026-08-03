@@ -77,6 +77,17 @@ export const PartnerEquityStore = signalStore(
       }
     },
 
+    async deleteProfitDistribution(id: string): Promise<void> {
+      setStoreLoading(store);
+      try {
+        await toApiPromise(partnerEquityService.deleteProfitDistribution(id));
+        setStoreSuccess(store);
+      } catch (error) {
+        setStoreError(store, error, 'Error al eliminar la distribución de utilidades');
+        throw error;
+      }
+    },
+
     async createAdvanceDraw(id: string, request: CreateAdvanceDrawRequest): Promise<PartnerDrawTransaction> {
       setStoreLoading(store);
       try {
@@ -100,6 +111,17 @@ export const PartnerEquityStore = signalStore(
         return response.draw_transaction;
       } catch (error) {
         setStoreError(store, error, 'Error al registrar la liquidación RHE');
+        throw error;
+      }
+    },
+
+    async deleteDrawTransaction(id: string): Promise<void> {
+      setStoreLoading(store);
+      try {
+        await toApiPromise(partnerEquityService.deleteDrawTransaction(id));
+        setStoreSuccess(store);
+      } catch (error) {
+        setStoreError(store, error, 'Error al eliminar el movimiento de socio');
         throw error;
       }
     },

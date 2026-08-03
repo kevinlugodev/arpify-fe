@@ -21,6 +21,7 @@
     "@fluentui/web-components": "^3.0.2",
     "@ngrx/signals": "^21.1.1",
     "bootstrap-icons": "^1.13.1",
+    "dayjs": "^1.11.21",
     "ngx-sonner": "^3.1.0",
     "rxjs": "~7.8.0",
     "simple-crypto-js": "^3.0.1",

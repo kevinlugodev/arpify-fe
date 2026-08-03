@@ -4,13 +4,15 @@ import { EmailLink } from '../email-link/email-link';
 import { StatusDomain, StatusTag } from '../status-tag/status-tag';
 import { UserCell } from '../user-cell/user-cell';
 import { FluentDropdown } from '../fluent-form-controls/fluent-form-controls';
+import { RelativeTime } from '../relative-time/relative-time';
+import { FormatDatePipe } from '../../pipes/format-date.pipe';
 
 export interface DataTableStatusOption {
   value: string;
   label: string;
 }
 
-export type DataTableCellType = 'text' | 'status' | 'status-select' | 'email' | 'user';
+export type DataTableCellType = 'text' | 'status' | 'status-select' | 'email' | 'user' | 'date' | 'datetime' | 'relative';
 
 export interface DataTableColumn<T = object> {
   key: keyof T | string;
@@ -33,7 +35,7 @@ export interface DataTableAction<T = object> {
 @Component({
   selector: 'app-data-table',
   standalone: true,
-  imports: [EmptyState, StatusTag, EmailLink, UserCell, FluentDropdown],
+  imports: [EmptyState, StatusTag, EmailLink, UserCell, FluentDropdown, RelativeTime, FormatDatePipe],
   templateUrl: './data-table.html',
   styleUrl: './data-table.scss',
   encapsulation: ViewEncapsulation.None,

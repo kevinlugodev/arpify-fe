@@ -1,16 +1,53 @@
 <nav class="sidebar">
   <ul class="sidebar__list">
-    @for (item of navItems; track item.route) {
+    @for (entry of entries(); track entry.label) {
       <li class="sidebar__item">
-        <a
-          class="sidebar__link"
-          [routerLink]="item.route"
-          routerLinkActive="sidebar__link--active"
-          [routerLinkActiveOptions]="{ exact: item.route === '/' }"
-        >
-          <i class="bi {{ item.icon }} sidebar__icon"></i>
-          <span class="sidebar__label">{{ item.label }}</span>
-        </a>
+        @if (isGroup(entry)) {
+          <div class="sidebar__group">
+            <button
+              type="button"
+              class="sidebar__group-header"
+              [class.sidebar__group-header--active]="entry.items.some((item) => item.route === '/' ? false : (isRouteActive(item.route)))"
+              (click)="toggleGroup(entry)"
+            >
+              <i class="bi {{ entry.icon }} sidebar__icon"></i>
+              <span class="sidebar__label">{{ entry.label }}</span>
+              <i
+                class="bi sidebar__chevron"
+                [class.bi-chevron-up]="isExpanded(entry)"
+                [class.bi-chevron-down]="!isExpanded(entry)"
+              ></i>
+            </button>
+
+            @if (isExpanded(entry)) {
+              <ul class="sidebar__sublist">
+                @for (item of entry.items; track item.route) {
+                  <li class="sidebar__subitem">
+                    <a
+                      class="sidebar__sublink"
+                      [routerLink]="item.route"
+                      routerLinkActive="sidebar__sublink--active"
+                      [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+                    >
+                      <i class="bi {{ item.icon }} sidebar__subicon"></i>
+                      <span class="sidebar__label">{{ item.label }}</span>
+                    </a>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        } @else {
+          <a
+            class="sidebar__link"
+            [routerLink]="entry.route"
+            routerLinkActive="sidebar__link--active"
+            [routerLinkActiveOptions]="{ exact: entry.route === '/' }"
+          >
+            <i class="bi {{ entry.icon }} sidebar__icon"></i>
+            <span class="sidebar__label">{{ entry.label }}</span>
+          </a>
+        }
       </li>
     }
   </ul>

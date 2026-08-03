@@ -268,7 +268,7 @@ export default class PettyCashComponent {
       this.selectedFundForReplenish.set(fund);
       this.selectedFundForExpense.set(null);
       this.editingFundId.set(null);
-      this.replenishModel.set({ ...EMPTY_REPLENISH });
+      this.replenishForm().reset({ ...EMPTY_REPLENISH });
       return;
     }
 
@@ -276,7 +276,7 @@ export default class PettyCashComponent {
       this.selectedFundForExpense.set(fund);
       this.selectedFundForReplenish.set(null);
       this.editingFundId.set(null);
-      this.expenseModel.set({ ...EMPTY_EXPENSE });
+      this.expenseForm().reset({ ...EMPTY_EXPENSE });
       return;
     }
 
@@ -344,7 +344,7 @@ export default class PettyCashComponent {
 
   protected resetReplenishForm(): void {
     this.selectedFundForReplenish.set(null);
-    this.replenishModel.set({ ...EMPTY_REPLENISH });
+    this.replenishForm().reset({ ...EMPTY_REPLENISH });
   }
 
   // --- Expense handlers ---
@@ -382,6 +382,6 @@ export default class PettyCashComponent {
 
   protected resetExpenseForm(): void {
     this.selectedFundForExpense.set(null);
-    this.expenseModel.set({ ...EMPTY_EXPENSE });
+    this.expenseForm().reset({ ...EMPTY_EXPENSE });
   }
 }

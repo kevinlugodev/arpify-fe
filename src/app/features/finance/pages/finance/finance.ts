@@ -293,7 +293,7 @@ export default class FinancePage {
     { key: 'year', header: 'Año' },
     { key: 'month', header: 'Mes' },
     { key: 'status', header: 'Estado', type: 'status', statusDomain: 'finance-period' },
-    { key: 'due_date', header: 'Vencimiento' },
+    { key: 'due_date', header: 'Vencimiento', type: 'date' },
   ];
 
   protected readonly periodActions: DataTableAction<TaxPeriod>[] = [
@@ -306,7 +306,7 @@ export default class FinancePage {
     { key: 'number', header: 'Número' },
     { key: 'flow', header: 'Flujo' },
     { key: 'document_type', header: 'Tipo' },
-    { key: 'issue_date', header: 'Emisión' },
+    { key: 'issue_date', header: 'Emisión', type: 'date' },
     { key: 'total_amount', header: 'Total' },
     { key: 'currency', header: 'Mon' },
   ];
@@ -450,7 +450,7 @@ export default class FinancePage {
     try {
       const created = await this.financeStore.createTaxPeriod(request);
       toast.success('Periodo creado');
-      this.periodModel.set({ ...EMPTY_PERIOD });
+      this.periodForm().reset({ ...EMPTY_PERIOD });
       this.taxPeriodsResource.reload();
       this.selectedPeriodId.set(created.id);
     } catch {
@@ -483,13 +483,13 @@ export default class FinancePage {
 
   protected openInvoiceForm(): void {
     const periodId = this.selectedPeriodId();
-    this.invoiceModel.set({ ...EMPTY_INVOICE, tax_period_id: periodId });
+    this.invoiceForm().reset({ ...EMPTY_INVOICE, tax_period_id: periodId });
     this.invoiceFormVisible.set(true);
   }
 
   protected closeInvoiceForm(): void {
     const periodId = this.selectedPeriodId();
-    this.invoiceModel.set({ ...EMPTY_INVOICE, tax_period_id: periodId });
+    this.invoiceForm().reset({ ...EMPTY_INVOICE, tax_period_id: periodId });
     this.invoiceFormVisible.set(false);
   }
 

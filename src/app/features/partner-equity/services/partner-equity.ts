@@ -79,6 +79,10 @@ export class PartnerEquityService {
     return this.api.post<{ profit_distribution: ProfitDistribution }>('partner-equity/profit-distributions', request);
   }
 
+  deleteProfitDistribution(id: string): Observable<ApiResponse<unknown>> {
+    return this.api.delete<unknown>(`partner-equity/profit-distributions/${id}`);
+  }
+
   // --- Partner Draw Transactions ---
 
   getDrawTransactions(
@@ -109,5 +113,9 @@ export class PartnerEquityService {
       `partner-equity/partner-accounts/${id}/settlement-payment`,
       request
     );
+  }
+
+  deleteDrawTransaction(id: string): Observable<ApiResponse<unknown>> {
+    return this.api.delete<unknown>(`partner-equity/draw-transactions/${id}`);
   }
 }

@@ -199,8 +199,8 @@ export default class BankStatementsComponent {
   protected readonly statementColumns: DataTableColumn<StatementRow>[] = [
     { key: 'file_name', header: 'Archivo' },
     { key: 'bank_account_name', header: 'Cuenta bancaria' },
-    { key: 'period_start_date', header: 'Periodo inicio' },
-    { key: 'period_end_date', header: 'Periodo fin' },
+    { key: 'period_start_date', header: 'Periodo inicio', type: 'date' },
+    { key: 'period_end_date', header: 'Periodo fin', type: 'date' },
   ];
 
   protected readonly statementActions: DataTableAction<StatementRow>[] = [
@@ -211,7 +211,7 @@ export default class BankStatementsComponent {
   protected readonly itemsLoading = computed(() => this.itemsResource.isLoading());
 
   protected readonly itemColumns: DataTableColumn<BankStatementItem>[] = [
-    { key: 'transaction_date', header: 'Fecha' },
+    { key: 'transaction_date', header: 'Fecha', type: 'date' },
     { key: 'operation_number', header: 'N° operación' },
     { key: 'description', header: 'Descripción' },
     { key: 'amount', header: 'Monto' },

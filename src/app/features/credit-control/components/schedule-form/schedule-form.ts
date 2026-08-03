@@ -134,14 +134,14 @@ export default class ScheduleFormComponent {
         toast.success('Cronograma creado');
       }
       this.saved.emit();
-      this.model.set({ ...EMPTY_SCHEDULE });
+      this.form().reset({ ...EMPTY_SCHEDULE });
     } catch {
       toast.error(this.creditControlStore.status().error ?? 'Error al guardar el cronograma');
     }
   }
 
   protected onCancel(): void {
-    this.model.set({ ...EMPTY_SCHEDULE });
+    this.form().reset({ ...EMPTY_SCHEDULE });
     this.cancelled.emit();
   }
 }

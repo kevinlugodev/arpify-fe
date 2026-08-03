@@ -7,13 +7,49 @@
 
   <app-info-tip message="Esta sección está disponible para roles OWNER y ADMIN. Permite rastrear cambios en entidades del sistema." />
 
-  <div class="audit__filters">
-    <app-search-field
-      placeholder="Filtrar por tipo de entidad"
-      [value]="entityType()"
-      (valueChange)="entityType.set($event)"
-    />
-  </div>
+  <section class="audit__filters">
+    <div class="audit__filter-row">
+      <div class="form-field audit__filter">
+        <label>Tipo de entidad</label>
+        <app-fluent-dropdown [formField]="filterForm.entityType">
+          @for (option of entityTypeOptions; track option.value) {
+            <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+      </div>
+
+      <div class="form-field audit__filter">
+        <label>Acción</label>
+        <app-fluent-dropdown [formField]="filterForm.action">
+          @for (option of actionOptions; track option.value) {
+            <fluent-option [value]="option.value">{{ option.label }}</fluent-option>
+          }
+        </app-fluent-dropdown>
+      </div>
+
+      <div class="form-field audit__filter">
+        <label>ID Entidad</label>
+        <app-fluent-text-input
+          placeholder="UUID de la entidad"
+          [formField]="filterForm.entityId"
+        />
+      </div>
+
+      <div class="form-field audit__filter">
+        <label>ID Actor</label>
+        <app-fluent-text-input
+          placeholder="UUID del usuario"
+          [formField]="filterForm.actorId"
+        />
+      </div>
+    </div>
+
+    <div class="audit__filter-actions">
+      <fluent-button type="button" appearance="neutral" (click)="clearFilters()">
+        Limpiar filtros
+      </fluent-button>
+    </div>
+  </section>
 
   @if (logs().length === 0 && !loading()) {
     <app-empty-state

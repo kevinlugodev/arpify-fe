@@ -105,7 +105,7 @@ export default class MassEmailsPage {
   protected readonly logColumns: DataTableColumn<MassEmailLog>[] = [
     { key: 'recipient', header: 'Destinatario', type: 'email' },
     { key: 'status', header: 'Estado', type: 'status', statusDomain: 'mass-email' },
-    { key: 'sent_at', header: 'Enviado' },
+    { key: 'sent_at', header: 'Enviado', type: 'relative' },
   ];
 
   protected async onCreateTemplate(): Promise<void> {

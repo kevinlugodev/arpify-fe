@@ -144,7 +144,7 @@ export default class PartnerAccountFormComponent {
         });
         toast.success('Cuenta de socio creada');
       }
-      this.model.set({ ...EMPTY_FORM });
+      this.form().reset({ ...EMPTY_FORM });
       this.accountsResource.reload();
       this.submitSuccess.emit();
     } catch {
@@ -153,7 +153,7 @@ export default class PartnerAccountFormComponent {
   }
 
   protected onCancel(): void {
-    this.model.set({ ...EMPTY_FORM });
+    this.form().reset({ ...EMPTY_FORM });
     this.cancel.emit();
   }
 }

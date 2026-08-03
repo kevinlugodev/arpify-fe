@@ -4,10 +4,9 @@
   gap: var(--space-md);
 
   &__tabs {
-    padding: var(--space-md);
-    background-color: var(--neutral-color-0);
-    border: 1px solid var(--neutral-color-200);
-    border-radius: var(--border-radius-md);
+    padding: 0;
+    background: none;
+    border: none;
   }
 
   &__panel {

@@ -87,7 +87,7 @@ export default class ProfitDistributionFormComponent {
         distribution_date: this.model().distribution_date,
       });
       toast.success('Distribución de utilidades creada');
-      this.model.set({ ...EMPTY_FORM });
+      this.form().reset({ ...EMPTY_FORM });
       this.submitSuccess.emit();
     } catch {
       toast.error(this.partnerEquityStore.status().error ?? 'Error al crear la distribución');

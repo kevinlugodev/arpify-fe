@@ -156,7 +156,7 @@ export default class PayrollRunEmployeesComponent {
     try {
       await this.hrPayrollStore.addEmployeeToPayrollRun(this.payrollRun().id, request);
       toast.success('Colaborador agregado a la planilla');
-      this.addEmployeeModel.set({ ...EMPTY_ADD_EMPLOYEE });
+      this.addEmployeeForm().reset({ ...EMPTY_ADD_EMPLOYEE });
       this.itemsResource.reload();
       this.changed.emit();
     } catch {

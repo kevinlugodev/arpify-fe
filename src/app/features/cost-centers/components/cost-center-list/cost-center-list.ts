@@ -24,7 +24,6 @@ export default class CostCenterListComponent {
     { key: 'name', header: 'Nombre' },
     { key: 'description', header: 'Descripción' },
     { key: 'status', header: 'Estado', type: 'status', statusDomain: 'cost-center' },
-    { key: 'is_active', header: 'Activo', type: 'status', statusDomain: 'active-state' },
   ];
 
   protected readonly actions: DataTableAction<CostCenter>[] = [

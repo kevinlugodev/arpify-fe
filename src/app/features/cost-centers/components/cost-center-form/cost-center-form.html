@@ -41,11 +41,6 @@
           <span class="form-field__error">{{ form.status().getError('required')?.message }}</span>
         }
       </div>
-
-      <div class="form-field cost-center-form__field--checkbox">
-        <app-fluent-checkbox [formField]="form.is_active">Activo</app-fluent-checkbox>
-        <span class="cost-center-form__field-hint">Desmarca para dar de baja el centro.</span>
-      </div>
     </div>
 
     <div class="cost-center-form__actions">

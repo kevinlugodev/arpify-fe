@@ -60,7 +60,7 @@ export default class ScheduleListComponent {
   protected readonly columns: DataTableColumn<CreditAccountSchedule>[] = [
     { key: 'receivable_id', header: 'Factura' },
     { key: 'customer_name', header: 'Cliente' },
-    { key: 'original_due_date', header: 'Vencimiento' },
+    { key: 'original_due_date', header: 'Vencimiento', type: 'date' },
     { key: 'invoice_amount', header: 'Monto' },
     { key: 'paid_amount', header: 'Pagado' },
     { key: 'remaining_amount', header: 'Saldo' },

@@ -179,6 +179,7 @@
         [rows]="transactionRows()"
         [loading]="loading()"
         [rowActions]="transactionActions"
+        (rowActionClick)="onTransactionAction($event)"
       />
     }
   </section>

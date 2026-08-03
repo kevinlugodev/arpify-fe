@@ -68,8 +68,8 @@ export default class CompensationListComponent {
     { key: 'currency', header: 'Moneda' },
     { key: 'labor_regime', header: 'Régimen' },
     { key: 'pension_system', header: 'Pensión' },
-    { key: 'effective_start_date', header: 'Inicio vigencia' },
-    { key: 'effective_end_date', header: 'Fin vigencia' },
+    { key: 'effective_start_date', header: 'Inicio vigencia', type: 'date' },
+    { key: 'effective_end_date', header: 'Fin vigencia', type: 'date' },
   ];
 
   protected readonly actions: DataTableAction<EmployeeCompensation>[] = [

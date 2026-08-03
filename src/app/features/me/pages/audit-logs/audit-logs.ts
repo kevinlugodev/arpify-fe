@@ -37,6 +37,6 @@ export default class AuditLogs {
     { key: 'action', header: 'Acción' },
     { key: 'entity_type', header: 'Entidad' },
     { key: 'entity_id', header: 'ID Entidad' },
-    { key: 'created_at', header: 'Fecha' },
+    { key: 'created_at', header: 'Fecha', type: 'relative' },
   ];
 }

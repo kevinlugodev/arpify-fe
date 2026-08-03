@@ -95,13 +95,12 @@ export default class AssetFormComponent {
 
   protected readonly saving = computed(() => this.fixedAssetsStore.status().loading);
 
-  protected readonly employeeOptions = computed<Option<string>[]>(() => [
-    { value: '', label: 'Sin asignar' },
-    ...this.employees().map((employee) => ({
+  protected readonly employeeOptions = computed<Option<string>[]>(() =>
+    this.employees().map((employee) => ({
       value: employee.id,
       label: `${employee.first_name} ${employee.last_name}`,
-    })),
-  ]);
+    }))
+  );
 
   protected readonly isEditing = computed(() => !!this.assetToEdit());
 
@@ -184,14 +183,14 @@ export default class AssetFormComponent {
         toast.success('Activo creado');
       }
       this.saved.emit();
-      this.model.set({ ...EMPTY_ASSET });
+      this.form().reset({ ...EMPTY_ASSET });
     } catch {
       toast.error(this.fixedAssetsStore.status().error ?? 'Error al guardar el activo');
     }
   }
 
   protected onCancel(): void {
-    this.model.set({ ...EMPTY_ASSET });
+    this.form().reset({ ...EMPTY_ASSET });
     this.cancel.emit();
   }
 }

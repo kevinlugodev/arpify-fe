@@ -115,10 +115,10 @@ export default class CollectionLogsComponent {
   protected readonly saving = computed(() => this.creditControlStore.status().loading);
 
   protected readonly columns: DataTableColumn<CollectionLog>[] = [
-    { key: 'contact_date', header: 'Fecha de contacto' },
+    { key: 'contact_date', header: 'Fecha de contacto', type: 'date' },
     { key: 'contact_channel', header: 'Canal', type: 'status', statusDomain: 'credit-channel' },
     { key: 'notes', header: 'Notas' },
-    { key: 'next_follow_up_date', header: 'Próximo seguimiento' },
+    { key: 'next_follow_up_date', header: 'Próximo seguimiento', type: 'date' },
   ];
 
   protected readonly actions: DataTableAction<CollectionLog>[] = [
@@ -229,6 +229,6 @@ export default class CollectionLogsComponent {
 
   protected resetForm(scheduleId: string): void {
     this.editingLogId.set(null);
-    this.model.set({ ...EMPTY_LOG, schedule_id: scheduleId });
+    this.form().reset({ ...EMPTY_LOG, schedule_id: scheduleId });
   }
 }

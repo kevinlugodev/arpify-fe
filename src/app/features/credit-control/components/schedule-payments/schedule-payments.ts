@@ -125,10 +125,7 @@ export default class SchedulePaymentsComponent {
     try {
       await this.creditControlStore.recordPayment(scheduleId, request);
       toast.success('Pago registrado');
-      this.model.update((model) => ({
-        ...EMPTY_PAYMENT,
-        schedule_id: model.schedule_id,
-      }));
+      this.form().reset({ ...EMPTY_PAYMENT, schedule_id: this.model().schedule_id });
       this.schedulesChanged.emit();
     } catch {
       toast.error(this.creditControlStore.status().error ?? 'Error al registrar el pago');

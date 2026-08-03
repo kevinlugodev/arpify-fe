@@ -5,11 +5,34 @@
 
   &__filters {
     display: flex;
+    flex-direction: column;
     gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+  }
 
-    app-search-field {
-      flex: 1;
-      max-width: 24rem;
+  &__filter-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  &__filter {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+
+    label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--neutral-color-900);
     }
+  }
+
+  &__filter-actions {
+    display: flex;
+    justify-content: flex-end;
   }
 }

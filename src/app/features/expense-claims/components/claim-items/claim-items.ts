@@ -170,27 +170,25 @@ export default class ClaimItemsComponent {
     return 'La rendición está cuadrada.';
   });
 
-  protected readonly bankAccountOptions = computed<Option<string>[]>(() => [
-    { value: '', label: 'Selecciona una cuenta bancaria' },
-    ...this.accounts().map((account) => ({
+  protected readonly bankAccountOptions = computed<Option<string>[]>(() =>
+    this.accounts().map((account) => ({
       value: account.id,
       label: `${account.name} (${account.currency})`,
-    })),
-  ]);
+    }))
+  );
 
-  protected readonly fundOptions = computed<Option<string>[]>(() => [
-    { value: '', label: 'Selecciona una caja chica' },
-    ...this.funds().map((fund) => ({
+  protected readonly fundOptions = computed<Option<string>[]>(() =>
+    this.funds().map((fund) => ({
       value: fund.id,
       label: `${fund.name} (${fund.currency})`,
-    })),
-  ]);
+    }))
+  );
 
   protected readonly itemColumns: DataTableColumn<ExpenseClaimItem>[] = [
     { key: 'document_type', header: 'Tipo', type: 'status', statusDomain: 'expense-claim-document' },
     { key: 'document_number', header: 'Número' },
     { key: 'supplier_name', header: 'Proveedor' },
-    { key: 'expense_date', header: 'Fecha' },
+    { key: 'expense_date', header: 'Fecha', type: 'date' },
     { key: 'amount', header: 'Monto' },
     { key: 'currency', header: 'Mon' },
     { key: 'category', header: 'Categoría', type: 'status', statusDomain: 'expense-claim-category' },
@@ -352,7 +350,7 @@ export default class ClaimItemsComponent {
     try {
       await this.expenseClaimsStore.settleExpenseClaim(claim.id, request);
       toast.success('Rendición liquidada');
-      this.settleModel.set({ ...EMPTY_SETTLE });
+      this.settleForm().reset({ ...EMPTY_SETTLE });
       this.itemsResource.reload();
       this.saved.emit();
     } catch {

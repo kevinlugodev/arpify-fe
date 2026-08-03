@@ -85,6 +85,7 @@ export default class PartnerDrawsComponent {
   readonly loading = input<boolean>(false);
 
   readonly reload = output<void>();
+  readonly delete = output<PartnerDrawTransaction>();
 
   protected readonly activeOperation = signal<DrawOperation>(null);
 
@@ -135,10 +136,18 @@ export default class PartnerDrawsComponent {
     { key: 'amount', header: 'Monto' },
     { key: 'rhe_document_number', header: 'RHE' },
     { key: 'notes', header: 'Notas' },
-    { key: 'created_at', header: 'Fecha' },
+    { key: 'created_at', header: 'Fecha', type: 'relative' },
   ];
 
-  protected readonly transactionActions: DataTableAction<DrawTransactionRow>[] = [];
+  protected readonly transactionActions: DataTableAction<DrawTransactionRow>[] = [
+    { key: 'delete', label: 'Eliminar', icon: 'bi-trash' },
+  ];
+
+  protected onTransactionAction(event: { action: string; row: DrawTransactionRow }): void {
+    if (event.action === 'delete') {
+      this.delete.emit(event.row);
+    }
+  }
 
   constructor() {
     this.advanceForm = form(this.advanceModel, (schema) => {
@@ -156,8 +165,8 @@ export default class PartnerDrawsComponent {
 
   protected setOperation(operation: DrawOperation): void {
     this.activeOperation.set(operation);
-    this.advanceModel.set({ ...EMPTY_ADVANCE });
-    this.settlementModel.set({ ...EMPTY_SETTLEMENT });
+    this.advanceForm().reset({ ...EMPTY_ADVANCE });
+    this.settlementForm().reset({ ...EMPTY_SETTLEMENT });
   }
 
   protected async onAdvanceSubmit(): Promise<void> {
@@ -189,7 +198,7 @@ export default class PartnerDrawsComponent {
         amount,
       });
       toast.success('Adelanto registrado');
-      this.advanceModel.set({ ...EMPTY_ADVANCE });
+      this.advanceForm().reset({ ...EMPTY_ADVANCE });
       this.activeOperation.set(null);
       this.reload.emit();
     } catch {
@@ -223,7 +232,7 @@ export default class PartnerDrawsComponent {
         notes: model.notes || undefined,
       });
       toast.success('Liquidación RHE registrada');
-      this.settlementModel.set({ ...EMPTY_SETTLEMENT });
+      this.settlementForm().reset({ ...EMPTY_SETTLEMENT });
       this.activeOperation.set(null);
       this.reload.emit();
     } catch {

@@ -67,13 +67,12 @@ export default class ClaimFormComponent {
 
   protected readonly saving = computed(() => this.expenseClaimsStore.status().loading);
 
-  protected readonly employeeOptions = computed<Option<string>[]>(() => [
-    { value: '', label: 'Selecciona un colaborador' },
-    ...this.employees().map((employee) => ({
+  protected readonly employeeOptions = computed<Option<string>[]>(() =>
+    this.employees().map((employee) => ({
       value: employee.id,
       label: `${employee.first_name} ${employee.last_name}`,
-    })),
-  ]);
+    }))
+  );
 
   protected readonly isEditing = computed(() => !!this.claim());
   protected readonly isReadonly = computed(() => {
@@ -140,12 +139,14 @@ export default class ClaimFormComponent {
         toast.success('Rendición creada');
       }
       this.saved.emit();
+      this.claimForm().reset({ ...EMPTY_CLAIM });
     } catch {
       toast.error(this.expenseClaimsStore.status().error ?? 'Error al guardar la rendición');
     }
   }
 
   protected onCancel(): void {
+    this.claimForm().reset({ ...EMPTY_CLAIM });
     this.cancel.emit();
   }
 }

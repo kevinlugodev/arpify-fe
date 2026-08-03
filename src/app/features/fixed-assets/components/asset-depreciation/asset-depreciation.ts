@@ -174,7 +174,7 @@ export default class AssetDepreciationComponent {
       toast.success('Depreciación ejecutada');
       this.logsResource.reload();
       this.depreciated.emit();
-      this.model.set({ ...EMPTY_DEPRECIATION });
+      this.form().reset({ ...EMPTY_DEPRECIATION });
     } catch {
       toast.error(this.fixedAssetsStore.status().error ?? 'Error al ejecutar la depreciación');
     }
